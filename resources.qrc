@@ -1,0 +1,12 @@
+<RCC>
+    <qresource prefix="/icons">
+        <file alias="new-file">file-circle-plus-solid.svg</file>
+        <file alias="open-file">file-solid.svg</file>
+        <file alias="save-file">floppy-disk-solid.svg</file>
+        <file alias="main-icon">mortar-pestle-solid.svg</file>
+        <file alias="exit">right-from-bracket-solid.svg</file>
+        <file alias="remove">square-minus-solid.svg</file>
+        <file alias="add">square-plus-solid.svg</file>
+        <file alias="toggle">square-check-solid.svg</file>
+    </qresource>
+</RCC>

@@ -2,8 +2,9 @@
 #define RUBRIC_H
 
 #include <QString>
-#include "repmodel.h"
+#include "drug.h"
 
+class RepModel;
 class Rubric
 {
     friend RepModel;

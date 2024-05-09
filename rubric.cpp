@@ -5,7 +5,7 @@ Rubric::Rubric(const QString &title, const Drugs &drugs, Rubric *parentRubric)
     , _drugs(drugs)
     , _parentRubric(parentRubric)
 {
-    qDebug() << "Rubric with title" << _title << "created.";
+
 }
 
 Rubric::~Rubric()
@@ -13,7 +13,6 @@ Rubric::~Rubric()
     for (const auto &drug : _drugs) {
         drug.first->removeRubric(this);
     }
-    qDebug() << "Rubric with title" << _title << "deleted.";
 }
 
 unsigned char Rubric::drugDegree(Drug *drug) const

@@ -1,5 +1,4 @@
 #include "repmodel.h"
-#include <QFile>
 #include "rubric.h"
 #include <stack>
 
@@ -61,15 +60,11 @@ QModelIndex RepModel::parent(const QModelIndex &index) const
 
     Rubric *rubric = getRubric(index);
     Rubric *parentRubric = rubric ? rubric->parentRubric() : nullptr;
-    Rubric *grandParentRubric = parentRubric ? parentRubric->parentRubric() : nullptr;
 
     if (!parentRubric)
         return {};
 
-    auto begin = _rubrics.cbegin(), end = _rubrics.cend();
-    if (grandParentRubric)
-        begin = grandParentRubric->_subrubrics.cbegin(),
-        end = grandParentRubric->_subrubrics.cend();
+    auto begin = siblings(parentRubric).cbegin(), end = siblings(parentRubric).cend();
 
     const auto it = std::find_if(begin, end, [parentRubric](const std::unique_ptr<Rubric> &rub) {
         return rub.get() == parentRubric;
@@ -124,14 +119,11 @@ bool RepModel::setData(const QModelIndex &index, const QVariant &value, int role
     return true;
 }
 
-void RepModel::addRubric(const QString &rubricString, const QModelIndex &parent)
+void RepModel::addRubric(const QString &rubricString)
 {
     if (Rubric *rubric = rubricFromString(rubricString)) {
-        // Append rubric
-        beginInsertRows(parent, rowCount(parent), rowCount(parent));
-        parent.isValid() ? getRubric(parent)->_subrubrics.push_back(std::unique_ptr<Rubric>(rubric))
-                         : _rubrics.push_back(std::unique_ptr<Rubric>(rubric));
-
+        beginInsertRows(QModelIndex(), rowCount(), rowCount());
+        _rubrics.push_back(std::unique_ptr<Rubric>(rubric));
         endInsertRows();
         update();
     }
@@ -144,11 +136,14 @@ void RepModel::removeRubric(const QModelIndex &index)
 
     int row = index.row();
 
-    beginRemoveRows(QModelIndex(), row, row);
-    _rubrics.erase(_rubrics.cbegin() + row);
-    endRemoveRows();
+    // TODO: remove subrubric
+    if (Rubric *rubric = getRubric(index)) {
+        beginRemoveRows(index.parent(), row, row);
+        _rubrics.erase(_rubrics.cbegin() + row);
+        endRemoveRows();
 
-    update();
+        update();
+    }
 }
 
 void RepModel::fromString(const QString &repStr)
@@ -183,20 +178,12 @@ void RepModel::fromString(const QString &repStr)
                 // The last child of the current parent is now the new parent
                 // unless the current parent has no children.
                 Rubric *lastParent = state.top().parent;
-                if (lastParent) {
-                    if (lastParent->subrubricCount() > 0)
-                        state.push(
-                            {lastParent->subrubric(lastParent->subrubricCount() - 1),
-                             createIndex(lastParent->subrubricCount() - 1,
-                                         0,
-                                         lastParent->subrubric(lastParent->subrubricCount() - 1)),
-                             position});
-                } else {
-                    if (_rubrics.size() > 0)
-                        state.push({_rubrics.back().get(),
-                                    createIndex(_rubrics.size() - 1, 0, _rubrics.back().get()),
-                                    position});
+                const auto &children = lastParent ? lastParent->_subrubrics : _rubrics;
+                if (!children.empty()) {
+                    Rubric *child = children.back().get();
+                    state.push({child, createIndex(children.size() - 1, 0, child), position});
                 }
+
             } else {
                 while (position < state.top().indentation && !state.empty())
                     state.pop();
@@ -206,6 +193,7 @@ void RepModel::fromString(const QString &repStr)
             Rubric *parent = state.top().parent;
             QModelIndex parentIdx = state.top().parentIdx;
             beginInsertRows(parentIdx, rowCount(parentIdx), rowCount(parentIdx));
+
             if (parent) {
                 rubric->_parentRubric = parent;
                 parent->_subrubrics.push_back(std::unique_ptr<Rubric>(rubric));
@@ -249,137 +237,6 @@ QString RepModel::toString()
 
     return result;
 }
-
-/*
-    QFile file(filePath);
-
-    if (!file.open(QIODevice::ReadOnly | QFile::Text)) {
-        return false;
-    }
-
-    clear();
-
-    QTextStream dataStream(&file);
-
-    int drugCount = 0;
-    dataStream >> drugCount;
-    if (!drugCount) {
-        file.close();
-        return false;
-    }
-
-    beginInsertColumns(QModelIndex(), 1, drugCount);
-    for (int i = 0; i < drugCount; ++i) {
-        quint32 id;
-        Drug drug{QString(), 0, 0, 0};
-        dataStream >> id;
-        dataStream.readLine();
-        dataStream.readLineInto(&drug.title);
-
-        drugs.insert(id, drug);
-        sortedDrugs.append(id);
-
-        lastDrugId = std::max(lastDrugId, id);
-    }
-    endInsertColumns();
-
-    int rubricCount = 0;
-    dataStream >> rubricCount;
-    if (!rubricCount) {
-        file.close();
-        return false;
-    }
-    beginInsertRows(QModelIndex(), 0, rubricCount - 1);
-    for (int i = 0; i < rubricCount; ++i) {
-        Rubric rubric;
-        int checkState;
-        dataStream.readLine();
-        dataStream.readLineInto(&rubric.title);
-        dataStream >> checkState;
-        rubric.checkState = checkState ? Qt::Checked : Qt::Unchecked;
-
-        int drugVariantsCount = 0;
-        dataStream >> drugVariantsCount;
-
-        if (!drugVariantsCount) {
-            file.close();
-            return false;
-        }
-
-        for (int j = 0; j < drugVariantsCount; ++j) {
-            quint32 drugId;
-            short degree;
-            dataStream >> drugId >> degree;
-            rubric.drugVariants.insert(drugId, degree);
-
-            Drug &drug = drugs[drugId];
-            drug.variantsCount++;
-
-            if (rubric.checkState == Qt::Unchecked)
-                drug.disabledVariantsCnt++;
-            else
-                drug.variantsSum += degree;
-        }
-
-        rubrics.append(rubric);
-    }
-    endInsertRows();
-
-    file.close();
-
-    sort();
-    emit headerDataChanged(Qt::Horizontal, 1, columnCount() - 1);
-    emit dataChanged(index(0, 1), index(rowCount() - 1, columnCount() - 1), {Qt::DisplayRole});
-
-    */
-
-/*
-    QFile file(filePath);
-    if (!file.open(QIODevice::WriteOnly)) {
-        return false;
-    }
-    QTextStream dataStream(&file);
-
-    int drugCount = drugs.count();
-
-    if (!drugCount) {
-        file.close();
-        return false;
-    }
-
-    dataStream << drugCount << '\n';
-    for (auto drug = drugs.cbegin(), end = drugs.cend(); drug != end; ++drug) {
-        dataStream << drug.key() << '\n' << drug.value().title << '\n';
-    }
-
-    int rubricCount = rubrics.count();
-
-    if (!rubricCount) {
-        file.close();
-        return false;
-    }
-
-    dataStream << rubricCount << '\n';
-    for (const Rubric &rubric : rubrics) {
-        dataStream << rubric.title << '\n';
-
-        dataStream << rubric.checkState << ' ';
-
-        int drugVariantsCount = rubric.drugVariants.count();
-        if (!drugVariantsCount) {
-            file.close();
-            return false;
-        }
-
-        dataStream << drugVariantsCount;
-        for (auto variant = rubric.drugVariants.cbegin(), end = rubric.drugVariants.cend();
-             variant != end;
-             ++variant) {
-            dataStream << ' ' << variant.key() << ' ' << variant.value();
-        }
-        dataStream << '\n';
-    }
-    */
 
 void RepModel::clear()
 {
@@ -514,7 +371,7 @@ Rubric *RepModel::rubricFromString(const QString &rubricString)
     return rubric;
 }
 
-QString RepModel::rubricToString(Rubric *rubric)
+QString RepModel::rubricToString(Rubric *rubric) const
 {
     QString rubStr(rubric->title());
     rubStr += ":";

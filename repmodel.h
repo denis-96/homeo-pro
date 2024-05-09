@@ -2,7 +2,7 @@
 #define REPMODEL_H
 
 #include <QAbstractItemModel>
-#include "drug.h"
+#include "rubric.h"
 
 class RepModel : public QAbstractItemModel
 {
@@ -30,7 +30,7 @@ public:
 
     bool setData(const QModelIndex &index, const QVariant &value, int role = Qt::EditRole) override;
 
-    void addRubric(const QString &rubricString, const QModelIndex &parent = {});
+    void addRubric(const QString &rubricString);
     void removeRubric(const QModelIndex &index);
 
     void fromString(const QString &repStr);
@@ -43,7 +43,9 @@ private:
     void update();
     Rubric *findRubric(const QString &title, Rubric *parent = nullptr) const;
     Rubric *rubricFromString(const QString &rubricString);
-    QString rubricToString(Rubric *rubric);
+    QString rubricToString(Rubric *rubric) const;
+
+    const std::vector<std::unique_ptr<Rubric>> &siblings(Rubric *rubric) const;
 
     std::vector<std::unique_ptr<Rubric>> _rubrics;
     std::vector<std::unique_ptr<Drug>> _drugs;
@@ -52,6 +54,10 @@ private:
 inline Rubric *RepModel::getRubric(const QModelIndex &index) const
 {
     return static_cast<Rubric *>(index.internalPointer());
+}
+inline const std::vector<std::unique_ptr<Rubric>> &RepModel::siblings(Rubric *rubric) const
+{
+    return rubric->parentRubric() ? rubric->parentRubric()->_subrubrics : _rubrics;
 }
 
 #endif // REPMODEL_H

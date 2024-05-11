@@ -30,7 +30,8 @@ public:
 
     bool setData(const QModelIndex &index, const QVariant &value, int role = Qt::EditRole) override;
 
-    void addRubric(const QString &rubricString);
+    void addRubric(const QString &rubricString, const QModelIndex &parent = {});
+    void addRubric(const RubricData &rubricData, const QModelIndex &parent = {});
     void removeRubric(const QModelIndex &index);
 
     void fromString(const QString &repStr);
@@ -42,7 +43,7 @@ private:
     Rubric *getRubric(const QModelIndex &index) const;
     void update();
     Rubric *findRubric(const QString &title, Rubric *parent = nullptr) const;
-    Rubric *rubricFromString(const QString &rubricString);
+    // Rubric *rubricFromString(const QString &rubricString);
     QString rubricToString(Rubric *rubric) const;
 
     const std::vector<std::unique_ptr<Rubric>> &siblings(Rubric *rubric) const;

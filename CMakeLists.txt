@@ -27,6 +27,8 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         MANUAL_FINALIZATION
         main.cpp
         ${PROJECT_SOURCES}
+        example.rep
+        .gitignore
     )
 endif()
 

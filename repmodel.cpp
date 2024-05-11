@@ -14,15 +14,19 @@ QVariant RepModel::data(const QModelIndex &index, int role) const
         return {};
 
     Rubric *rubric = getRubric(index);
+
+    if (!rubric)
+        return {};
+
     if (role == Qt::DisplayRole) {
         if (index.column() == 0)
             return rubric->title();
 
-        Drug *drug = _drugs[index.column() - 1].get();
+        Drug *drug = _drugs.at(index.column() - 1).get();
         unsigned char degree = rubric->drugDegree(drug);
         return degree ? degree : QVariant{};
     }
-    if (role == Roles::RubricImportance && index.column() == 0) {
+    if (role == Roles::RubricImportance) {
         return rubric->importance();
     }
 
@@ -32,24 +36,29 @@ QVariant RepModel::data(const QModelIndex &index, int role) const
 QVariant RepModel::headerData(int section, Qt::Orientation orientation, int role) const
 {
     if (orientation == Qt::Horizontal && role == Qt::DisplayRole)
-
     {
-        return section > 0 ? _drugs.at(section - 1)->title() : "Рубрики \\ Препараты";
+        if (section == 0)
+            return "Рубрики \\ Препараты";
+        if (section > 0)
+            return _drugs.at(section - 1)->title();
     }
     return {};
 }
 
 QModelIndex RepModel::index(int row, int column, const QModelIndex &parent) const
 {
-    if (!parent.isValid())
-        return row >= 0 && row < rowCount() ? createIndex(row, column, _rubrics.at(row).get())
-                                            : QModelIndex{};
+    if (row < 0 || column < 0)
+        return {};
 
-    if (parent.column() == 0) {
+    if (parent.isValid() && parent.column() == 0) {
         if (Rubric *parentRubric = getRubric(parent))
             if (Rubric *rubric = parentRubric->subrubric(row))
                 return createIndex(row, column, rubric);
     }
+
+    if (!parent.isValid() && row < rowCount())
+        return createIndex(row, column, _rubrics.at(row).get());
+
     return {};
 }
 
@@ -59,7 +68,11 @@ QModelIndex RepModel::parent(const QModelIndex &index) const
         return {};
 
     Rubric *rubric = getRubric(index);
-    Rubric *parentRubric = rubric ? rubric->parentRubric() : nullptr;
+
+    if (!rubric)
+        return {};
+
+    Rubric *parentRubric = rubric->parentRubric();
 
     if (!parentRubric)
         return {};
@@ -101,32 +114,73 @@ Qt::ItemFlags RepModel::flags(const QModelIndex &index) const
 
 bool RepModel::setData(const QModelIndex &index, const QVariant &value, int role)
 {
-    if (role != Roles::RubricImportance || index.column() != 0)
-        return false;
+    if (role == Roles::RubricImportance) {
+        Rubric *rubric = getRubric(index);
 
-    Rubric *rubric = getRubric(index);
+        if (!rubric)
+            return false;
 
-    if (!rubric)
-        return false;
+        bool ok;
+        unsigned newImportance = value.toUInt(&ok);
+        if (!ok || newImportance > 4)
+            return false;
 
-    bool ok;
-    unsigned newImportance = value.toUInt(&ok);
-    if (!ok || newImportance > 4)
-        return false;
+        rubric->setImportance(newImportance);
 
-    rubric->setImportance(newImportance);
+        return true;
+    }
 
-    return true;
+    return false;
 }
 
-void RepModel::addRubric(const QString &rubricString)
+void RepModel::addRubric(const QString &rubricString, const QModelIndex &parent)
 {
-    if (Rubric *rubric = rubricFromString(rubricString)) {
-        beginInsertRows(QModelIndex(), rowCount(), rowCount());
-        _rubrics.push_back(std::unique_ptr<Rubric>(rubric));
-        endInsertRows();
+    RubricData rubricData(rubricString);
+    if (!rubricData.isEmpty() && !findRubric(rubricData.title())) {
+        addRubric(rubricData, parent);
         update();
     }
+}
+
+void RepModel::addRubric(const RubricData &rubricData, const QModelIndex &parent)
+{
+    Rubric *parentRubric = getRubric(parent);
+    // Create new rubric
+    std::unique_ptr<Rubric> rubric(new Rubric(rubricData.title(), {}, parentRubric));
+
+    auto newDrugs = rubricData.drugs();
+    // Existing drug
+    for (const auto &drug : _drugs) {
+        QString drugTitle = drug->title();
+        if (rubricData.drugs().find(drugTitle) != rubricData.drugs().end()) {
+            unsigned char degree = rubricData.drugs().at(drugTitle);
+            rubric->addDrug(drug.get(), degree);
+            drug->addRubric(rubric.get(), degree);
+            newDrugs.erase(drugTitle);
+        }
+    }
+
+    // New drugs
+    beginInsertColumns(QModelIndex(), columnCount(), columnCount() + newDrugs.size() - 1);
+    for (const auto &variant : newDrugs) {
+        std::unique_ptr<Drug> drug(new Drug(variant.first));
+
+        rubric->addDrug(drug.get(), variant.second);
+        drug->addRubric(rubric.get(), variant.second);
+
+        _drugs.push_back(std::move(drug));
+    }
+    endInsertColumns();
+
+    //
+    beginInsertRows(parent, rowCount(parent), rowCount(parent));
+
+    if (parentRubric) {
+        parentRubric->addSubrubric(std::move(rubric));
+
+    } else
+        _rubrics.push_back(std::move(rubric));
+    endInsertRows();
 }
 
 void RepModel::removeRubric(const QModelIndex &index)
@@ -136,10 +190,12 @@ void RepModel::removeRubric(const QModelIndex &index)
 
     int row = index.row();
 
-    // TODO: remove subrubric
     if (Rubric *rubric = getRubric(index)) {
         beginRemoveRows(index.parent(), row, row);
-        _rubrics.erase(_rubrics.cbegin() + row);
+        if (rubric->parentRubric())
+            rubric->parentRubric()->removeSubrubric(rubric);
+        else
+            _rubrics.erase(_rubrics.cbegin() + row);
         endRemoveRows();
 
         update();
@@ -169,9 +225,9 @@ void RepModel::fromString(const QString &repStr)
 
         const QStringView lineData = line.sliced(position).trimmed();
         if (!lineData.isEmpty()) {
-            // Read the data from the rest of the line.
-            Rubric *rubric = rubricFromString(lineData.toString());
-            if (!rubric)
+            // Read the data.
+            RubricData rubricData(lineData.toString());
+            if (rubricData.isEmpty() || findRubric(rubricData.title()))
                 continue;
 
             if (position > state.top().indentation) {
@@ -189,17 +245,7 @@ void RepModel::fromString(const QString &repStr)
                     state.pop();
             }
 
-            // Append a new item to the current parent's list of children.
-            Rubric *parent = state.top().parent;
-            QModelIndex parentIdx = state.top().parentIdx;
-            beginInsertRows(parentIdx, rowCount(parentIdx), rowCount(parentIdx));
-
-            if (parent) {
-                rubric->_parentRubric = parent;
-                parent->_subrubrics.push_back(std::unique_ptr<Rubric>(rubric));
-            } else
-                _rubrics.push_back(std::unique_ptr<Rubric>(rubric));
-            endInsertRows();
+            addRubric(rubricData, state.top().parentIdx);
         }
     }
 
@@ -303,7 +349,7 @@ Rubric *RepModel::findRubric(const QString &title, Rubric *parent) const
 
     return nullptr;
 }
-
+/*
 Rubric *RepModel::rubricFromString(const QString &rubricString)
 {
     QString rubricTitle;
@@ -370,7 +416,7 @@ Rubric *RepModel::rubricFromString(const QString &rubricString)
 
     return rubric;
 }
-
+*/
 QString RepModel::rubricToString(Rubric *rubric) const
 {
     QString rubStr(rubric->title());

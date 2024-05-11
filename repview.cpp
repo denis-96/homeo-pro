@@ -26,18 +26,13 @@ public:
         QStyleOptionViewItem customizedOption = option;
 
         if (index.column() > 0) {
-            bool isRowDisabled = !index.siblingAtColumn(0).data(Qt::CheckStateRole).toBool();
-            short itemData = index.data(Qt::DisplayRole).toString().toUShort();
+            unsigned int itemData = index.data(Qt::DisplayRole).toUInt();
 
-            auto backgroundColor = isRowDisabled ? Qt::white : cellColorMapping[itemData];
-            auto textColor = isRowDisabled ? Qt::lightGray : Qt::black;
+            auto backgroundColor = cellColorMapping[itemData];
 
             painter->fillRect(option.rect, backgroundColor);
 
-            customizedOption.palette.setColor(QPalette::Text, textColor);
-            customizedOption.palette.setColor(QPalette::HighlightedText, textColor);
-            customizedOption.palette.setColor(QPalette::Highlight, backgroundColor);
-            customizedOption.displayAlignment.setFlag(Qt ::AlignCenter);
+            // customizedOption.displayAlignment.setFlag(Qt ::AlignCenter);
         }
 
         QStyledItemDelegate::paint(painter, customizedOption, index);
@@ -47,27 +42,25 @@ public:
 RepView::RepView(QWidget *parent)
     : QTreeView(parent)
 {
-    /*
     setItemDelegate(new CellsDelegate(this));
-    setFont(QFont("Segoe UI", 13));
-    setStyleSheet("QHeaderView::section { background-color: palette(midlight) }");
-    setSelectionMode(QAbstractItemView::SingleSelection);
+    // setFont(QFont("Segoe UI", 13));
+    // setStyleSheet("QHeaderView::section { background-color: palette(midlight) }");
+    setSelectionMode(QAbstractItemView::ExtendedSelection);
     setSelectionBehavior(QAbstractItemView::SelectRows);
 
-    verticalHeader()->setMinimumSectionSize(20);
-    verticalHeader()->setDefaultSectionSize(20);
-    verticalHeader()->hide();
+    // verticalHeader()->setMinimumSectionSize(20);
+    // verticalHeader()->setDefaultSectionSize(20);
+    // verticalHeader()->hide();
 
-    horizontalHeader()->setMinimumSectionSize(20);
-    horizontalHeader()->setDefaultSectionSize(20);
+    // horizontalHeader()->setMinimumSectionSize(20);
+    // horizontalHeader()->setDefaultSectionSize(20);
 
-    horizontalHeader()->setFont(QFont("Segoe UI", 10, QFont::Bold));
-    horizontalHeader()->setSectionsClickable(false);
-    horizontalHeader()->setSectionResizeMode(QHeaderView::Fixed);
+    // horizontalHeader()->setFont(QFont("Segoe UI", 10, QFont::Bold));
+    // horizontalHeader()->setSectionsClickable(false);
+    // horizontalHeader()->setSectionResizeMode(QHeaderView::Fixed);
 
-    horizontalHeader()->setDefaultAlignment(Qt::AlignHCenter | Qt::AlignBottom
-                                            | (Qt::Alignment) Qt::TextWordWrap);
-    */
+    // horizontalHeader()->setDefaultAlignment(Qt::AlignHCenter | Qt::AlignBottom
+    //                                         | (Qt::Alignment) Qt::TextWordWrap);
 }
 
 void RepView::setRepModel(RepModel *repModel)

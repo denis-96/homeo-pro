@@ -60,7 +60,7 @@ public:
     Rubric *subrubric(int number);
     int subrubricCount() const;
     void addSubrubric(std::unique_ptr<Rubric> &&rubric);
-    void removeSubrubric(Rubric *rubric);
+    std::unique_ptr<Rubric> removeSubrubric(Rubric *rubric);
 
     Rubric *parentRubric() const;
 

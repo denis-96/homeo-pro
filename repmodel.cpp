@@ -172,7 +172,7 @@ void RepModel::addRubric(const RubricData &rubricData, const QModelIndex &parent
     }
     endInsertColumns();
 
-    //
+    // Insert rubric
     beginInsertRows(parent, rowCount(parent), rowCount(parent));
 
     if (parentRubric) {

@@ -27,9 +27,8 @@ unsigned char Rubric::drugDegree(Drug *drug) const
 }
 void Rubric::addDrug(Drug *drug, unsigned char degree)
 {
-    if (degree > 4)
-        return;
-    _drugs.insert({drug, degree});
+    if (degree <= 4)
+        _drugs[drug] = degree;
 }
 
 void Rubric::removeDrug(Drug *drug)
@@ -46,32 +45,58 @@ Rubric *Rubric::subrubric(int number)
 
 void Rubric::addSubrubric(std::unique_ptr<Rubric> &&rubric)
 {
-    for (const auto &drug : rubric->_drugs) {
-        if (drug.second > _drugs[drug.first])
-            _drugs[drug.first] = drug.second;
-        drug.first->removeRubric(rubric.get());
+    for (const auto &pair : rubric->_drugs) {
+        Drug *drug = pair.first;
+        auto degree = pair.second;
+        if (drugDegree(drug) < degree) {
+            addDrug(drug, degree);
+            drug->addRubric(this, degree);
+        }
+        drug->removeRubric(rubric.get());
     }
     _subrubrics.push_back(std::move(rubric));
 }
 
-void Rubric::removeSubrubric(Rubric *rubric)
+std::unique_ptr<Rubric> Rubric::removeSubrubric(Rubric *rubric)
 {
-    for (const auto &drug : rubric->_drugs) {
-        // TODO: remove subrubric drug from parent rubric
-        drug.first->addRubric(rubric, drug.second);
-    }
-
     auto rubricIt = std::find_if(_subrubrics.cbegin(),
                                  _subrubrics.cend(),
                                  [rubric](const std::unique_ptr<Rubric> &rub) {
                                      return rubric == rub.get();
                                  });
 
-    if (rubricIt != _subrubrics.cend()) {
-        _subrubrics.erase(rubricIt);
-    }
+    if (rubricIt == _subrubrics.cend())
+        return {};
 
+    for (const auto &pair : rubric->_drugs) {
+        Drug *drug = pair.first;
+        auto degree = pair.second;
+
+        unsigned short maxDegree = 0;
+        for (const auto &subRub : _subrubrics)
+            if (subRub.get() != rubric)
+                maxDegree = std::max<unsigned short>(subRub->drugDegree(drug), maxDegree);
+
+        if (maxDegree == 0) {
+            removeDrug(drug);
+            drug->removeRubric(this);
+        }
+
+        else {
+            addDrug(drug, maxDegree);
+            drug->addRubric(this, maxDegree);
+        }
+
+        drug->addRubric(rubric, degree);
+    }
     rubric->_parentRubric = nullptr;
+
+    auto rubricIdx = std::distance(_subrubrics.cbegin(), rubricIt);
+    std::unique_ptr<Rubric> rubricPtr = std::move(_subrubrics[rubricIdx]);
+
+    _subrubrics.erase(rubricIt);
+
+    return std::move(rubricPtr);
 }
 
 void Rubric::setImportance(unsigned short newImportance)

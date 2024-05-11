@@ -32,7 +32,8 @@ DrugInfo Drug::info() const
 
 void Drug::addRubric(Rubric *rubric, unsigned char degree)
 {
-    _rubrics.insert({rubric, degree});
+    if (degree <= 4)
+        _rubrics[rubric] = degree;
 }
 
 void Drug::removeRubric(Rubric *rubric)

@@ -12,6 +12,7 @@ class RubricData
 public:
     RubricData() = default;
     explicit RubricData(const QString &rubricString);
+    RubricData(const QString &title, std::unordered_map<QString, unsigned char> drugs);
 
     bool isEmpty() const;
     const QString &title() const;

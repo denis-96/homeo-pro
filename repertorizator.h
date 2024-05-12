@@ -36,16 +36,22 @@ private:
     RepView *repView;
 
     QMenu *repMenu;
+    QMenu *editMenu;
+    QMenu *contextMenu;
+
     QAction *newAction;
     QAction *openAction;
     QAction *saveAction;
     QAction *saveAsAction;
     QAction *exitAction;
 
-    QMenu *editMenu;
     QAction *addRubricAction;
     QAction *removeRubricAction;
-    QAction *toggleRubricAction;
+    QAction *groupRubricsAction;
+    QAction *ungroupRubricsAction;
+
+    QAction *removeSubrubAction;
+    QAction *addSubrubAction;
 
     QToolBar *toolBar;
 
@@ -68,6 +74,11 @@ private slots:
 
     void addRubric();
     void removeRubric();
+
+    void groupRubrics();
+    void ungroupRUbrics();
+
+    void showContextMenu(QPoint pos);
 
     void onRepChange();
     void toggleRepActions();

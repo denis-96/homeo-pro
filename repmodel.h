@@ -34,6 +34,8 @@ public:
     void addRubric(const RubricData &rubricData, const QModelIndex &parent = {});
     void removeRubric(const QModelIndex &index);
 
+    void groupRubrics(const QModelIndexList &rubricIndexes);
+
     void fromString(const QString &repStr);
     QString toString();
 

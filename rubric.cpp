@@ -136,3 +136,8 @@ RubricData::RubricData(const QString &rubricString)
         _drugs.insert({drugTitle, drugDegree});
     }
 }
+
+RubricData::RubricData(const QString &title, std::unordered_map<QString, unsigned char> drugs)
+    : _title(title)
+    , _drugs(drugs)
+{}

@@ -202,6 +202,17 @@ void RepModel::removeRubric(const QModelIndex &index)
     }
 }
 
+void RepModel::groupRubrics(const QModelIndexList &rubricIndexes)
+{
+    // TODO;
+    addRubric(RubricData("Объединение рубрик", {}));
+    for (const auto &rubricIdx : rubricIndexes) {
+        if (Rubric *rubric = getRubric(rubricIdx))
+            ;
+        // _rubrics.back()->addSubrubric()
+    }
+}
+
 void RepModel::fromString(const QString &repStr)
 {
     clear();

@@ -21,6 +21,12 @@ void Repertorizator::setupUI()
     createMenu();
     createToolBar();
 
+    setContextMenuPolicy(Qt::CustomContextMenu);
+    connect(this,
+            &Repertorizator::customContextMenuRequested,
+            this,
+            &Repertorizator::showContextMenu);
+
     connect(repView->selectionModel(),
             &QItemSelectionModel::selectionChanged,
             this,
@@ -34,37 +40,35 @@ void Repertorizator::createActions()
 {
     newAction = new QAction("Новая", this);
     newAction->setIcon(QIcon(":/icons/new-file"));
-    connect(newAction, SIGNAL(triggered()), this, SLOT(newRep()));
+    connect(newAction, &QAction::triggered, this, &Repertorizator::newRep);
 
     openAction = new QAction("Открыть", this);
     openAction->setIcon(QIcon(":/icons/open-file"));
-    connect(openAction, SIGNAL(triggered()), this, SLOT(openRep()));
+    connect(openAction, &QAction::triggered, this, &Repertorizator::openRep);
 
     saveAction = new QAction("Сохранить", this);
     saveAction->setIcon(QIcon(":/icons/save-file"));
-    connect(saveAction, SIGNAL(triggered()), this, SLOT(saveRep()));
+    connect(saveAction, &QAction::triggered, this, &Repertorizator::saveRep);
 
     saveAsAction = new QAction("Сохранить как", this);
     saveAsAction->setIcon(QIcon(":/icons/save-file"));
-    connect(saveAsAction, SIGNAL(triggered()), this, SLOT(saveRepAs()));
+    connect(saveAsAction, &QAction::triggered, this, &Repertorizator::saveRepAs);
 
     exitAction = new QAction("Выход", this);
     exitAction->setIcon(QIcon(":/icons/exit"));
-    connect(exitAction, SIGNAL(triggered()), this, SLOT(close()));
+    connect(exitAction, &QAction::triggered, this, &Repertorizator::close);
 
     addRubricAction = new QAction("Добавить", this);
     addRubricAction->setIcon(QIcon(":/icons/add"));
-    connect(addRubricAction, SIGNAL(triggered()), this, SLOT(addRubric()));
+    connect(addRubricAction, &QAction::triggered, this, &Repertorizator::addRubric);
 
     removeRubricAction = new QAction("Удалить", this);
     removeRubricAction->setIcon(QIcon(":/icons/remove"));
     removeRubricAction->setDisabled(true);
-    connect(removeRubricAction, SIGNAL(triggered()), this, SLOT(removeRubric()));
+    connect(removeRubricAction, &QAction::triggered, this, &Repertorizator::removeRubric);
 
-    toggleRubricAction = new QAction("Вкл/Выкл", this);
-    toggleRubricAction->setIcon(QIcon(":/icons/toggle"));
-    toggleRubricAction->setDisabled(true);
-    // connect(toggleRubricAction, SIGNAL(triggered()), this, SLOT(toggleRubric()));
+    groupRubricsAction = new QAction("Группировать рубрики", this);
+    connect(groupRubricsAction, &QAction::triggered, this, &Repertorizator::groupRubrics);
 }
 
 void Repertorizator::createMenu()
@@ -80,7 +84,10 @@ void Repertorizator::createMenu()
     editMenu = menuBar()->addMenu("Редактирование");
     editMenu->addAction(addRubricAction);
     editMenu->addAction(removeRubricAction);
-    editMenu->addAction(toggleRubricAction);
+
+    contextMenu = new QMenu(this);
+    contextMenu->addAction(addRubricAction);
+    contextMenu->addAction(removeRubricAction);
 }
 
 void Repertorizator::createToolBar()
@@ -92,7 +99,6 @@ void Repertorizator::createToolBar()
 
     toolBar->addAction(addRubricAction);
     toolBar->addAction(removeRubricAction);
-    toolBar->addAction(toggleRubricAction);
 }
 
 bool Repertorizator::readRep(const QString &fileName)
@@ -229,6 +235,26 @@ void Repertorizator::removeRubric()
     toggleRepActions();
 }
 
+void Repertorizator::groupRubrics()
+{
+    repModel->groupRubrics();
+}
+
+void Repertorizator::showContextMenu(QPoint pos)
+{
+    QPoint globalPos = mapToGlobal(pos);
+    QModelIndex index = repView->indexAt(repView->viewport()->mapFromGlobal(globalPos));
+
+    if (repView->selectionModel()->selectedRows().size() > 1) {
+        contextMenu->addAction(groupRubricsAction);
+    }
+    if (index.isValid()) {
+    } else {
+    }
+
+    contextMenu->popup(globalPos);
+}
+
 void Repertorizator::onRepChange()
 {
     updateTitle(2);
@@ -238,7 +264,6 @@ void Repertorizator::toggleRepActions()
 {
     QModelIndexList selectedRows = repView->selectionModel()->selectedRows();
     removeRubricAction->setEnabled((bool) selectedRows.size());
-    toggleRubricAction->setEnabled((bool) selectedRows.size());
 }
 
 void Repertorizator::updateTitle(int state)

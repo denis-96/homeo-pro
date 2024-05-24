@@ -30,8 +30,8 @@ void Repertorizator::setupUI()
     connect(repView->selectionModel(),
             &QItemSelectionModel::selectionChanged,
             this,
-            &Repertorizator::toggleRepActions);
-    connect(repModel, &RepModel::dataChanged, this, &Repertorizator::onRepChange);
+            &Repertorizator::toggleActions);
+    connect(repModel, &RepModel::dataChanged, this, [this] { updateTitle(2); });
     this->setCentralWidget(repView);
     this->setWindowIcon(QIcon(":/icons/main-icon"));
 }
@@ -60,15 +60,49 @@ void Repertorizator::createActions()
 
     addRubricAction = new QAction("Добавить", this);
     addRubricAction->setIcon(QIcon(":/icons/add"));
-    connect(addRubricAction, &QAction::triggered, this, &Repertorizator::addRubric);
+    connect(addRubricAction, &QAction::triggered, this, [this] {
+        QString rubricStr = QApplication::clipboard()->text();
+        repModel->addRubric(rubricStr);
+    });
 
     removeRubricAction = new QAction("Удалить", this);
     removeRubricAction->setIcon(QIcon(":/icons/remove"));
     removeRubricAction->setDisabled(true);
-    connect(removeRubricAction, &QAction::triggered, this, &Repertorizator::removeRubric);
+    connect(removeRubricAction, &QAction::triggered, this, [this] {
+        if (repView->selectionModel()->selectedRows().size() > 0)
+            repModel->removeRubrics(repView->selectionModel()->selectedRows());
+    });
 
     groupRubricsAction = new QAction("Группировать рубрики", this);
-    connect(groupRubricsAction, &QAction::triggered, this, &Repertorizator::groupRubrics);
+    removeRubricAction->setDisabled(true);
+    connect(groupRubricsAction, &QAction::triggered, this, [this] {
+        if (repView->selectionModel()->selectedRows().size() > 1)
+            repModel->groupRubrics(repView->selectionModel()->selectedRows());
+    });
+
+    ungroupRubricsAction = new QAction("Разгруппировать рубрики", this);
+    removeRubricAction->setDisabled(true);
+    connect(ungroupRubricsAction, &QAction::triggered, this, [this] {
+        if (repView->selectionModel()->selectedRows().size() == 1)
+            repModel->ungroupRubrics(repView->selectionModel()->selectedRows().back());
+    });
+
+    changeImportanceActions = new QActionGroup(this);
+    for (int i = 0; i <= 4; ++i) {
+        QAction *action = new QAction(QString::number(i), changeImportanceActions);
+        action->setData(i);
+        action->setCheckable(true);
+        changeImportanceActions->addAction(action);
+        connect(action, &QAction::triggered, this, [this] {
+            if (QAction *action = qobject_cast<QAction *>(sender())) {
+                if (repView->selectionModel()->selectedRows().size() == 1)
+                    repModel->setData(repView->selectionModel()->selectedRows().back(),
+                                      action->data(),
+                                      RepModel ::Roles::RubricImportance);
+            }
+        });
+    }
+    changeImportanceActions->setDisabled(true);
 }
 
 void Repertorizator::createMenu()
@@ -88,6 +122,9 @@ void Repertorizator::createMenu()
     contextMenu = new QMenu(this);
     contextMenu->addAction(addRubricAction);
     contextMenu->addAction(removeRubricAction);
+    contextMenu->addSeparator();
+    contextMenu->addAction(groupRubricsAction);
+    contextMenu->addAction(ungroupRubricsAction);
 }
 
 void Repertorizator::createToolBar()
@@ -99,6 +136,8 @@ void Repertorizator::createToolBar()
 
     toolBar->addAction(addRubricAction);
     toolBar->addAction(removeRubricAction);
+
+    toolBar->addActions(changeImportanceActions->actions());
 }
 
 bool Repertorizator::readRep(const QString &fileName)
@@ -111,6 +150,9 @@ bool Repertorizator::readRep(const QString &fileName)
     }
 
     repModel->fromString(QString::fromUtf8(file.readAll()));
+
+    currentRep = fileName;
+    updateTitle(1);
 
     return true;
 }
@@ -129,6 +171,8 @@ bool Repertorizator::writeRep(const QString &fileName)
         QMessageBox::warning(this, "Предупреждение", "Ошибка при записи в файл " + fileName);
         return false;
     }
+    currentRep = fileName;
+    updateTitle(1);
 
     return true;
 }
@@ -155,11 +199,7 @@ void Repertorizator::openRep()
     if (fileName.isEmpty())
         return;
 
-    if (!readRep(fileName))
-        return;
-
-    currentRep = fileName;
-    updateTitle(1);
+    readRep(fileName);
 }
 
 void Repertorizator::saveRep()
@@ -177,11 +217,7 @@ void Repertorizator::saveRep()
         fileName = currentRep;
     }
 
-    if (!writeRep(fileName))
-        return;
-
-    currentRep = fileName;
-    updateTitle(1);
+    writeRep(fileName);
 }
 
 void Repertorizator::saveRepAs()
@@ -193,11 +229,7 @@ void Repertorizator::saveRepAs()
     if (fileName.isEmpty())
         return;
 
-    if (!writeRep(fileName))
-        return;
-
-    currentRep = fileName;
-    updateTitle(1);
+    writeRep(fileName);
 }
 
 bool Repertorizator::closeRep()
@@ -219,51 +251,25 @@ bool Repertorizator::closeRep()
     return true;
 }
 
-void Repertorizator::addRubric()
-{
-    QString rubricStr = QApplication::clipboard()->text();
-    repModel->addRubric(rubricStr);
-}
-
-void Repertorizator::removeRubric()
-{
-    QModelIndexList selectedRows = repView->selectionModel()->selectedRows();
-    for (const auto &row : selectedRows) {
-        repModel->removeRubric(row);
-    }
-
-    toggleRepActions();
-}
-
-void Repertorizator::groupRubrics()
-{
-    repModel->groupRubrics();
-}
-
 void Repertorizator::showContextMenu(QPoint pos)
 {
-    QPoint globalPos = mapToGlobal(pos);
-    QModelIndex index = repView->indexAt(repView->viewport()->mapFromGlobal(globalPos));
-
-    if (repView->selectionModel()->selectedRows().size() > 1) {
-        contextMenu->addAction(groupRubricsAction);
-    }
-    if (index.isValid()) {
-    } else {
-    }
-
-    contextMenu->popup(globalPos);
+    contextMenu->popup(mapToGlobal(pos));
 }
 
-void Repertorizator::onRepChange()
+void Repertorizator::toggleActions()
 {
-    updateTitle(2);
-}
+    const auto &selectedRows = repView->selectionModel()->selectedRows();
+    int selectedRowsCnt = selectedRows.size();
 
-void Repertorizator::toggleRepActions()
-{
-    QModelIndexList selectedRows = repView->selectionModel()->selectedRows();
-    removeRubricAction->setEnabled((bool) selectedRows.size());
+    removeRubricAction->setEnabled(selectedRowsCnt > 0);
+    groupRubricsAction->setEnabled(selectedRowsCnt > 1);
+    ungroupRubricsAction->setEnabled(selectedRowsCnt == 1
+                                     && repModel->isParent(selectedRows.back()));
+    changeImportanceActions->setEnabled(selectedRowsCnt == 1);
+    if (selectedRowsCnt == 1) {
+        auto importance = selectedRows.back().data(RepModel::Roles::RubricImportance).toUInt();
+        changeImportanceActions->actions().at(importance)->setChecked(true);
+    }
 }
 
 void Repertorizator::updateTitle(int state)
@@ -278,21 +284,6 @@ void Repertorizator::updateTitle(int state)
             setWindowTitle('*' + (currentRep.isEmpty() ? "Безымянная" : currentRep)
                            + " - Реперторизатор");
         break;
-    }
-}
-
-void Repertorizator::initialize()
-{
-    QStringList arguments = QCoreApplication::arguments();
-    if (arguments.size() > 1 && QFile::exists(arguments.last())) {
-        if (/*!repModel->loadFromRepFile(arguments.last())*/ true) {
-            QMessageBox::warning(this,
-                                 "Предупреждение",
-                                 "Не удалось открыть файл " + arguments.last());
-            return;
-        }
-        currentRep = arguments.last();
-        updateTitle(1);
     }
 }
 

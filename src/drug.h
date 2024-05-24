@@ -1,6 +1,7 @@
 #ifndef DRUG_H
 #define DRUG_H
 
+#if 0
 #include <QString>
 
 class Rubric;
@@ -41,5 +42,5 @@ inline int Drug::rubricCount() const
 {
     return _rubrics.size();
 }
-
+#endif
 #endif // DRUG_H

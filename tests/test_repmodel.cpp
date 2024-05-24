@@ -1,4 +1,4 @@
-#include "repmodel.h"
+#include "../src/repmodel.h"
 
 #include <QAbstractItemModelTester>
 #include <QObject>
@@ -15,9 +15,10 @@ private slots:
 void TestRepModel::testRepModel()
 {
     RepModel model;
+    QTest::qExec(this);
     QAbstractItemModelTester tester(&model);
 }
 
-QTEST_APPLESS_MAIN(TestRepModel)
+QTEST_MAIN(TestRepModel)
 
-#include "test.moc"
+#include "test_repmodel.moc"

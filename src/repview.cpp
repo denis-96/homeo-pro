@@ -1,7 +1,32 @@
 #include "repview.h"
-#include <QHeaderView>
+
+#include <QMouseEvent>
 #include <QPainter>
 #include <QStyledItemDelegate>
+
+DrugsView::DrugsView(QWidget *parent)
+    : QHeaderView(Qt::Horizontal, parent)
+{}
+
+void DrugsView::paintSection(QPainter *painter, const QRect &rect, int logicalIndex) const
+{
+    if (!rect.isValid())
+        return;
+    painter->save();
+    painter->setRenderHint(QPainter::TextAntialiasing);
+    painter->translate(rect.bottomLeft());
+    painter->rotate(-90);
+    QRect newRect = QRect(0, -1, rect.height(), rect.width());
+
+    painter->save();
+    QHeaderView::paintSection(painter, newRect, logicalIndex);
+    painter->restore();
+
+    painter->setBrush(QBrush(Qt::NoBrush));
+    painter->setPen(Qt::gray);
+    painter->drawRect(newRect);
+    painter->restore();
+}
 
 class CellsDelegate : public QStyledItemDelegate
 {
@@ -26,13 +51,13 @@ public:
         QStyleOptionViewItem customizedOption = option;
 
         if (index.column() > 0) {
-            unsigned int itemData = index.data(Qt::DisplayRole).toUInt();
-
-            auto backgroundColor = cellColorMapping[itemData];
+            unsigned int degree = index.data(Qt::DisplayRole).toUInt();
+            unsigned int importance = index.data(RepModel::Roles::RubricImportance).toUInt();
+            auto backgroundColor = !importance ? Qt::white : cellColorMapping[degree];
 
             painter->fillRect(option.rect, backgroundColor);
 
-            // customizedOption.displayAlignment.setFlag(Qt ::AlignCenter);
+            customizedOption.displayAlignment.setFlag(Qt ::AlignCenter);
         }
 
         QStyledItemDelegate::paint(painter, customizedOption, index);
@@ -48,12 +73,10 @@ RepView::RepView(QWidget *parent)
     setSelectionMode(QAbstractItemView::ExtendedSelection);
     setSelectionBehavior(QAbstractItemView::SelectRows);
 
-    // verticalHeader()->setMinimumSectionSize(20);
-    // verticalHeader()->setDefaultSectionSize(20);
-    // verticalHeader()->hide();
-
-    // horizontalHeader()->setMinimumSectionSize(20);
-    // horizontalHeader()->setDefaultSectionSize(20);
+    setHeader(new DrugsView(this));
+    header()->setMinimumSectionSize(20);
+    header()->setDefaultSectionSize(20);
+    header()->setFixedHeight(100);
 
     // horizontalHeader()->setFont(QFont("Segoe UI", 10, QFont::Bold));
     // horizontalHeader()->setSectionsClickable(false);

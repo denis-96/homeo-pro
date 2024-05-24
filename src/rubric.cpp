@@ -11,13 +11,19 @@ Rubric::Rubric(const QString &title, const Drugs &drugs, Rubric *parentRubric)
 
 Rubric::~Rubric()
 {
-    for (const auto &drug : _drugs) {
-        drug.first->removeRubric(this);
-    }
     qDebug() << "Rubric with title" << _title << "deleted.";
 }
 
-unsigned char Rubric::drugDegree(Drug *drug) const
+void Rubric::setTitle(const QString &newTitle)
+{
+    if (!newTitle.isEmpty())
+        _title = newTitle;
+}
+void Rubric::setImportance(unsigned short newImportance)
+{
+    _importance = newImportance;
+}
+unsigned char Rubric::drugDegree(const QString &drug) const
 {
     auto drugIt = _drugs.find(drug);
     if (drugIt != _drugs.end())
@@ -25,13 +31,13 @@ unsigned char Rubric::drugDegree(Drug *drug) const
 
     return 0;
 }
-void Rubric::addDrug(Drug *drug, unsigned char degree)
+void Rubric::addDrug(const QString &drug, unsigned char degree)
 {
     if (degree <= 4)
         _drugs[drug] = degree;
 }
 
-void Rubric::removeDrug(Drug *drug)
+void Rubric::removeDrug(const QString &drug)
 {
     _drugs.erase(drug);
 }
@@ -46,48 +52,37 @@ Rubric *Rubric::subrubric(int number)
 void Rubric::addSubrubric(std::unique_ptr<Rubric> &&rubric)
 {
     for (const auto &pair : rubric->_drugs) {
-        Drug *drug = pair.first;
+        auto drug = pair.first;
         auto degree = pair.second;
         if (drugDegree(drug) < degree) {
             addDrug(drug, degree);
-            drug->addRubric(this, degree);
         }
-        drug->removeRubric(rubric.get());
     }
+
+    rubric->_parentRubric = this;
     _subrubrics.push_back(std::move(rubric));
 }
 
-std::unique_ptr<Rubric> Rubric::removeSubrubric(Rubric *rubric)
+std::unique_ptr<Rubric> Rubric::removeSubrubric(int number)
 {
-    auto rubricIt = std::find_if(_subrubrics.cbegin(),
-                                 _subrubrics.cend(),
-                                 [rubric](const std::unique_ptr<Rubric> &rub) {
-                                     return rubric == rub.get();
-                                 });
-
-    if (rubricIt == _subrubrics.cend())
+    if (number >= subrubricCount())
         return {};
 
+    auto rubric = subrubric(number);
+    auto rubricIt = _subrubrics.cbegin() + number;
+
     for (const auto &pair : rubric->_drugs) {
-        Drug *drug = pair.first;
-        auto degree = pair.second;
+        auto drug = pair.first;
 
         unsigned short maxDegree = 0;
         for (const auto &subRub : _subrubrics)
             if (subRub.get() != rubric)
                 maxDegree = std::max<unsigned short>(subRub->drugDegree(drug), maxDegree);
 
-        if (maxDegree == 0) {
+        if (maxDegree == 0)
             removeDrug(drug);
-            drug->removeRubric(this);
-        }
-
-        else {
+        else
             addDrug(drug, maxDegree);
-            drug->addRubric(this, maxDegree);
-        }
-
-        drug->addRubric(rubric, degree);
     }
     rubric->_parentRubric = nullptr;
 
@@ -99,25 +94,18 @@ std::unique_ptr<Rubric> Rubric::removeSubrubric(Rubric *rubric)
     return std::move(rubricPtr);
 }
 
-void Rubric::setImportance(unsigned short newImportance)
+std::unique_ptr<Rubric> Rubric::fromString(const QString &str)
 {
-    _importance = newImportance;
-}
-
-RubricData::RubricData(const QString &rubricString)
-{
-    QStringList splitedRubric = rubricString.split(": ");
+    QStringList splitedRubric = str.split(": ");
     if (splitedRubric.size() != 2)
-        return;
+        return std::make_unique<Rubric>();
 
-    _title = splitedRubric[0];
+    auto rubric = std::make_unique<Rubric>(splitedRubric[0]);
 
-    QStringList unparsedDrugs = splitedRubric[1].split(' ');
-    if (unparsedDrugs.isEmpty())
-        return;
+    if (splitedRubric[1].endsWith('.'))
+        splitedRubric[1].chop(1);
 
-    if (unparsedDrugs.back().endsWith('.'))
-        unparsedDrugs.back().chop(1);
+    QStringList unparsedDrugs = splitedRubric[1].split(' ', Qt::SkipEmptyParts);
 
     for (auto &drug : unparsedDrugs) {
         QStringList splitedDrug = drug.split("(");
@@ -133,11 +121,20 @@ RubricData::RubricData(const QString &rubricString)
                 continue;
         }
 
-        _drugs.insert({drugTitle, drugDegree});
+        rubric->addDrug(drugTitle, drugDegree);
     }
+    return std::move(rubric);
 }
 
-RubricData::RubricData(const QString &title, std::unordered_map<QString, unsigned char> drugs)
-    : _title(title)
-    , _drugs(drugs)
-{}
+QString Rubric::toString()
+{
+    QString rubStr(title());
+    rubStr += ":";
+
+    for (const auto &drug : _drugs)
+        rubStr += ' ' + drug.first + '(' + QString::number(drug.second) + ')';
+
+    rubStr += ".\n";
+
+    return rubStr;
+}

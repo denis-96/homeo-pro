@@ -2,6 +2,7 @@
 #define REPERTORIZATOR_H
 
 #include <QAction>
+#include <QActionGroup>
 #include <QApplication>
 #include <QClipboard>
 #include <QCloseEvent>
@@ -25,6 +26,9 @@ class Repertorizator : public QMainWindow
 public:
     explicit Repertorizator(QWidget *parent = nullptr);
     ~Repertorizator();
+
+    bool readRep(const QString &fileName);
+    bool writeRep(const QString &fileName);
 
     void updateTitle(int state);
     void closeEvent(QCloseEvent *event);
@@ -50,6 +54,8 @@ private:
     QAction *groupRubricsAction;
     QAction *ungroupRubricsAction;
 
+    QActionGroup *changeImportanceActions;
+
     QAction *removeSubrubAction;
     QAction *addSubrubAction;
 
@@ -60,28 +66,15 @@ private:
     void createMenu();
     void createToolBar();
 
-    bool readRep(const QString &fileName);
-    bool writeRep(const QString &fileName);
-
 private slots:
-    void initialize();
-
     void newRep();
     void openRep();
     void saveRep();
     void saveRepAs();
     bool closeRep();
 
-    void addRubric();
-    void removeRubric();
-
-    void groupRubrics();
-    void ungroupRUbrics();
-
     void showContextMenu(QPoint pos);
-
-    void onRepChange();
-    void toggleRepActions();
+    void toggleActions();
 };
 
 #endif // REPERTORIZATOR_H

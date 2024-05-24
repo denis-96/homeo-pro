@@ -22,6 +22,7 @@ public:
 
     QModelIndex index(int row, int column, const QModelIndex &parent = {}) const override;
     QModelIndex parent(const QModelIndex &index) const override;
+    bool isParent(const QModelIndex &index) const;
 
     int rowCount(const QModelIndex &parent = {}) const override;
     int columnCount(const QModelIndex &parent = {}) const override;
@@ -31,10 +32,11 @@ public:
     bool setData(const QModelIndex &index, const QVariant &value, int role = Qt::EditRole) override;
 
     void addRubric(const QString &rubricString, const QModelIndex &parent = {});
-    void addRubric(const RubricData &rubricData, const QModelIndex &parent = {});
     void removeRubric(const QModelIndex &index);
+    void removeRubrics(QModelIndexList rubricIndexes);
 
-    void groupRubrics(const QModelIndexList &rubricIndexes);
+    void groupRubrics(QModelIndexList rubricIndexes);
+    void ungroupRubrics(const QModelIndex &rubricsGroup);
 
     void fromString(const QString &repStr);
     QString toString();
@@ -42,17 +44,23 @@ public:
     void clear();
 
 private:
-    Rubric *getRubric(const QModelIndex &index) const;
     void update();
-    Rubric *findRubric(const QString &title, Rubric *parent = nullptr) const;
-    // Rubric *rubricFromString(const QString &rubricString);
-    QString rubricToString(Rubric *rubric) const;
 
+    void addRubric(std::unique_ptr<Rubric> &&rubric, const QModelIndex &parent = {});
+    Rubric *getRubric(const QModelIndex &index) const;
+    Rubric *findRubric(const QString &title, Rubric *parent = nullptr) const;
     const std::vector<std::unique_ptr<Rubric>> &siblings(Rubric *rubric) const;
 
     std::vector<std::unique_ptr<Rubric>> _rubrics;
-    std::vector<std::unique_ptr<Drug>> _drugs;
+    std::vector<QString> _drugs;
 };
+
+inline bool RepModel::isParent(const QModelIndex &index) const
+{
+    if (Rubric *rubric = getRubric(index))
+        return rubric->subrubricCount();
+    return false;
+}
 
 inline Rubric *RepModel::getRubric(const QModelIndex &index) const
 {

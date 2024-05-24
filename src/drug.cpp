@@ -1,3 +1,4 @@
+#if 0
 #include "drug.h"
 #include <QDebug>
 #include "rubric.h"
@@ -40,3 +41,4 @@ void Drug::removeRubric(Rubric *rubric)
 {
     _rubrics.erase(rubric);
 }
+#endif

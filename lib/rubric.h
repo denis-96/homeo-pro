@@ -29,8 +29,8 @@ public:
 
     int drugCount() const;
     unsigned char drugDegree(const QString &drug) const;
-    void addDrug(const QString &drug, unsigned char degree);
-    void removeDrug(const QString &drug);
+    bool addDrug(const QString &drug, unsigned char degree);
+    bool removeDrug(const QString &drug);
 
     Rubric *subrubric(int number);
     int subrubricCount() const;

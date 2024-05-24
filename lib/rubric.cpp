@@ -31,15 +31,18 @@ unsigned char Rubric::drugDegree(const QString &drug) const
 
     return 0;
 }
-void Rubric::addDrug(const QString &drug, unsigned char degree)
+bool Rubric::addDrug(const QString &drug, unsigned char degree)
 {
-    if (degree <= 4)
-        _drugs[drug] = degree;
+    if (degree > 4)
+        return false;
+
+    _drugs[drug] = degree;
+    return true;
 }
 
-void Rubric::removeDrug(const QString &drug)
+bool Rubric::removeDrug(const QString &drug)
 {
-    _drugs.erase(drug);
+    return _drugs.erase(drug);
 }
 
 Rubric *Rubric::subrubric(int number)

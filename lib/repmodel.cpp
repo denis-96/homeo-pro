@@ -298,9 +298,10 @@ QString RepModel::toString()
         state.pop();
 
         for (int i = 0; i < current.indentation; ++i)
-            result += ' ';
+            result.push_back(' ');
 
-        result += current.rubric->toString();
+        result.push_back(current.rubric->toString());
+        result.push_back('\n');
         for (auto it = current.rubric->_subrubrics.crbegin();
              it < current.rubric->_subrubrics.crend();
              ++it)

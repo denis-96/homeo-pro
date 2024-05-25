@@ -1,18 +1,14 @@
 #include "rubric.h"
 #include <QDebug>
+#include <set>
 
 Rubric::Rubric(const QString &title, const Drugs &drugs, Rubric *parentRubric)
     : _title(title)
     , _drugs(drugs)
     , _parentRubric(parentRubric)
-{
-    qDebug() << "Rubric with title" << _title << "created.";
-}
+{}
 
-Rubric::~Rubric()
-{
-    qDebug() << "Rubric with title" << _title << "deleted.";
-}
+Rubric::~Rubric() {}
 
 void Rubric::setTitle(const QString &newTitle)
 {
@@ -94,14 +90,14 @@ std::unique_ptr<Rubric> Rubric::removeSubrubric(int number)
 
     _subrubrics.erase(rubricIt);
 
-    return std::move(rubricPtr);
+    return rubricPtr;
 }
 
 std::unique_ptr<Rubric> Rubric::fromString(const QString &str)
 {
     QStringList splitedRubric = str.split(": ");
-    if (splitedRubric.size() != 2)
-        return std::make_unique<Rubric>();
+    if (splitedRubric.size() == 1)
+        splitedRubric.push_back("");
 
     auto rubric = std::make_unique<Rubric>(splitedRubric[0]);
 
@@ -126,18 +122,28 @@ std::unique_ptr<Rubric> Rubric::fromString(const QString &str)
 
         rubric->addDrug(drugTitle, drugDegree);
     }
-    return std::move(rubric);
+    return rubric;
 }
 
 QString Rubric::toString()
 {
+    if (!isValid())
+        return {};
+
     QString rubStr(title());
-    rubStr += ":";
+    if (drugCount()) {
+        rubStr.push_back(':');
 
-    for (const auto &drug : _drugs)
-        rubStr += ' ' + drug.first + '(' + QString::number(drug.second) + ')';
+        for (const auto &drug :
+             std::set<decltype(_drugs)::value_type>(_drugs.cbegin(), _drugs.cend())) {
+            rubStr.push_back(' ');
+            rubStr.push_back(drug.second > 2 ? drug.first.toUpper() : drug.first);
+            if (drug.second > 1)
+                rubStr.push_back('(' + QString::number(drug.second) + ')');
+        }
+    }
 
-    rubStr += ".\n";
+    rubStr.push_back('.');
 
     return rubStr;
 }

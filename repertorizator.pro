@@ -3,5 +3,7 @@ TEMPLATE = subdirs
 SUBDIRS += \
     app \
     lib \
-    tests \
     tests
+
+
+tests.depends = lib

@@ -27,19 +27,6 @@ unsigned char Rubric::drugDegree(const QString &drug) const
 
     return 0;
 }
-bool Rubric::addDrug(const QString &drug, unsigned char degree)
-{
-    if (degree > 4)
-        return false;
-
-    _drugs[drug] = degree;
-    return true;
-}
-
-bool Rubric::removeDrug(const QString &drug)
-{
-    return _drugs.erase(drug);
-}
 
 Rubric *Rubric::subrubric(int number)
 {
@@ -48,18 +35,22 @@ Rubric *Rubric::subrubric(int number)
     return nullptr;
 }
 
-void Rubric::addSubrubric(std::unique_ptr<Rubric> &&rubric)
+int Rubric::addSubrubric(std::unique_ptr<Rubric> &&rubric)
 {
+    if (_drugs.size() && _subrubrics.empty())
+        return -1;
     for (const auto &pair : rubric->_drugs) {
         auto drug = pair.first;
         auto degree = pair.second;
         if (drugDegree(drug) < degree) {
-            addDrug(drug, degree);
+            _drugs[drug] = degree;
         }
     }
 
     rubric->_parentRubric = this;
     _subrubrics.push_back(std::move(rubric));
+
+    return _subrubrics.size() - 1;
 }
 
 std::unique_ptr<Rubric> Rubric::removeSubrubric(int number)
@@ -79,9 +70,9 @@ std::unique_ptr<Rubric> Rubric::removeSubrubric(int number)
                 maxDegree = std::max<unsigned short>(subRub->drugDegree(drug), maxDegree);
 
         if (maxDegree == 0)
-            removeDrug(drug);
+            _drugs.erase(drug);
         else
-            addDrug(drug, maxDegree);
+            _drugs[drug] = maxDegree;
     }
     rubric->_parentRubric = nullptr;
 
@@ -120,7 +111,7 @@ std::unique_ptr<Rubric> Rubric::fromString(const QString &str)
                 continue;
         }
 
-        rubric->addDrug(drugTitle, drugDegree);
+        rubric->_drugs.insert({drugTitle, drugDegree});
     }
     return rubric;
 }

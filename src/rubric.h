@@ -29,12 +29,10 @@ public:
 
     int drugCount() const;
     unsigned char drugDegree(const QString &drug) const;
-    bool addDrug(const QString &drug, unsigned char degree);
-    bool removeDrug(const QString &drug);
 
     Rubric *subrubric(int number);
     int subrubricCount() const;
-    void addSubrubric(std::unique_ptr<Rubric> &&rubric);
+    int addSubrubric(std::unique_ptr<Rubric> &&rubric);
     std::unique_ptr<Rubric> removeSubrubric(int number);
 
     Rubric *parentRubric() const;

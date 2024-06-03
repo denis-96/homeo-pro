@@ -15,14 +15,13 @@ public:
     RepModel(QObject *parent = nullptr);
     ~RepModel() override;
 
-    QVariant data(const QModelIndex &index, int role) const override;
+    QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const override;
     QVariant headerData(int section,
-                        Qt::Orientation orientation,
+                        Qt::Orientation orientation = Qt::Horizontal,
                         int role = Qt::DisplayRole) const override;
 
     QModelIndex index(int row, int column, const QModelIndex &parent = {}) const override;
     QModelIndex parent(const QModelIndex &index) const override;
-    bool isParent(const QModelIndex &index) const;
 
     int rowCount(const QModelIndex &parent = {}) const override;
     int columnCount(const QModelIndex &parent = {}) const override;
@@ -31,11 +30,12 @@ public:
 
     bool setData(const QModelIndex &index, const QVariant &value, int role = Qt::EditRole) override;
 
-    void addRubric(const QString &rubricString, const QModelIndex &parent = {});
+    QModelIndex addRubric(const QString &rubricString);
     void removeRubric(const QModelIndex &index);
     void removeRubrics(QModelIndexList rubricIndexes);
 
-    void groupRubrics(QModelIndexList rubricIndexes);
+    QModelIndex groupRubrics(QModelIndexList rubricIndexes,
+                             const QString &groupTitle = "Объединение рубрик");
     void ungroupRubrics(const QModelIndex &rubricsGroup);
 
     void fromString(const QString &repStr);
@@ -54,13 +54,6 @@ private:
     std::vector<std::unique_ptr<Rubric>> _rubrics;
     std::vector<QString> _drugs;
 };
-
-inline bool RepModel::isParent(const QModelIndex &index) const
-{
-    if (Rubric *rubric = getRubric(index))
-        return rubric->subrubricCount();
-    return false;
-}
 
 inline Rubric *RepModel::getRubric(const QModelIndex &index) const
 {

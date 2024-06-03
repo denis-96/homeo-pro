@@ -1,8 +1,8 @@
-#include "repertorizator.h"
+#include <repertorizator.h>
 
 #include <QApplication>
+#include <QFile>
 #include <QTimer>
-#define DEBUG
 
 int main(int argc, char *argv[])
 {

@@ -1,23 +1,11 @@
 #ifndef REPERTORIZATOR_H
 #define REPERTORIZATOR_H
 
-#include <QAction>
-#include <QActionGroup>
-#include <QApplication>
-#include <QClipboard>
-#include <QCloseEvent>
-#include <QFileDialog>
-#include <QIcon>
-#include <QItemSelectionModel>
+#include <QListView>
 #include <QMainWindow>
-#include <QMenu>
-#include <QMenuBar>
-#include <QMessageBox>
-#include <QString>
-#include <QToolBar>
-
-#include <repmodel.h>
-#include <repview.h>
+#include "repmodel.h"
+#include "repproxymodel.h"
+#include "repview.h"
 
 class Repertorizator : public QMainWindow
 {
@@ -37,7 +25,9 @@ private:
     QString currentRep;
 
     RepModel *repModel;
+    RepProxyModel *repProxyModel;
     RepView *repView;
+    QListView *rubricsView;
 
     QMenu *repMenu;
     QMenu *editMenu;
@@ -61,10 +51,15 @@ private:
 
     QToolBar *toolBar;
 
+    QDialog *groupCreationDialog;
+
     void setupUI();
     void createActions();
     void createMenu();
     void createToolBar();
+    void createDialogs();
+
+    static QString generateTitleForGroup(const QModelIndexList &rubrics);
 
 private slots:
     void newRep();
@@ -72,6 +67,11 @@ private slots:
     void saveRep();
     void saveRepAs();
     bool closeRep();
+
+    void addRubric();
+    void removeRubric();
+    void groupRubrics();
+    void ungroupRubrics();
 
     void showContextMenu(QPoint pos);
     void toggleActions();

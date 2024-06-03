@@ -1,4 +1,16 @@
 #include "repertorizator.h"
+#include <QActionGroup>
+#include <QApplication>
+#include <QClipboard>
+#include <QCloseEvent>
+#include <QFile>
+#include <QFileDialog>
+#include <QInputDialog>
+#include <QListView>
+#include <QMenuBar>
+#include <QMessageBox>
+#include <QToolBar>
+#include <QVBoxLayout>
 
 Repertorizator::Repertorizator(QWidget *parent)
     : QMainWindow(parent)
@@ -7,9 +19,15 @@ Repertorizator::Repertorizator(QWidget *parent)
     resize(900, 500);
 
     repModel = new RepModel(this);
-    repView = new RepView();
+    repView = new RepView(this);
+    repProxyModel = new RepProxyModel(this);
+    rubricsView = new QListView(this);
 
     repView->setRepModel(repModel);
+    repProxyModel->setSourceModel(repModel);
+    rubricsView->setModel(repProxyModel);
+    rubricsView->setSelectionMode(QAbstractItemView::MultiSelection);
+    rubricsView->setSelectionBehavior(QAbstractItemView::SelectRows);
 
     setupUI();
 }
@@ -20,6 +38,7 @@ void Repertorizator::setupUI()
     createActions();
     createMenu();
     createToolBar();
+    createDialogs();
 
     setContextMenuPolicy(Qt::CustomContextMenu);
     connect(this,
@@ -31,61 +50,52 @@ void Repertorizator::setupUI()
             &QItemSelectionModel::selectionChanged,
             this,
             &Repertorizator::toggleActions);
+
     connect(repModel, &RepModel::dataChanged, this, [this] { updateTitle(2); });
+
     this->setCentralWidget(repView);
-    this->setWindowIcon(QIcon(":/icons/main-icon"));
+    this->setWindowIcon(QIcon(":/resources/icons/main-icon.svg"));
+
+    setFont(QFont("Segoe UI", 13));
 }
 
 void Repertorizator::createActions()
 {
     newAction = new QAction("Новая", this);
-    newAction->setIcon(QIcon(":/icons/new-file"));
+    newAction->setIcon(QIcon(":/resources/icons/new-file.svg"));
     connect(newAction, &QAction::triggered, this, &Repertorizator::newRep);
 
     openAction = new QAction("Открыть", this);
-    openAction->setIcon(QIcon(":/icons/open-file"));
+    openAction->setIcon(QIcon(":/resources/icons/open-file.svg"));
     connect(openAction, &QAction::triggered, this, &Repertorizator::openRep);
 
     saveAction = new QAction("Сохранить", this);
-    saveAction->setIcon(QIcon(":/icons/save-file"));
+    saveAction->setIcon(QIcon(":/resources/icons/save-file.svg"));
     connect(saveAction, &QAction::triggered, this, &Repertorizator::saveRep);
 
     saveAsAction = new QAction("Сохранить как", this);
-    saveAsAction->setIcon(QIcon(":/icons/save-file"));
+    saveAsAction->setIcon(QIcon(":/resources/icons/save-file.svg"));
     connect(saveAsAction, &QAction::triggered, this, &Repertorizator::saveRepAs);
 
     exitAction = new QAction("Выход", this);
-    exitAction->setIcon(QIcon(":/icons/exit"));
+    exitAction->setIcon(QIcon(":/resources/icons/exit.svg"));
     connect(exitAction, &QAction::triggered, this, &Repertorizator::close);
 
     addRubricAction = new QAction("Добавить", this);
-    addRubricAction->setIcon(QIcon(":/icons/add"));
-    connect(addRubricAction, &QAction::triggered, this, [this] {
-        QString rubricStr = QApplication::clipboard()->text();
-        repModel->addRubric(rubricStr);
-    });
+    addRubricAction->setIcon(QIcon(":/resources/icons/add.svg"));
+    connect(addRubricAction, &QAction::triggered, this, &Repertorizator::addRubric);
 
     removeRubricAction = new QAction("Удалить", this);
-    removeRubricAction->setIcon(QIcon(":/icons/remove"));
+    removeRubricAction->setIcon(QIcon(":/resources/icons/remove.svg"));
     removeRubricAction->setDisabled(true);
-    connect(removeRubricAction, &QAction::triggered, this, [this] {
-        if (repView->selectionModel()->selectedRows().size() > 0)
-            repModel->removeRubrics(repView->selectionModel()->selectedRows());
-    });
+    connect(removeRubricAction, &QAction::triggered, this, &Repertorizator::removeRubric);
 
     groupRubricsAction = new QAction("Группировать рубрики", this);
-    removeRubricAction->setDisabled(true);
-    connect(groupRubricsAction, &QAction::triggered, this, [this] {
-        if (repView->selectionModel()->selectedRows().size() > 1)
-            repModel->groupRubrics(repView->selectionModel()->selectedRows());
-    });
+    connect(groupRubricsAction, &QAction::triggered, this, &Repertorizator::groupRubrics);
 
     ungroupRubricsAction = new QAction("Разгруппировать рубрики", this);
-    removeRubricAction->setDisabled(true);
-    connect(ungroupRubricsAction, &QAction::triggered, this, [this] {
-        if (repView->selectionModel()->selectedRows().size() == 1)
-            repModel->ungroupRubrics(repView->selectionModel()->selectedRows().back());
-    });
+    ungroupRubricsAction->setDisabled(true);
+    connect(ungroupRubricsAction, &QAction::triggered, this, &Repertorizator::ungroupRubrics);
 
     changeImportanceActions = new QActionGroup(this);
     for (int i = 0; i <= 4; ++i) {
@@ -125,6 +135,7 @@ void Repertorizator::createMenu()
     contextMenu->addSeparator();
     contextMenu->addAction(groupRubricsAction);
     contextMenu->addAction(ungroupRubricsAction);
+    contextMenu->addMenu("Значимость")->addActions(changeImportanceActions->actions());
 }
 
 void Repertorizator::createToolBar()
@@ -138,6 +149,69 @@ void Repertorizator::createToolBar()
     toolBar->addAction(removeRubricAction);
 
     toolBar->addActions(changeImportanceActions->actions());
+}
+
+void Repertorizator::createDialogs()
+{
+    groupCreationDialog = new QDialog(this);
+
+    QLineEdit *titleEdit = new QLineEdit(groupCreationDialog);
+    titleEdit->setText("Объединение рубрик");
+    connect(rubricsView->selectionModel(),
+            &QItemSelectionModel::selectionChanged,
+            titleEdit,
+            [titleEdit, this] {
+                titleEdit->setText(
+                    generateTitleForGroup(rubricsView->selectionModel()->selectedRows()));
+            });
+
+    QDialogButtonBox *buttonBox = new QDialogButtonBox(QDialogButtonBox::Ok
+                                                           | QDialogButtonBox::Cancel,
+                                                       groupCreationDialog);
+    connect(buttonBox, &QDialogButtonBox::accepted, groupCreationDialog, &QDialog::accept);
+    connect(buttonBox, &QDialogButtonBox::rejected, groupCreationDialog, &QDialog::reject);
+
+    auto layout = new QVBoxLayout(groupCreationDialog);
+    layout->addWidget(rubricsView);
+    layout->addWidget(titleEdit);
+    layout->addWidget(buttonBox);
+
+    groupCreationDialog->setLayout(layout);
+}
+
+QString Repertorizator::generateTitleForGroup(const QModelIndexList &rubrics)
+{
+    if (rubrics.empty())
+        return "Объединение рубрик";
+    int minSize = 100000000;
+    QStringList titles;
+    titles.reserve(rubrics.size());
+
+    for (const auto &rub : rubrics) {
+        titles.push_back(rub.data().toString());
+        if (titles.back().size() < minSize)
+            minSize = titles.back().size();
+    }
+    int endEqual = 0;
+    for (int i = 0; i < minSize; ++i) {
+        bool equal = true;
+        QChar character;
+        for (const auto &title : titles) {
+            if (character.isNull())
+                character = title[i];
+            if (character != title[i]) {
+                equal = false;
+                break;
+            }
+        }
+        endEqual = i;
+        if (!equal) {
+            break;
+        }
+    }
+    if (endEqual < 2)
+        return "Объединение рубрик";
+    return titles.back().left(endEqual).trimmed();
 }
 
 bool Repertorizator::readRep(const QString &fileName)
@@ -251,6 +325,59 @@ bool Repertorizator::closeRep()
     return true;
 }
 
+void Repertorizator::addRubric()
+{
+    QString rubricStr = QApplication::clipboard()->text();
+    auto idx = repModel->addRubric(rubricStr);
+    if (!idx.isValid())
+        QMessageBox::information(this, "Добавление рубрики", "Введённая рубрика уже существует!");
+}
+
+void Repertorizator::removeRubric()
+{
+    if (repView->selectionModel()->selectedRows().size() > 0)
+        repModel->removeRubrics(repView->selectionModel()->selectedRows());
+}
+
+void Repertorizator::groupRubrics()
+{
+    QString title;
+    QModelIndexList selectedRubrics;
+
+    if (repView->selectionModel()->selectedRows().size() > 1) {
+        bool ok;
+        selectedRubrics = repView->selectionModel()->selectedRows();
+        title = QInputDialog::getText(this,
+                                      "Группирование рубрик",
+                                      "Название группы:",
+                                      QLineEdit::Normal,
+                                      generateTitleForGroup(selectedRubrics),
+                                      &ok);
+        if (!ok)
+            return;
+
+    } else if (groupCreationDialog->exec() == QDialog::Accepted) {
+        title = ((QLineEdit *) groupCreationDialog->layout()->itemAt(1)->widget())->text();
+        selectedRubrics = rubricsView->selectionModel()->selectedRows();
+        for (auto &r : selectedRubrics) {
+            r = repProxyModel->mapToSource(r);
+        }
+    }
+    if (!title.isEmpty() && !selectedRubrics.empty()) {
+        auto idx = repModel->groupRubrics(selectedRubrics, title);
+        if (!idx.isValid())
+            QMessageBox::information(this,
+                                     "Группирование рубрик",
+                                     QString("Группа с названием \"%1\" уже существует!").arg(title));
+    }
+}
+
+void Repertorizator::ungroupRubrics()
+{
+    if (repView->selectionModel()->selectedRows().size() == 1)
+        repModel->ungroupRubrics(repView->selectionModel()->selectedRows().back());
+}
+
 void Repertorizator::showContextMenu(QPoint pos)
 {
     contextMenu->popup(mapToGlobal(pos));
@@ -262,10 +389,14 @@ void Repertorizator::toggleActions()
     int selectedRowsCnt = selectedRows.size();
 
     removeRubricAction->setEnabled(selectedRowsCnt > 0);
-    groupRubricsAction->setEnabled(selectedRowsCnt > 1);
-    ungroupRubricsAction->setEnabled(selectedRowsCnt == 1
-                                     && repModel->isParent(selectedRows.back()));
+    groupRubricsAction->setText(selectedRowsCnt > 1 ? "Группировать выбранное"
+                                                    : "Группировать рубрики");
+
     changeImportanceActions->setEnabled(selectedRowsCnt == 1);
+
+    ungroupRubricsAction->setEnabled(selectedRowsCnt == 1
+                                     && repModel->hasChildren(selectedRows.back()));
+
     if (selectedRowsCnt == 1) {
         auto importance = selectedRows.back().data(RepModel::Roles::RubricImportance).toUInt();
         changeImportanceActions->actions().at(importance)->setChecked(true);

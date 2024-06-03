@@ -1,5 +1,4 @@
 #include "repmodel.h"
-#include "rubric.h"
 #include <stack>
 
 RepModel::RepModel(QObject *parent)
@@ -35,11 +34,16 @@ QVariant RepModel::data(const QModelIndex &index, int role) const
 
 QVariant RepModel::headerData(int section, Qt::Orientation orientation, int role) const
 {
-    if (orientation == Qt::Horizontal && role == Qt::DisplayRole)
-    {
-        if (section == 0)
-            return "Рубрики \\ Препараты";
-        if (section > 0)
+    if (orientation == Qt::Horizontal && section > 0) {
+        if (role == Qt::DisplayRole) {
+            QString drugTitle;
+            drugTitle.reserve(_drugs.at(section - 1).size() * 2);
+            for (const auto &ch : _drugs.at(section - 1))
+                drugTitle.push_back(ch.toUpper() + '\n');
+            drugTitle.removeLast();
+            return drugTitle;
+        }
+        if (role == Qt::UserRole)
             return _drugs.at(section - 1);
     }
     return {};
@@ -134,13 +138,15 @@ bool RepModel::setData(const QModelIndex &index, const QVariant &value, int role
     return false;
 }
 
-void RepModel::addRubric(const QString &rubricString, const QModelIndex &parent)
+QModelIndex RepModel::addRubric(const QString &rubricString)
 {
     auto rubric = Rubric::fromString(rubricString);
-    if (rubric->isValid() && !findRubric(rubric->title())) {
-        addRubric(std::move(rubric), parent);
-        update();
-    }
+    if (!rubric->isValid() || findRubric(rubric->title()))
+        return {};
+
+    addRubric(std::move(rubric));
+    update();
+    return index(rowCount() - 1, 0);
 }
 
 void RepModel::removeRubric(const QModelIndex &index)
@@ -175,10 +181,13 @@ void RepModel::removeRubrics(QModelIndexList rubricIndexes)
     }
 }
 
-void RepModel::groupRubrics(QModelIndexList rubricIndexes)
+QModelIndex RepModel::groupRubrics(QModelIndexList rubricIndexes, const QString &groupTitle)
 {
-    addRubric("Объединение рубрик: ");
-    auto rubricsGroup = _rubrics.back().get();
+    if (groupTitle.isEmpty() || findRubric(groupTitle))
+        return {};
+
+    auto rubricsGroupIdx = addRubric(groupTitle);
+    auto rubricsGroup = getRubric(rubricsGroupIdx);
 
     std::sort(rubricIndexes.begin(),
               rubricIndexes.end(),
@@ -203,6 +212,10 @@ void RepModel::groupRubrics(QModelIndexList rubricIndexes)
         rubricsGroup->addSubrubric(std::move(subrubric));
     }
     endInsertRows();
+
+    update();
+
+    return rubricsGroupIdx;
 }
 
 void RepModel::ungroupRubrics(const QModelIndex &rubricsGroup)
@@ -220,13 +233,15 @@ void RepModel::ungroupRubrics(const QModelIndex &rubricsGroup)
     }
     endRemoveRows();
 
-    removeRubric(rubricsGroup);
-
-    beginInsertRows(QModelIndex(), rowCount(), rowCount() + subrubrics.size() - 1);
+    beginInsertRows(QModelIndex(), rubricsGroup.row(), rubricsGroup.row() + subrubrics.size() - 1);
+    auto insertPos = _rubrics.cbegin() + rubricsGroup.row();
     for (auto &subrubric : subrubrics) {
-        _rubrics.push_back(std::move(subrubric));
+        insertPos = _rubrics.insert(insertPos, std::move(subrubric));
+        ++insertPos;
     }
     endInsertRows();
+
+    removeRubric(index(insertPos - _rubrics.cbegin(), 0));
 }
 
 void RepModel::fromString(const QString &repStr)
@@ -383,11 +398,13 @@ void RepModel::addRubric(std::unique_ptr<Rubric> &&rubric, const QModelIndex &pa
         }
     }
     // New drugs
-    beginInsertColumns(QModelIndex(), columnCount(), columnCount() + newDrugs.size() - 1);
-    for (const auto &drug : newDrugs) {
-        _drugs.push_back(drug.first);
+    if (newDrugs.size()) {
+        beginInsertColumns(QModelIndex(), columnCount(), columnCount() + newDrugs.size() - 1);
+        for (const auto &drug : newDrugs) {
+            _drugs.push_back(drug.first);
+        }
+        endInsertColumns();
     }
-    endInsertColumns();
 
     // Insert rubric
     beginInsertRows(parent, rowCount(parent), rowCount(parent));

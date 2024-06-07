@@ -56,7 +56,10 @@ void Repertorizator::setupUI()
     this->setCentralWidget(repView);
     this->setWindowIcon(QIcon(":/resources/icons/main-icon.svg"));
 
-    setFont(QFont("Segoe UI", 13));
+    setFont(QFont("Segoe UI", 12));
+    auto pal = palette();
+    pal.setColor(QPalette::Base, QColor(0xD2D2D2));
+    setPalette(pal);
 }
 
 void Repertorizator::createActions()
@@ -125,6 +128,76 @@ void Repertorizator::createMenu()
     repMenu->addSeparator();
     repMenu->addAction(exitAction);
 
+    // remove after beta-testing
+    repMenu->addSeparator();
+    auto openOld = new QAction("Открыть(пред. версия)", this);
+    connect(openOld, &QAction::triggered, this, [this] {
+        if (!closeRep()) {
+            return;
+        }
+        QString fileName = QFileDialog::getOpenFileName(this,
+                                                        "Выберите реперторизацию",
+                                                        QString(),
+                                                        "Реперторизации (*.rep)");
+        if (fileName.isEmpty())
+            return;
+
+        QFile file1(fileName);
+        if (!file1.open(QIODevice::ReadOnly | QIODevice::Text))
+            return;
+
+        QTextStream in(&file1);
+        int dCount;
+        in >> dCount;
+
+        std::map<int, QString> drugs;
+        for (int i = 0; i < dCount; ++i) {
+            int id;
+            in >> id;
+            in.readLine();
+            QString title = in.readLine();
+            title.replace(" ", "");
+            drugs.insert({id, title});
+        }
+        int rCount;
+        in >> rCount;
+
+        std::vector<std::pair<QString, std::vector<std::pair<QString, int>>>> rubrics;
+        for (int i = 0; i < rCount; ++i) {
+            in.readLine();
+            QString title = in.readLine();
+            int s;
+            int dC;
+            in >> s >> dC;
+            rubrics.push_back({title, {}});
+            for (int j = 0; j < dC; ++j) {
+                int dId, degree;
+                in >> dId >> degree;
+                rubrics.back().second.push_back({drugs[dId], degree});
+            }
+        }
+
+        file1.close();
+
+        QFile file2(fileName);
+        if (!file2.open(QIODevice::WriteOnly | QIODevice::Text))
+            return;
+
+        QTextStream out(&file2);
+        for (const auto &r : rubrics) {
+            out << r.first << ":";
+            for (const auto &d : r.second) {
+                out << " " << d.first << "(" << d.second << ")";
+            }
+            out << ".\n";
+        }
+        file2.close();
+
+        readRep(fileName);
+    });
+    repMenu->addAction(openOld);
+    //
+
     editMenu = menuBar()->addMenu("Редактирование");
     editMenu->addAction(addRubricAction);
     editMenu->addAction(removeRubricAction);
@@ -188,7 +261,7 @@ QString Repertorizator::generateTitleForGroup(const QModelIndexList &rubrics)
     titles.reserve(rubrics.size());
 
     for (const auto &rub : rubrics) {
-        titles.push_back(rub.data().toString());
+        titles.push_back(rub.data(Qt::UserRole).toString());
         if (titles.back().size() < minSize)
             minSize = titles.back().size();
     }
@@ -400,6 +473,15 @@ void Repertorizator::toggleActions()
     if (selectedRowsCnt == 1) {
         auto importance = selectedRows.back().data(RepModel::Roles::RubricImportance).toUInt();
         changeImportanceActions->actions().at(importance)->setChecked(true);
+    }
+}
+
+void Repertorizator::openWith()
+{
+    QStringList arguments = qApp->arguments();
+    if (arguments.size() > 1 && QFile::exists(arguments.back())) {
+        auto fileName = arguments.last();
+        readRep(fileName);
     }
 }
 

@@ -1,4 +1,5 @@
 #include "repmodel.h"
+#include <QIcon>
 #include <stack>
 
 RepModel::RepModel(QObject *parent)
@@ -19,7 +20,7 @@ QVariant RepModel::data(const QModelIndex &index, int role) const
 
     if (role == Qt::DisplayRole) {
         if (index.column() == 0)
-            return rubric->title();
+            return QString("(%1) ").arg(rubric->drugCount()) + rubric->title();
 
         auto drug = _drugs.at(index.column() - 1);
         unsigned char degree = rubric->drugDegree(drug);
@@ -27,6 +28,9 @@ QVariant RepModel::data(const QModelIndex &index, int role) const
     }
     if (role == Roles::RubricImportance) {
         return rubric->importance();
+    }
+    if (role == Qt::UserRole && index.column() == 0) {
+        return rubric->title();
     }
 
     return {};
@@ -36,12 +40,7 @@ QVariant RepModel::headerData(int section, Qt::Orientation orientation, int role
 {
     if (orientation == Qt::Horizontal && section > 0) {
         if (role == Qt::DisplayRole) {
-            QString drugTitle;
-            drugTitle.reserve(_drugs.at(section - 1).size() * 2);
-            for (const auto &ch : _drugs.at(section - 1))
-                drugTitle.push_back(ch.toUpper() + '\n');
-            drugTitle.removeLast();
-            return drugTitle;
+            return _drugs.at(section - 1);
         }
         if (role == Qt::UserRole)
             return _drugs.at(section - 1);
@@ -51,7 +50,7 @@ QVariant RepModel::headerData(int section, Qt::Orientation orientation, int role
 
 QModelIndex RepModel::index(int row, int column, const QModelIndex &parent) const
 {
-    if (row < 0 || column < 0)
+    if (row < 0 || column < 0 || column >= columnCount())
         return {};
 
     if (parent.isValid() && parent.column() == 0) {

@@ -75,6 +75,9 @@ private slots:
 
     void showContextMenu(QPoint pos);
     void toggleActions();
+
+public slots:
+    void openWith();
 };
 
 #endif // REPERTORIZATOR_H

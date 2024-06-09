@@ -1,5 +1,5 @@
 #include <QtTest>
-#include <rubric.h>
+#include <Rubric.h>
 // add necessary includes here
 
 class TestRubric : public QObject

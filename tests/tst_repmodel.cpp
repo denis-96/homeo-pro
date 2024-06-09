@@ -1,5 +1,5 @@
 #include <QtTest>
-#include <repmodel.h>
+#include <RepModel.h>
 
 class TestRepModel : public QObject
 {
@@ -69,11 +69,11 @@ void TestRepModel::testAddRemoveRubric()
         QCOMPARE(model.columnCount(), expectedHData[prevRowCount].size() + 1);
         for (int c = 1; c < model.columnCount(); ++c) {
             qDebug() << c;
-            QCOMPARE(model.headerData(c, Qt::Horizontal, Qt::UserRole).toString(),
+            QCOMPARE(model.headerData(c, Qt::Horizontal).toString(),
                      expectedHData[prevRowCount][c - 1]);
         }
         for (int c = 0; c < model.columnCount(); ++c) {
-            QCOMPARE(model.data(model.index(idx.row(), c)).toString(),
+            QCOMPARE(model.data(model.index(idx.row(), c), Qt::UserRole).toString(),
                      expectedData[prevRowCount][c]);
         }
         QCOMPARE(model.rowCount(), ++prevRowCount);
@@ -84,8 +84,7 @@ void TestRepModel::testAddRemoveRubric()
         QCOMPARE(model.rowCount(), i);
         QCOMPARE(model.columnCount(), expectedHData[i - 1].size() + 1);
         for (int c = 1; c < model.columnCount(); ++c) {
-            QCOMPARE(model.headerData(c, Qt::Horizontal, Qt::UserRole).toString(),
-                     expectedHData[i - 1][c - 1]);
+            QCOMPARE(model.headerData(c, Qt::Horizontal).toString(), expectedHData[i - 1][c - 1]);
         }
     }
     model.removeRubric(model.index(0, 0));

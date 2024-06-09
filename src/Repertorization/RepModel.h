@@ -2,7 +2,7 @@
 #define REPMODEL_H
 
 #include <QAbstractItemModel>
-#include "rubric.h"
+#include "Rubric.h"
 
 class RepModel : public QAbstractItemModel
 {

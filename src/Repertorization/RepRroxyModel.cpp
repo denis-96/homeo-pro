@@ -1,4 +1,4 @@
-#include "repproxymodel.h"
+#include "RepRroxyModel.h"
 
 RepProxyModel::RepProxyModel(QObject *parent, FilterBehaviour fBeh)
     : QSortFilterProxyModel{parent}

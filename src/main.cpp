@@ -1,4 +1,4 @@
-#include <repertorizator.h>
+#include "HomeoPro.h"
 
 #include <QApplication>
 #include <QFile>
@@ -7,8 +7,8 @@
 int main(int argc, char *argv[])
 {
     QApplication application(argc, argv);
-    Repertorizator window;
-    QTimer::singleShot(0, &window, &Repertorizator::openWith);
+    HomePro window;
+    QTimer::singleShot(0, &window, &HomePro::openWith);
 
     window.show();
 

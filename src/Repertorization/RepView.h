@@ -2,7 +2,7 @@
 #define REPVIEW_H
 
 #include <QTreeView>
-#include "repmodel.h"
+#include "RepModel.h"
 
 class RepView : public QTreeView
 {

@@ -1,4 +1,4 @@
-#include "repmodel.h"
+#include "RepModel.h"
 #include <QIcon>
 #include <stack>
 
@@ -29,8 +29,13 @@ QVariant RepModel::data(const QModelIndex &index, int role) const
     if (role == Roles::RubricImportance) {
         return rubric->importance();
     }
-    if (role == Qt::UserRole && index.column() == 0) {
-        return rubric->title();
+    if (role == Qt::UserRole) {
+        if (index.column() == 0)
+            return rubric->title();
+
+        auto drug = _drugs.at(index.column() - 1);
+        unsigned char degree = rubric->drugDegree(drug);
+        return degree ? degree : QVariant{};
     }
 
     return {};
@@ -42,8 +47,6 @@ QVariant RepModel::headerData(int section, Qt::Orientation orientation, int role
         if (role == Qt::DisplayRole) {
             return _drugs.at(section - 1);
         }
-        if (role == Qt::UserRole)
-            return _drugs.at(section - 1);
     }
     return {};
 }

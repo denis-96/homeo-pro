@@ -1,4 +1,4 @@
-#include "repview.h"
+#include "RepView.h"
 
 #include <QHeaderView>
 #include <QItemSelectionModel>

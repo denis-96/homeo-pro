@@ -1,4 +1,4 @@
-#include "rubric.h"
+#include "Rubric.h"
 #include <QDebug>
 #include <set>
 
@@ -122,7 +122,7 @@ QString Rubric::toString()
         return {};
 
     QString rubStr(title());
-    if (drugCount()) {
+    if (drugCount() && !subrubricCount()) {
         rubStr.push_back(':');
 
         for (const auto &drug :
@@ -132,9 +132,8 @@ QString Rubric::toString()
             if (drug.second > 1)
                 rubStr.push_back('(' + QString::number(drug.second) + ')');
         }
+        rubStr.push_back('.');
     }
-
-    rubStr.push_back('.');
 
     return rubStr;
 }

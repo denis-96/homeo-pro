@@ -38,7 +38,7 @@ public:
                              const QString &groupTitle = "Объединение рубрик");
     void ungroupRubrics(const QModelIndex &rubricsGroup);
 
-    void fromString(const QString &repStr);
+    void read(const QString &repStr);
     QString toString();
 
     void clear();

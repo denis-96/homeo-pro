@@ -2,7 +2,6 @@
 #define REPVIEW_H
 
 #include <QTreeView>
-#include "RepModel.h"
 
 class RepView : public QTreeView
 {
@@ -10,7 +9,7 @@ class RepView : public QTreeView
 
 public:
     explicit RepView(QWidget *parent = nullptr);
-    void setRepModel(RepModel *repModel);
+    void setModel(QAbstractItemModel *model) override;
 };
 
 #endif // REPVIEW_H

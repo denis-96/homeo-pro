@@ -174,7 +174,12 @@ void HomePro::updateActions()
 
 QString HomePro::getTitleFromFileName(const QString &fileName)
 {
-    return fileName.right(fileName.size() - fileName.lastIndexOf("/") - 1);
+    int titleBegIdx = fileName.lastIndexOf("/");
+
+    if (titleBegIdx == -1)
+        titleBegIdx = fileName.lastIndexOf("\\");
+
+    return fileName.right(fileName.size() - titleBegIdx - 1);
 }
 
 void HomePro::newFile()
@@ -197,11 +202,10 @@ void HomePro::newFile()
 
 void HomePro::open()
 {
-    QString fileName
-        = QFileDialog::getOpenFileName(this,
-                                       "Выберите реперторизацию",
-                                       QString(),
-                                       "Реперторизации (*.rep);;Карточки пациентов (*.pcard)");
+    QString fileName = QFileDialog::getOpenFileName(this,
+                                                    "Выберите файл",
+                                                    QString(),
+                                                    "Гомеопатические файлы (*.rep *.pcard)");
     if (fileName.isEmpty())
         return;
 

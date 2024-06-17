@@ -246,7 +246,7 @@ void RepModel::ungroupRubrics(const QModelIndex &rubricsGroup)
     removeRubric(index(insertPos - _rubrics.cbegin(), 0));
 }
 
-void RepModel::fromString(const QString &repStr)
+void RepModel::read(const QString &repStr)
 {
     clear();
 

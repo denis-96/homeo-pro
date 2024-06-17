@@ -5,7 +5,6 @@
 #include <QStringList>
 
 class RepModel;
-
 class Rubric
 {
     friend RepModel;

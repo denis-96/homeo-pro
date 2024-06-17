@@ -18,7 +18,7 @@ Repertorization::Repertorization(QWidget *parent)
     repProxyModel = new RepProxyModel(this);
     rubricsView = new QListView(this);
 
-    repView->setRepModel(repModel);
+    repView->setModel(repModel);
     repProxyModel->setSourceModel(repModel);
     rubricsView->setModel(repProxyModel);
     rubricsView->setSelectionMode(QAbstractItemView::MultiSelection);
@@ -29,7 +29,7 @@ Repertorization::Repertorization(QWidget *parent)
 
 bool Repertorization::read(QFile &file)
 {
-    repModel->fromString(QString::fromUtf8(file.readAll()));
+    repModel->read(QString::fromUtf8(file.readAll()));
     return true;
 }
 

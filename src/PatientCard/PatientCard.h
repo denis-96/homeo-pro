@@ -4,6 +4,7 @@
 #include <QLabel>
 #include <QTabWidget>
 #include <QWidget>
+#include "PCardTab.h"
 #include <HomeoEntity.h>
 
 class PatientCard : public HomeoEntity
@@ -16,9 +17,10 @@ private:
     bool read(QFile &file) override;
     bool write(QFile &file) override;
 
-    QTabWidget *tabWidget;
+    void createTabs();
 
-private slots:
+    QTabWidget *tabWidget;
+    std::vector<std::pair<QString, PCardTab *>> tabs;
 };
 
 #endif // PATIENTCARD_H

@@ -5,6 +5,7 @@
 #include <QMouseEvent>
 #include <QPainter>
 #include <QStyledItemDelegate>
+#include "RepModel.h"
 
 class RepSelectionModel : public QItemSelectionModel
 {
@@ -173,10 +174,10 @@ RepView::RepView(QWidget *parent)
     setPalette(pal);
 }
 
-void RepView::setRepModel(RepModel *repModel)
+void RepView::setModel(QAbstractItemModel *model)
 {
-    QTreeView::setModel(repModel);
-    setSelectionModel(new RepSelectionModel(repModel, this));
+    QTreeView::setModel(model);
+    setSelectionModel(new RepSelectionModel(model, this));
     setSelectionMode(QAbstractItemView::ExtendedSelection);
     setSelectionBehavior(QAbstractItemView::SelectRows);
     setColumnWidth(0, 300);

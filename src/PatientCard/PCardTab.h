@@ -3,21 +3,14 @@
 
 #include <QBoxLayout>
 #include <QWidget>
-#include "PCardField.h"
+#include "Field.h"
 
 class PCardTab : public QWidget
 {
     Q_OBJECT
 public:
-    struct LabeledField
-    {
-        QString label;
-        PCardField *field;
-        QBoxLayout::Direction alignment;
-    };
-
     explicit PCardTab(const QString &title = "",
-                      const std::vector<LabeledField> &fields = {},
+                      const std::vector<Field *> &fields = {},
                       QWidget *parent = nullptr);
 
     QString title() { return _title; }
@@ -27,7 +20,7 @@ public:
 
 private:
     QString _title;
-    std::vector<PCardField *> _fields;
+    std::vector<Field *> _fields;
 
 signals:
     void changed();

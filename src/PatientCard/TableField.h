@@ -3,23 +3,26 @@
 
 #include <QStyledItemDelegate>
 #include <QTableView>
-#include "PCardField.h"
+#include "Field.h"
 
 typedef QString RowHeadersFunc(int section);
 class TableFieldModel;
 
-class TableField : public QTableView
+class TableField : public Field
 {
     Q_OBJECT
 public:
-    TableField(const std::vector<QString> &columnsHeaders,
+    TableField(const QString &label,
+               const std::vector<QString> &columnsHeaders,
                RowHeadersFunc *rowHeadersFunc = nullptr,
+               int defaultRowCount = 0,
                QWidget *parent = nullptr);
 
-    void read(const QJsonValue &json);
-    QJsonValue toJson() const;
+    void read(const QJsonValue &json) override;
+    QJsonValue toJson() const override;
 
 private:
+    QTableView *view;
     TableFieldModel *model;
     QAction *addRowAction;
     QAction *removeRowAction;

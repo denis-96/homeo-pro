@@ -1,5 +1,7 @@
 #include "HomeoPro.h"
+#include <QApplication>
 #include <QCloseEvent>
+#include <QDialogButtonBox>
 #include <QFile>
 #include <QFileDialog>
 #include <QLabel>

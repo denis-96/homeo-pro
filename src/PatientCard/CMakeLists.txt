@@ -1,13 +1,13 @@
 qt_add_library(PatientCard STATIC
     PatientCard.h PatientCard.cpp
-    PassportDetailsTab.h PassportDetailsTab.cpp
 
-    DiseaseHistoryTab.h DiseaseHistoryTab.cpp
     PCardTab.h PCardTab.cpp
-    LifeHistoryTab.h LifeHistoryTab.cpp
-
-    PCardField.h PCardField.cpp
+    Field.h Field.cpp
     TableField.h TableField.cpp
+    TextField.h TextField.cpp
+    LineField.h LineField.cpp
+    NumberField.h NumberField.cpp
+    DateField.h DateField.cpp
 )
 
 qt_add_resources(PatientCard pcardIcons

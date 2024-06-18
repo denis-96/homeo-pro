@@ -1,25 +1,36 @@
 #include "TableField.h"
 #include <QHeaderView>
 #include <QJsonArray>
+#include <QLabel>
 #include <QPlainTextEdit>
+#include <QVBoxLayout>
 
-TableField::TableField(const std::vector<QString> &columnsHeaders,
+TableField::TableField(const QString &label,
+                       const std::vector<QString> &columnsHeaders,
                        RowHeadersFunc *rowHeadersFunc,
+                       int defaultRowCount,
                        QWidget *parent)
+    : Field(parent)
 {
     model = new TableFieldModel(columnsHeaders, rowHeadersFunc, this);
-    // connect(model, &QAbstractItemModel::dataChanged, this, &TableField::changed);
-    // connect(model, &QAbstractItemModel::rowsInserted, this, &TableField::changed);
-    // connect(model, &QAbstractItemModel::rowsRemoved, this, &TableField::changed);
+    connect(model, &QAbstractItemModel::dataChanged, this, &Field::changed);
+    connect(model, &QAbstractItemModel::rowsInserted, this, &Field::changed);
+    connect(model, &QAbstractItemModel::rowsRemoved, this, &Field::changed);
 
-    setModel(model);
-    setColumnWidth(0, 300);
-    setWordWrap(true);
-    horizontalHeader()->setStretchLastSection(true);
-    verticalHeader()->setDefaultSectionSize(60);
-    setSelectionMode(QAbstractItemView::SingleSelection);
-    setSelectionBehavior(QAbstractItemView::SelectRows);
-    setItemDelegate(new MultiLineEditDelegate(this));
+    for (int i = 0; i < defaultRowCount; ++i) {
+        model->appendRow();
+    }
+
+    view = new QTableView(this);
+    view->setModel(model);
+    view->setColumnWidth(0, 300);
+    view->setMinimumHeight(500);
+    view->setWordWrap(true);
+    view->horizontalHeader()->setStretchLastSection(true);
+    view->verticalHeader()->setDefaultSectionSize(60);
+    view->setSelectionMode(QAbstractItemView::SingleSelection);
+    view->setSelectionBehavior(QAbstractItemView::SelectRows);
+    view->setItemDelegate(new MultiLineEditDelegate(this));
 
     addRowAction = new QAction(QIcon(":/resources/icons/add.svg"), "Добавить запись", this);
     connect(addRowAction, &QAction::triggered, this, [this] { model->appendRow(); });
@@ -28,14 +39,23 @@ TableField::TableField(const std::vector<QString> &columnsHeaders,
     removeRowAction = new QAction(QIcon(":/resources/icons/remove.svg"), "Удалить запись", this);
     removeRowAction->setDisabled(true);
     connect(removeRowAction, &QAction::triggered, this, [this] {
-        model->removeRow(selectionModel()->selectedRows().back());
+        model->removeRow(view->selectionModel()->selectedRows().back());
     });
     addAction(removeRowAction);
 
     setContextMenuPolicy(Qt::ActionsContextMenu);
-    connect(selectionModel(), &QItemSelectionModel::selectionChanged, this, [this] {
-        removeRowAction->setEnabled(selectionModel()->selectedRows().size());
+    connect(view->selectionModel(), &QItemSelectionModel::selectionChanged, this, [this] {
+        removeRowAction->setEnabled(view->selectionModel()->selectedRows().size());
     });
+
+    setLayout(new QVBoxLayout(this));
+    if (label.size()) {
+        auto lbl = new QLabel(label, this);
+        lbl->setWordWrap(true);
+        layout()->addWidget(lbl);
+    } else
+        layout()->setContentsMargins(0, 0, 0, 0);
+    layout()->addWidget(view);
 }
 
 void TableField::read(const QJsonValue &json)
@@ -58,7 +78,7 @@ void TableField::read(const QJsonValue &json)
         model->appendRow(rowData);
     }
 
-    resizeRowsToContents();
+    view->resizeRowsToContents();
 }
 
 QJsonValue TableField::toJson() const
@@ -114,16 +134,6 @@ QVariant TableFieldModel::headerData(int section, Qt::Orientation orientation, i
         if (orientation == Qt::Horizontal && section < 2)
             return _columnHeaders.at(section);
         if (orientation == Qt::Vertical && _rowHeadersFunc) {
-            /*
-            if (section == 0)
-                return "В у";
-            if (section == 1)
-                return "Роды";
-            if (section == 2)
-                return "До 1 года";
-            if (section == 3)
-                return "1 - 4";
-            return QString("%1 - %2").arg((section - 3) * 4 + (section < 9 ? 4 : 12));*/
             return _rowHeadersFunc(section);
         }
     }

@@ -4,27 +4,18 @@
 #include <QLabel>
 #include <QVBoxLayout>
 
-PCardTab::PCardTab(const QString &title, const std::vector<LabeledField> &fields, QWidget *parent)
+PCardTab::PCardTab(const QString &title, const std::vector<Field *> &fields, QWidget *parent)
     : _title(title)
+    , _fields(fields)
     , QWidget{parent}
 {
-    auto layout = new QVBoxLayout(this);
+    setLayout(new QVBoxLayout(this));
+    layout()->setContentsMargins(0, 0, 0, 0);
 
-    _fields.reserve(fields.size());
-    for (const auto &field : fields) {
-        _fields.push_back(field.field);
-
-        auto label = new QLabel(field.label);
-        label->setWordWrap(true);
-
-        auto fieldLayout = new QBoxLayout(field.alignment, this);
-        fieldLayout->addWidget(label);
-        fieldLayout->addWidget(dynamic_cast<QWidget *>(field.field));
-
-        layout->addLayout(fieldLayout);
+    for (const auto &field : _fields) {
+        layout()->addWidget(field);
+        connect(field, &Field::changed, this, &PCardTab::changed);
     }
-
-    setLayout(layout);
 }
 
 void PCardTab::read(const QJsonValue &json)
@@ -35,8 +26,7 @@ void PCardTab::read(const QJsonValue &json)
 
     if (answersJson.size() == _fields.size())
         for (int i = 0; i < answersJson.size(); ++i) {
-            if (answersJson.at(i).isString())
-                _fields.at(i)->read(answersJson.at(i));
+            _fields.at(i)->read(answersJson.at(i));
         }
 }
 

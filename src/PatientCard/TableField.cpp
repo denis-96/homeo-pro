@@ -7,7 +7,7 @@
 
 TableField::TableField(const QString &label,
                        const std::vector<QString> &columnsHeaders,
-                       RowHeadersFunc *rowHeadersFunc,
+                       const RowHeadersFunc &rowHeadersFunc,
                        int defaultRowCount,
                        QWidget *parent)
     : Field(parent)
@@ -27,6 +27,10 @@ TableField::TableField(const QString &label,
     view->setMinimumHeight(500);
     view->setWordWrap(true);
     view->horizontalHeader()->setStretchLastSection(true);
+    auto f = view->horizontalHeader()->font();
+    f.setPointSize(14);
+    f.setBold(true);
+    view->horizontalHeader()->setFont(f);
     view->verticalHeader()->setDefaultSectionSize(60);
     view->setSelectionMode(QAbstractItemView::SingleSelection);
     view->setSelectionBehavior(QAbstractItemView::SelectRows);
@@ -56,6 +60,11 @@ TableField::TableField(const QString &label,
     } else
         layout()->setContentsMargins(0, 0, 0, 0);
     layout()->addWidget(view);
+}
+
+void TableField::addRow(const std::vector<QString> &data)
+{
+    model->appendRow(data);
 }
 
 void TableField::read(const QJsonValue &json)
@@ -95,7 +104,7 @@ QJsonValue TableField::toJson() const
 }
 
 TableFieldModel::TableFieldModel(const std::vector<QString> &columnsHeaders,
-                                 RowHeadersFunc *rowHeadersFunc,
+                                 const RowHeadersFunc &rowHeadersFunc,
                                  QObject *parent)
     : QAbstractTableModel{parent}
     , _rowHeadersFunc(rowHeadersFunc)
@@ -131,7 +140,7 @@ bool TableFieldModel::setData(const QModelIndex &index, const QVariant &value, i
 QVariant TableFieldModel::headerData(int section, Qt::Orientation orientation, int role) const
 {
     if (role == Qt::DisplayRole) {
-        if (orientation == Qt::Horizontal && section < 2)
+        if (orientation == Qt::Horizontal)
             return _columnHeaders.at(section);
         if (orientation == Qt::Vertical && _rowHeadersFunc) {
             return _rowHeadersFunc(section);

@@ -5,7 +5,7 @@
 #include <QTableView>
 #include "Field.h"
 
-typedef QString RowHeadersFunc(int section);
+using RowHeadersFunc = std::function<QString(int)>;
 class TableFieldModel;
 
 class TableField : public Field
@@ -14,9 +14,11 @@ class TableField : public Field
 public:
     TableField(const QString &label,
                const std::vector<QString> &columnsHeaders,
-               RowHeadersFunc *rowHeadersFunc = nullptr,
+               const RowHeadersFunc &rowHeadersFunc = nullptr,
                int defaultRowCount = 0,
                QWidget *parent = nullptr);
+
+    void addRow(const std::vector<QString> &data);
 
     void read(const QJsonValue &json) override;
     QJsonValue toJson() const override;
@@ -34,7 +36,7 @@ class TableFieldModel : public QAbstractTableModel
 
 public:
     TableFieldModel(const std::vector<QString> &columnsHeaders,
-                    RowHeadersFunc *rowHeadersFunc = nullptr,
+                    const RowHeadersFunc &rowHeadersFunc = nullptr,
                     QObject *parent = nullptr);
 
     int rowCount(const QModelIndex &parent = {}) const override { return _data.size(); }
@@ -56,7 +58,7 @@ public:
 private:
     std::vector<std::vector<QString>> _data;
     std::vector<QString> _columnHeaders;
-    RowHeadersFunc *_rowHeadersFunc;
+    RowHeadersFunc _rowHeadersFunc;
 };
 
 class MultiLineEditDelegate : public QStyledItemDelegate

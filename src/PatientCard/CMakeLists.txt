@@ -8,6 +8,8 @@ qt_add_library(PatientCard STATIC
     LineField.h LineField.cpp
     NumberField.h NumberField.cpp
     DateField.h DateField.cpp
+    CurrentStateTab.h CurrentStateTab.cpp
+
 )
 
 qt_add_resources(PatientCard pcardIcons

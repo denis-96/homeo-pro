@@ -18,6 +18,12 @@ PCardTab::PCardTab(const QString &title, const std::vector<Field *> &fields, QWi
     }
 }
 
+void PCardTab::addField(Field *field)
+{
+    _fields.push_back(field);
+    connect(field, &Field::changed, this, &PCardTab::changed);
+}
+
 void PCardTab::read(const QJsonValue &json)
 {
     if (!json.isArray())

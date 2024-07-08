@@ -8,7 +8,7 @@ class TextField : public Field
 {
     Q_OBJECT
 public:
-    TextField(const QString &label, QWidget *parent = nullptr);
+    TextField(const QString &label, const QString &initialText = "", QWidget *parent = nullptr);
 
     void read(const QJsonValue &json) override;
     QJsonValue toJson() const override;

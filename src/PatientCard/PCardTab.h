@@ -15,8 +15,11 @@ public:
 
     QString title() { return _title; }
 
-    void read(const QJsonValue &json);
-    QJsonValue toJson() const;
+    virtual void read(const QJsonValue &json);
+    virtual QJsonValue toJson() const;
+
+protected:
+    void addField(Field *field);
 
 private:
     QString _title;

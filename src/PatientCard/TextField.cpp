@@ -2,13 +2,17 @@
 #include <QLabel>
 #include <QVBoxLayout>
 
-TextField::TextField(const QString &label, QWidget *parent)
+TextField::TextField(const QString &label, const QString &initialText, QWidget *parent)
     : Field(parent)
 {
     textEdit = new QPlainTextEdit(this);
     auto f = textEdit->font();
     f.setPointSize(14);
     textEdit->setFont(f);
+
+    if (initialText.size())
+        textEdit->setPlainText(initialText);
+
     connect(textEdit, &QPlainTextEdit::textChanged, this, &Field ::changed);
 
     auto lbl = new QLabel(label, this);

@@ -1,26 +1,34 @@
 #ifndef PATIENTCARD_H
 #define PATIENTCARD_H
 
-#include <QLabel>
 #include <QTabWidget>
+#include <QTableWidget>
 #include <QWidget>
-#include "PCardTab.h"
 #include <HomeoEntity.h>
 
+namespace Ui {
+class PatientCard;
+}
 class PatientCard : public HomeoEntity
 {
     Q_OBJECT
 public:
     explicit PatientCard(QWidget *parent = nullptr);
+    ~PatientCard();
 
 private:
     bool read(QFile &file) override;
     bool write(QFile &file) override;
 
-    void createTabs();
+    void setupFields();
 
+    void setupEditableTable(QTableWidget *table);
+
+    Ui::PatientCard *ui;
     QTabWidget *tabWidget;
-    std::vector<std::pair<QString, PCardTab *>> tabs;
+
+    std::vector<QWidget *> edits;
+    std::vector<QTableWidget *> tables;
 };
 
 #endif // PATIENTCARD_H

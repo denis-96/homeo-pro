@@ -1,0 +1,4271 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>PatientCard</class>
+ <widget class="QTabWidget" name="PatientCard">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>800</width>
+    <height>600</height>
+   </rect>
+  </property>
+  <property name="font">
+   <font>
+    <pointsize>11</pointsize>
+   </font>
+  </property>
+  <property name="windowTitle">
+   <string>PatientCardTab</string>
+  </property>
+  <property name="currentIndex">
+   <number>0</number>
+  </property>
+  <widget class="QScrollArea" name="passportDetails">
+   <property name="widgetResizable">
+    <bool>true</bool>
+   </property>
+   <attribute name="title">
+    <string>Паспортная часть</string>
+   </attribute>
+   <widget class="QWidget" name="passportDetailsContents">
+    <property name="geometry">
+     <rect>
+      <x>0</x>
+      <y>0</y>
+      <width>794</width>
+      <height>557</height>
+     </rect>
+    </property>
+    <layout class="QVBoxLayout" name="passportDetailsLayout">
+     <item>
+      <widget class="QLabel" name="label1">
+       <property name="text">
+        <string>Фамилия Имя Отчество</string>
+       </property>
+       <property name="wordWrap">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLineEdit" name="edit1"/>
+     </item>
+     <item>
+      <widget class="QLabel" name="label2">
+       <property name="text">
+        <string>Возраст</string>
+       </property>
+       <property name="wordWrap">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QSpinBox" name="edit2"/>
+     </item>
+     <item>
+      <widget class="QLabel" name="label3">
+       <property name="text">
+        <string>Профессия, место работы (учебы), должность</string>
+       </property>
+       <property name="wordWrap">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLineEdit" name="edit3"/>
+     </item>
+     <item>
+      <widget class="QLabel" name="label4">
+       <property name="text">
+        <string>Дата обращения</string>
+       </property>
+       <property name="wordWrap">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QDateEdit" name="edit4"/>
+     </item>
+    </layout>
+   </widget>
+  </widget>
+  <widget class="QTableWidget" name="complaints">
+   <property name="font">
+    <font>
+     <pointsize>11</pointsize>
+    </font>
+   </property>
+   <property name="selectionMode">
+    <enum>QAbstractItemView::SingleSelection</enum>
+   </property>
+   <property name="selectionBehavior">
+    <enum>QAbstractItemView::SelectRows</enum>
+   </property>
+   <property name="rowCount">
+    <number>0</number>
+   </property>
+   <attribute name="title">
+    <string>Жалобы</string>
+   </attribute>
+   <column>
+    <property name="text">
+     <string>Основные</string>
+    </property>
+   </column>
+   <column>
+    <property name="text">
+     <string>Детализация (ЛОМС)</string>
+    </property>
+   </column>
+  </widget>
+  <widget class="QScrollArea" name="diseaseHistory">
+   <property name="widgetResizable">
+    <bool>true</bool>
+   </property>
+   <attribute name="title">
+    <string>История заболевния</string>
+   </attribute>
+   <widget class="QWidget" name="diseaseHistoryContents">
+    <property name="geometry">
+     <rect>
+      <x>0</x>
+      <y>0</y>
+      <width>777</width>
+      <height>1285</height>
+     </rect>
+    </property>
+    <layout class="QVBoxLayout" name="diseaseHistoryLayout">
+     <item>
+      <widget class="QLabel" name="label5">
+       <property name="text">
+        <string>В течение какого времени считает себя больным?</string>
+       </property>
+       <property name="wordWrap">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPlainTextEdit" name="edit5"/>
+     </item>
+     <item>
+      <widget class="QLabel" name="label6">
+       <property name="text">
+        <string>Факторы, способствовавшие началу заболевания.</string>
+       </property>
+       <property name="wordWrap">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPlainTextEdit" name="edit6"/>
+     </item>
+     <item>
+      <widget class="QLabel" name="label7">
+       <property name="text">
+        <string>С каких признаков началось заболевание?</string>
+       </property>
+       <property name="wordWrap">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPlainTextEdit" name="edit7"/>
+     </item>
+     <item>
+      <widget class="QLabel" name="label8">
+       <property name="text">
+        <string>Первое обращение к врачу, результаты проводившихся исследований, диагноз заболевания, лечение в тот период, его эффективность.</string>
+       </property>
+       <property name="wordWrap">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPlainTextEdit" name="edit8"/>
+     </item>
+     <item>
+      <widget class="QLabel" name="label9">
+       <property name="text">
+        <string>Последующее течение заболевания:
+а) динамика начальных симптомов, появление новых симптомов и дальнейшее развитие всех признаков заболевания;
+б) частота обострений, длительность ремиссий, осложнения заболевания;
+в) применявшиеся лечебные и диагностические мероприятия</string>
+       </property>
+       <property name="wordWrap">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPlainTextEdit" name="edit9"/>
+     </item>
+    </layout>
+   </widget>
+  </widget>
+  <widget class="QScrollArea" name="lifeHistory">
+   <property name="widgetResizable">
+    <bool>true</bool>
+   </property>
+   <attribute name="title">
+    <string>История жизни</string>
+   </attribute>
+   <widget class="QWidget" name="lifeHistoryContents">
+    <property name="geometry">
+     <rect>
+      <x>0</x>
+      <y>0</y>
+      <width>813</width>
+      <height>3762</height>
+     </rect>
+    </property>
+    <layout class="QVBoxLayout" name="lifeHistoryLayout">
+     <item>
+      <widget class="QLabel" name="label10">
+       <property name="text">
+        <string>Краткие биографические данные:</string>
+       </property>
+       <property name="wordWrap">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLabel" name="label10a">
+       <property name="text">
+        <string>Год и место рождения, в какой семье родился, каким ребенком по счету, как рос и развивался.</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPlainTextEdit" name="edit10"/>
+     </item>
+     <item>
+      <widget class="QLabel" name="label11">
+       <property name="text">
+        <string>Образование: неполное или полное среднее, специальное среднее или высшее.</string>
+       </property>
+       <property name="wordWrap">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPlainTextEdit" name="edit11"/>
+     </item>
+     <item>
+      <widget class="QLabel" name="label12">
+       <property name="text">
+        <string>Отношение к военной службе, пребывание на фронте (если был освобожден или демобилизован, то указать, по какой причине).</string>
+       </property>
+       <property name="wordWrap">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPlainTextEdit" name="edit12"/>
+     </item>
+     <item>
+      <widget class="QLabel" name="label13">
+       <property name="text">
+        <string>Семейно-половой анамнез:</string>
+       </property>
+       <property name="wordWrap">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLabel" name="label13a">
+       <property name="text">
+        <string>Для женщин - время появления менструаций, длительность менструального цикла, продолжительность менструаций, количество отделений. Возраст вступления в брак. Беременности, роды и аборты (самопроизвольные и искусственные), их количество и осложнения.</string>
+       </property>
+       <property name="wordWrap">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPlainTextEdit" name="edit13"/>
+     </item>
+     <item>
+      <widget class="QLabel" name="label14">
+       <property name="text">
+        <string>Климакс и его течение. Время окончания менструаций (менопауза). Семейное положение в настоящий момент. Количество детей.</string>
+       </property>
+       <property name="wordWrap">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPlainTextEdit" name="edit14"/>
+     </item>
+     <item>
+      <widget class="QLabel" name="label15">
+       <property name="text">
+        <string>Трудовой анамнез:</string>
+       </property>
+       <property name="wordWrap">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLabel" name="label15a">
+       <property name="text">
+        <string>С какого возраста, кем и где начал работать. Дальнейшая трудовая деятельность в хронологической последовательности с указанием мест работы и должностей. Условия и режим труда. Профессиональные вредности (воздействие токсических химических соединений, пылей, ионизирующей радиации, физические и эмоциональные нагрузки и др. вредности).</string>
+       </property>
+       <property name="wordWrap">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPlainTextEdit" name="edit15"/>
+     </item>
+     <item>
+      <widget class="QLabel" name="label16">
+       <property name="text">
+        <string>Бытовой анамнез:</string>
+       </property>
+       <property name="wordWrap">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLabel" name="label16a">
+       <property name="text">
+        <string>Жилищные и санитарно-гигиенические условия в быту (площадь помещений, их характеристика, наличие удобств). Количество проживающих на данной жилплощади лиц. Климатические условия. Пребывание в зонах экологических бедствий.</string>
+       </property>
+       <property name="wordWrap">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPlainTextEdit" name="edit16"/>
+     </item>
+     <item>
+      <widget class="QLabel" name="label17">
+       <property name="text">
+        <string>Питание:
+Режим и регулярность питания, характер пищи, ее разнообразие, калорийность и т.д.</string>
+       </property>
+       <property name="wordWrap">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPlainTextEdit" name="edit17"/>
+     </item>
+     <item>
+      <widget class="QLabel" name="label18">
+       <property name="text">
+        <string>Вредные привычки:
+Курение, с какого возраста, в каком количестве. Употребление алкоголя, с какого возраста, в каком количестве. Употребление наркотиков.</string>
+       </property>
+       <property name="wordWrap">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPlainTextEdit" name="edit18"/>
+     </item>
+     <item>
+      <widget class="QLabel" name="labelForTable1">
+       <property name="text">
+        <string>Перенесенные заболевания:</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLabel" name="labelForTable1a">
+       <property name="text">
+        <string>В хронологической последовательности излагаются все перенесенные заболевания, операции, ранения, травмы, контузии с указанием возраста больного, длительности и тяжести этих заболеваний и их осложнений и проводившегося лечения. Особо указать на перенесенные инфекционные заболевания, венерические болезни, туберкулез, желтуху. Отметить, переливалась ли ранее кровь или кровезаменители, и были ли реакции на переливание. Указать, проводилось ли парентеральное введение лекарств в течение последних 6 месяцев.</string>
+       </property>
+       <property name="wordWrap">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QTableWidget" name="table1">
+       <property name="minimumSize">
+        <size>
+         <width>0</width>
+         <height>750</height>
+        </size>
+       </property>
+       <attribute name="horizontalHeaderDefaultSectionSize">
+        <number>300</number>
+       </attribute>
+       <attribute name="verticalHeaderDefaultSectionSize">
+        <number>45</number>
+       </attribute>
+       <attribute name="verticalHeaderHighlightSections">
+        <bool>false</bool>
+       </attribute>
+       <row>
+        <property name="text">
+         <string>В у.</string>
+        </property>
+       </row>
+       <row>
+        <property name="text">
+         <string>Роды</string>
+        </property>
+       </row>
+       <row>
+        <property name="text">
+         <string>До 1 года</string>
+        </property>
+       </row>
+       <row>
+        <property name="text">
+         <string>1-4</string>
+        </property>
+       </row>
+       <row>
+        <property name="text">
+         <string>4-8</string>
+        </property>
+       </row>
+       <row>
+        <property name="text">
+         <string>8-12</string>
+        </property>
+       </row>
+       <row>
+        <property name="text">
+         <string>12-16</string>
+        </property>
+       </row>
+       <row>
+        <property name="text">
+         <string>16-20</string>
+        </property>
+       </row>
+       <row>
+        <property name="text">
+         <string>20-24</string>
+        </property>
+       </row>
+       <row>
+        <property name="text">
+         <string>24-36</string>
+        </property>
+       </row>
+       <row>
+        <property name="text">
+         <string>36-48</string>
+        </property>
+       </row>
+       <row>
+        <property name="text">
+         <string>48-60</string>
+        </property>
+       </row>
+       <row>
+        <property name="text">
+         <string>60-72</string>
+        </property>
+       </row>
+       <row>
+        <property name="text">
+         <string>72-84</string>
+        </property>
+       </row>
+       <row>
+        <property name="text">
+         <string>84-96</string>
+        </property>
+       </row>
+       <column>
+        <property name="text">
+         <string>Этиология</string>
+        </property>
+       </column>
+       <column>
+        <property name="text">
+         <string>Перенесенные заболевания</string>
+        </property>
+       </column>
+       <item row="0" column="0">
+        <property name="text">
+         <string/>
+        </property>
+       </item>
+       <item row="0" column="1">
+        <property name="text">
+         <string/>
+        </property>
+       </item>
+       <item row="1" column="0">
+        <property name="text">
+         <string/>
+        </property>
+       </item>
+       <item row="1" column="1">
+        <property name="text">
+         <string/>
+        </property>
+       </item>
+       <item row="2" column="0">
+        <property name="text">
+         <string/>
+        </property>
+       </item>
+       <item row="2" column="1">
+        <property name="text">
+         <string/>
+        </property>
+       </item>
+       <item row="3" column="0">
+        <property name="text">
+         <string/>
+        </property>
+       </item>
+       <item row="3" column="1">
+        <property name="text">
+         <string/>
+        </property>
+       </item>
+       <item row="4" column="0">
+        <property name="text">
+         <string/>
+        </property>
+       </item>
+       <item row="4" column="1">
+        <property name="text">
+         <string/>
+        </property>
+       </item>
+       <item row="5" column="0">
+        <property name="text">
+         <string/>
+        </property>
+       </item>
+       <item row="5" column="1">
+        <property name="text">
+         <string/>
+        </property>
+       </item>
+       <item row="6" column="0">
+        <property name="text">
+         <string/>
+        </property>
+       </item>
+       <item row="6" column="1">
+        <property name="text">
+         <string/>
+        </property>
+       </item>
+       <item row="7" column="0">
+        <property name="text">
+         <string/>
+        </property>
+       </item>
+       <item row="7" column="1">
+        <property name="text">
+         <string/>
+        </property>
+       </item>
+       <item row="8" column="0">
+        <property name="text">
+         <string/>
+        </property>
+       </item>
+       <item row="8" column="1">
+        <property name="text">
+         <string/>
+        </property>
+       </item>
+       <item row="9" column="0">
+        <property name="text">
+         <string/>
+        </property>
+       </item>
+       <item row="9" column="1">
+        <property name="text">
+         <string/>
+        </property>
+       </item>
+       <item row="10" column="0">
+        <property name="text">
+         <string/>
+        </property>
+       </item>
+       <item row="10" column="1">
+        <property name="text">
+         <string/>
+        </property>
+       </item>
+       <item row="11" column="0">
+        <property name="text">
+         <string/>
+        </property>
+       </item>
+       <item row="11" column="1">
+        <property name="text">
+         <string/>
+        </property>
+       </item>
+       <item row="12" column="0">
+        <property name="text">
+         <string/>
+        </property>
+       </item>
+       <item row="12" column="1">
+        <property name="text">
+         <string/>
+        </property>
+       </item>
+       <item row="13" column="0">
+        <property name="text">
+         <string/>
+        </property>
+       </item>
+       <item row="13" column="1">
+        <property name="text">
+         <string/>
+        </property>
+       </item>
+       <item row="14" column="0">
+        <property name="text">
+         <string/>
+        </property>
+       </item>
+       <item row="14" column="1">
+        <property name="text">
+         <string/>
+        </property>
+       </item>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLabel" name="label19">
+       <property name="text">
+        <string>Аллергологический анамнез:
+Непереносимость пищевых продуктов, различных медикаментов, вакцин и сывороток. Наличие аллергических реакций (вазомоторного ринита, крапивницы, отека Квинке), причины этих реакций, их сезонность.</string>
+       </property>
+       <property name="wordWrap">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPlainTextEdit" name="edit19"/>
+     </item>
+    </layout>
+   </widget>
+  </widget>
+  <widget class="QScrollArea" name="heredity">
+   <property name="widgetResizable">
+    <bool>true</bool>
+   </property>
+   <attribute name="title">
+    <string>Наследственность</string>
+   </attribute>
+   <widget class="QWidget" name="heredityContents">
+    <property name="geometry">
+     <rect>
+      <x>0</x>
+      <y>0</y>
+      <width>777</width>
+      <height>774</height>
+     </rect>
+    </property>
+    <layout class="QVBoxLayout" name="heredityLayout">
+     <item>
+      <widget class="QLabel" name="label20">
+       <property name="text">
+        <string>Родители, братья, сестры, дети: состояние их здоровья, заболевания, причины смерти (указать, в каком возрасте).
+Отягощенная наследственность:
+Наличие у ближайших родственников злокачественных новообразований, сердечно-сосудистых (инфаркт миокарда, стенокардия, артериальная гипертензия, инсульты), эндокринных (сахарный диабет, тиреотоксикоз и др.) и психических заболеваний, геморрагических диатезов, алкоголизма. Наличие в анамнезе у ближайших родственников туберкулеза.</string>
+       </property>
+       <property name="wordWrap">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLabel" name="label20a">
+       <property name="text">
+        <string>Мама</string>
+       </property>
+       <property name="wordWrap">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLineEdit" name="edit20"/>
+     </item>
+     <item>
+      <widget class="QLabel" name="label21">
+       <property name="text">
+        <string>Папа</string>
+       </property>
+       <property name="wordWrap">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLineEdit" name="edit21"/>
+     </item>
+     <item>
+      <widget class="QLabel" name="label22">
+       <property name="text">
+        <string>Бабушка по маме</string>
+       </property>
+       <property name="wordWrap">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLineEdit" name="edit22"/>
+     </item>
+     <item>
+      <widget class="QLabel" name="label23">
+       <property name="text">
+        <string>Дедушка по маме</string>
+       </property>
+       <property name="wordWrap">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLineEdit" name="edit23"/>
+     </item>
+     <item>
+      <widget class="QLabel" name="label24">
+       <property name="text">
+        <string>Бабушка по папе</string>
+       </property>
+       <property name="wordWrap">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLineEdit" name="edit24"/>
+     </item>
+     <item>
+      <widget class="QLabel" name="label25">
+       <property name="text">
+        <string>Дедушка по папе</string>
+       </property>
+       <property name="wordWrap">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLineEdit" name="edit25"/>
+     </item>
+     <item>
+      <widget class="QLabel" name="label26">
+       <property name="text">
+        <string>Братья / Сестры</string>
+       </property>
+       <property name="wordWrap">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLineEdit" name="edit26"/>
+     </item>
+     <item>
+      <widget class="QLabel" name="label27">
+       <property name="text">
+        <string>Дети</string>
+       </property>
+       <property name="wordWrap">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLineEdit" name="edit27"/>
+     </item>
+    </layout>
+   </widget>
+  </widget>
+  <widget class="QTabWidget" name="currentState">
+   <property name="tabPosition">
+    <enum>QTabWidget::West</enum>
+   </property>
+   <property name="currentIndex">
+    <number>1</number>
+   </property>
+   <attribute name="title">
+    <string>Настоящее состояние</string>
+   </attribute>
+   <widget class="QScrollArea" name="currentStateTab1">
+    <property name="widgetResizable">
+     <bool>true</bool>
+    </property>
+    <attribute name="title">
+     <string>Общий осмотр</string>
+    </attribute>
+    <widget class="QWidget" name="currentStateTab1Contents">
+     <property name="geometry">
+      <rect>
+       <x>0</x>
+       <y>0</y>
+       <width>154</width>
+       <height>9195</height>
+      </rect>
+     </property>
+     <layout class="QVBoxLayout" name="currentStateTab1Layout">
+      <item>
+       <widget class="QLabel" name="label28">
+        <property name="text">
+         <string>Общее состояние больного:</string>
+        </property>
+        <property name="wordWrap">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPlainTextEdit" name="edit28">
+        <property name="plainText">
+         <string>удовлетворительное, средней тяжести, тяжелое.</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="label29">
+        <property name="text">
+         <string>Сознание:</string>
+        </property>
+        <property name="wordWrap">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPlainTextEdit" name="edit29">
+        <property name="plainText">
+         <string>ясное, спутанное - ступор, сопор, кома, бред, галлюцинации.</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="label30">
+        <property name="text">
+         <string>Положение больного</string>
+        </property>
+        <property name="wordWrap">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPlainTextEdit" name="edit30">
+        <property name="plainText">
+         <string> активное, пассивное, вынужденное</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="label31">
+        <property name="text">
+         <string>Телосложение</string>
+        </property>
+        <property name="wordWrap">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPlainTextEdit" name="edit31">
+        <property name="plainText">
+         <string>конституциональный тип (нормостенический, гиперстенический, астенический),</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="label32">
+        <property name="text">
+         <string>Рост, масса тела</string>
+        </property>
+        <property name="wordWrap">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPlainTextEdit" name="edit32"/>
+      </item>
+      <item>
+       <widget class="QLabel" name="label33">
+        <property name="text">
+         <string>Осанка</string>
+        </property>
+        <property name="wordWrap">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPlainTextEdit" name="edit33">
+        <property name="plainText">
+         <string>прямая, сутуловатая), походка (быстрая, медленная, атактическзя, спастическая, паретическая</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="label34">
+        <property name="text">
+         <string>Температура тела:</string>
+        </property>
+        <property name="wordWrap">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPlainTextEdit" name="edit34"/>
+      </item>
+      <item>
+       <widget class="QLabel" name="label35">
+        <property name="text">
+         <string>Выражение лица</string>
+        </property>
+        <property name="wordWrap">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPlainTextEdit" name="edit35">
+        <property name="plainText">
+         <string>спокойное, безразличное, маскообразное, тоскливое, страдальческое, возбужденное, утомленное и т. д. Лицо Корвизара. fades feoris, facies nephritica, facies mitralis, facies Hyppocratica, facies Basedovica и др.</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="label36">
+        <property name="text">
+         <string>Кожные покровы:
+Со стороны кожи что-нибудь беспокоит (рубцы , опухоли , сыпь , бородавки, кондиломы)?</string>
+        </property>
+        <property name="wordWrap">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPlainTextEdit" name="edit36"/>
+      </item>
+      <item>
+       <widget class="QLabel" name="label37">
+        <property name="text">
+         <string>Цвет</string>
+        </property>
+        <property name="wordWrap">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPlainTextEdit" name="edit37">
+        <property name="plainText">
+         <string>бледно-розовый, смуглый, красный, синюшный, желтушный, бледный, землистый</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="label38">
+        <property name="text">
+         <string>Пигментация и депигментация (лейкодерма), их локализация.</string>
+        </property>
+        <property name="wordWrap">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPlainTextEdit" name="edit38"/>
+      </item>
+      <item>
+       <widget class="QLabel" name="label39">
+        <property name="text">
+         <string>Высыпания:</string>
+        </property>
+        <property name="wordWrap">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPlainTextEdit" name="edit39">
+        <property name="plainText">
+         <string>форма сыпи (розеола, папула, пустула, везикула, эритема, пятно, лихорадочные высыпания - herpes); локализация высыпаний, единичные или множественные (сливные) высыпания.</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="label40">
+        <property name="text">
+         <string>Сосудистые изменения</string>
+        </property>
+        <property name="wordWrap">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPlainTextEdit" name="edit40">
+        <property name="plainText">
+         <string>телеангиоэктазии, &quot;сосудистые звездочки&quot;, их локализация и количество</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="label41">
+        <property name="text">
+         <string>Кровоизлияния</string>
+        </property>
+        <property name="wordWrap">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPlainTextEdit" name="edit41">
+        <property name="plainText">
+         <string>локализация, размер, количество, выраженность.</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="label42">
+        <property name="text">
+         <string>Рубцы:</string>
+        </property>
+        <property name="wordWrap">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPlainTextEdit" name="edit42">
+        <property name="plainText">
+         <string>локализация, цвет, размеры, подвижность, болезненность</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="label43">
+        <property name="text">
+         <string>Трофические изменения</string>
+        </property>
+        <property name="wordWrap">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPlainTextEdit" name="edit43">
+        <property name="plainText">
+         <string>язвы, пролежни, их локализация, размер, характер поверхности и т.д.</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="label44">
+        <property name="text">
+         <string>Видимые опухоли:</string>
+        </property>
+        <property name="wordWrap">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPlainTextEdit" name="edit44">
+        <property name="plainText">
+         <string>миома, ангиома, атерома и другие, их локализация, размер</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="label45">
+        <property name="text">
+         <string>Влажность кожи. Тургор кожи. Тип оволосения.</string>
+        </property>
+        <property name="wordWrap">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPlainTextEdit" name="edit45"/>
+      </item>
+      <item>
+       <widget class="QLabel" name="label46">
+        <property name="text">
+         <string>Ногти:</string>
+        </property>
+        <property name="wordWrap">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPlainTextEdit" name="edit46">
+        <property name="plainText">
+         <string>форма (&quot;часовые стекла&quot;, койлонихии и др.), цвет (розовый, синюшный, бледный); поперечная или продольная исчерченность, ломкость ногтей.</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="label47">
+        <property name="text">
+         <string>Волосы</string>
+        </property>
+        <property name="wordWrap">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPlainTextEdit" name="edit47"/>
+      </item>
+      <item>
+       <widget class="QLabel" name="label48">
+        <property name="text">
+         <string>Видимые слизистые:</string>
+        </property>
+        <property name="wordWrap">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPlainTextEdit" name="edit48">
+        <property name="plainText">
+         <string>цвет (розовый, бледный, синюшный, желтушный, красный); высыпания на слизистых (энантема), их локализация и выраженность; влажность слизистых.</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="label49">
+        <property name="text">
+         <string>Подкожно-жировая клетчатка:</string>
+        </property>
+        <property name="wordWrap">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPlainTextEdit" name="edit49">
+        <property name="plainText">
+         <string>Развитие (умеренное, слабое, чрезмерное); места наибольшего отложения жира (на животе, руках, бедрах);</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="label50">
+        <property name="text">
+         <string>Отеки (oedema);</string>
+        </property>
+        <property name="wordWrap">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPlainTextEdit" name="edit50">
+        <property name="plainText">
+         <string>их локализация (конечности, поясница, живот), распространенность (местные или общие - анасарка), выраженность (пастозность, умеренные или резко выраженные), консистенция отеков.</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="label51">
+        <property name="text">
+         <string>Болезненность при пальпации подкожно-жировой клетчатки, наличие крепитации (при воздушной эмфиземе подкожной клетчатки).</string>
+        </property>
+        <property name="wordWrap">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPlainTextEdit" name="edit51"/>
+      </item>
+      <item>
+       <widget class="QLabel" name="label52">
+        <property name="text">
+         <string>Лимфатические узлы:
+Локализация пальпируемых лимфоузлов Их величина, форма, консистенция, болезненность, подвижность, сращения между собой и с окружающими тканями, состояние кожи над лимфоузлами.</string>
+        </property>
+        <property name="wordWrap">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPlainTextEdit" name="edit52">
+        <property name="plainText">
+         <string>затылочные,
+околоушные,
+подчелюстные,
+шейные,
+надключичные и подключичные,
+подмышечные,
+локтевые,
+паховые,
+подколенные</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="label53">
+        <property name="text">
+         <string>Мышцы:
+Степень развития</string>
+        </property>
+        <property name="wordWrap">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPlainTextEdit" name="edit53">
+        <property name="plainText">
+         <string>удовлетворительная, слабая и/или атрофии, гипертрофии мышц</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="label54">
+        <property name="text">
+         <string>Тонус:</string>
+        </property>
+        <property name="wordWrap">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPlainTextEdit" name="edit54">
+        <property name="plainText">
+         <string>сохранен, снижен, повышен (ригидность мышц</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="label55">
+        <property name="text">
+         <string>Сила мышц. Болезненность и уплотнения при ощупывании.</string>
+        </property>
+        <property name="wordWrap">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPlainTextEdit" name="edit55"/>
+      </item>
+      <item>
+       <widget class="QLabel" name="label56">
+        <property name="text">
+         <string>Кости:
+Форма костей, наличие деформаций, болезненности при ощупывании, поколачивании. Состояние концевых фаланг пальцев рук и ног (симптом &quot;барабанных пальцев&quot;).</string>
+        </property>
+        <property name="wordWrap">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPlainTextEdit" name="edit56"/>
+      </item>
+      <item>
+       <widget class="QLabel" name="label57">
+        <property name="text">
+         <string>Суставы:
+Конфигурация, припухлость, болезненность при ощупывании, гиперемия и местная температура кожи над суставами. Движения в суставах: их болезненность, хруст при движениях, объем активных и пассивных движений в суставах.</string>
+        </property>
+        <property name="wordWrap">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPlainTextEdit" name="edit57"/>
+      </item>
+     </layout>
+    </widget>
+   </widget>
+   <widget class="QScrollArea" name="currentStateTab2">
+    <property name="widgetResizable">
+     <bool>true</bool>
+    </property>
+    <attribute name="title">
+     <string>Система органов дыхания</string>
+    </attribute>
+    <widget class="QWidget" name="currentStateTab2Contents">
+     <property name="geometry">
+      <rect>
+       <x>0</x>
+       <y>0</y>
+       <width>736</width>
+       <height>3633</height>
+      </rect>
+     </property>
+     <layout class="QVBoxLayout" name="currentStateTab2Layout">
+      <item>
+       <widget class="QLabel" name="label58">
+        <property name="text">
+         <string>Кашель (tussis):</string>
+        </property>
+        <property name="wordWrap">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPlainTextEdit" name="edit58">
+        <property name="plainText">
+         <string>характер (сухой - непродуктивный или с выделением мокроты - продуктивный), время появления (днем, ночью, утром), длительность (постоянный, периодический, приступообразный), условия появления и купирования кашля.</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="label59">
+        <property name="text">
+         <string>Мокрота (sputum):</string>
+        </property>
+        <property name="wordWrap">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPlainTextEdit" name="edit59">
+        <property name="plainText">
+         <string>характер, цвет и консистенция (серозная, слизистая, слизисто-гнойная, гнойная), количество мокроты одномоментно и за сутки; примеси крови; положение, способствующее наилучшему отхождению мокроты.</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="label60">
+        <property name="text">
+         <string>Кровохарканье (haemoptoe):</string>
+        </property>
+        <property name="wordWrap">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPlainTextEdit" name="edit60">
+        <property name="plainText">
+         <string>количество крови (прожилки, сгустки или чистая кровь); цвет крови (алая, темная, ржавая или малинового цвета); условия появления кровохарканья.</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="label61">
+        <property name="text">
+         <string>Боль (dolor) в грудной клетке:</string>
+        </property>
+        <property name="wordWrap">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPlainTextEdit" name="edit61">
+        <property name="plainText">
+         <string>локализация, характер боли (острые, тупые, колющие), интенсивность (слабые, умеренные, сильные); продолжительность (постоянные, приступообразные); связь болей с дыхательными движениями; иррадиация болей.</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="label62">
+        <property name="text">
+         <string>Одышка (dyspnoe):</string>
+        </property>
+        <property name="wordWrap">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPlainTextEdit" name="edit62">
+        <property name="plainText">
+         <string>условия возникновения (в покое, при физической нагрузке, при кашле, при изменении положения тела и т.д.); характер одышки (инспираторная, экспираторная, смешанная).</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="label63">
+        <property name="text">
+         <string>Удушье (asthma):</string>
+        </property>
+        <property name="wordWrap">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPlainTextEdit" name="edit63">
+        <property name="plainText">
+         <string>время и условия возникновения, продолжительность приступов, их купирование.</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="label64">
+        <property name="text">
+         <string>Осмотр
+Нос:</string>
+        </property>
+        <property name="wordWrap">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPlainTextEdit" name="edit64">
+        <property name="plainText">
+         <string>изменение формы носа , дыхание через нос (свободное, затрудненное). Отделяемое из носа, его характер и количество. Носовые кровотечения.</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="label65">
+        <property name="text">
+         <string>Гортань:</string>
+        </property>
+        <property name="wordWrap">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPlainTextEdit" name="edit65">
+        <property name="plainText">
+         <string>Деформация и припухлость в области гортани. Голос (громкий, тихий, сиплый), отсутствие голоса - афония.</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="label66">
+        <property name="text">
+         <string>Грудная клетка:
+Форма грудной клетки:</string>
+        </property>
+        <property name="wordWrap">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPlainTextEdit" name="edit66">
+        <property name="plainText">
+         <string>нормостеническая, гиперстеническая, астеническая:
+патологические формы (эмфизематозная, или бочкообразная, паралитическая, ладьевидная, рахитическая, воронкообразная).
+Выраженность над- и подключичных ямок (выполнены, запавшие, втянуты)
+ширина межреберных промежутков (умеренные, широкие, узкие);
+величина эпигастрального угла (прямой, острый, тупой); положение лопаток и ключиц (не выступают, выступают умеренно, отчетливо, крыловидные лопатки);
+соотношение передне-заднего и бокового размеров грудной клетки;
+симметричность грудной клетки (увеличение или уменьшение одной из половин, локальные выпячивания или западения).</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="label67">
+        <property name="text">
+         <string>Искривления позвоночника:</string>
+        </property>
+        <property name="wordWrap">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPlainTextEdit" name="edit67">
+        <property name="plainText">
+         <string>кифоз, лордоз, сколиоз, кифосколиоз.
+Окружность грудной клетки, экскурсия грудной клетки на вдохе и выдохе.</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="label68">
+        <property name="text">
+         <string>Дыхание:</string>
+        </property>
+        <property name="wordWrap">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPlainTextEdit" name="edit68">
+        <property name="plainText">
+         <string>Тип дыхания (грудной, брюшной, смешанный).
+Симметричность дыхательных движений (отставание в акте дыхания одной половины).
+Участие в дыхании вспомогательной мускулатуры.
+Число дыханий в минуту.
+Глубина дыхания (поверхностное, глубокое, в т.ч. дыхание Куссмауля).
+Ритм дыхания (ритмичное, аритмичное, в т.ч. дыхание Чейн-Стокса и Биота).
+Соотношение вдоха и выдоха.
+Признаки затруднения вдоха и/или выдоха (инспираторная, экспираторная и смешанная одышка).</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="label69">
+        <property name="text">
+         <string>Пальпация
+Определение болезненных участков, их локализация. Определение резистентности (эластичности) грудной клетки. Определение голосового дрожания на симметричных участках (одинаково, усилено или ослаблено с одной стороны).
+Перкуссия легких</string>
+        </property>
+        <property name="wordWrap">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPlainTextEdit" name="edit69">
+        <property name="plainText">
+         <string>Сравнительная перкуссия: характер перкуторного звука на симметричных участках грудной клетки (звук ясный легочный, притупленный, тупой, коробочный, тимпанический, притупленно-тимпанический) с точным определением границ каждого звука по ребрам и топографическим линиям.</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="label70">
+        <property name="text">
+         <string>Аускультация
+Основные дыхательные шумы:</string>
+        </property>
+        <property name="wordWrap">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPlainTextEdit" name="edit70">
+        <property name="plainText">
+         <string>Характер основных дыхательных шумов над симметричными отделами легких (везикулярное, ослабленное, усиленное, жесткое, бронхиальное, амфорическое, отсутствие дыхательного шума).</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="label71">
+        <property name="text">
+         <string>Побочные дыхательные шумы:</string>
+        </property>
+        <property name="wordWrap">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPlainTextEdit" name="edit71">
+        <property name="plainText">
+         <string>Хрипы (сухие или влажные), крепитация, шум трения плевры, их локализация и детальная характеристика.</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="label72">
+        <property name="text">
+         <string>Бронхофония:</string>
+        </property>
+        <property name="wordWrap">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPlainTextEdit" name="edit72">
+        <property name="plainText">
+         <string>Определение бронхофонии над симметричными участками грудной клетки (одинаковая с обеих сторон, усилена или ослаблена с одной стороны).</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </widget>
+   <widget class="QScrollArea" name="currentStateTab3">
+    <property name="widgetResizable">
+     <bool>true</bool>
+    </property>
+    <attribute name="title">
+     <string>Система органов кровообращения</string>
+    </attribute>
+    <widget class="QWidget" name="currentStateTab3Contents">
+     <property name="geometry">
+      <rect>
+       <x>0</x>
+       <y>0</y>
+       <width>161</width>
+       <height>5795</height>
+      </rect>
+     </property>
+     <layout class="QVBoxLayout" name="currentStateTab3Layout">
+      <item>
+       <widget class="QLabel" name="label73">
+        <property name="text">
+         <string>Боль в области сердца:</string>
+        </property>
+        <property name="wordWrap">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPlainTextEdit" name="edit73">
+        <property name="plainText">
+         <string>Локализация (за грудиной, в области верхушки сердца, слева от грудины на уровне || -V ребер и т.д.);
+характер (сжимающие, колющие, давящие, ноющие и т.д.).
+иррадиация болей,
+интенсивность;
+постоянные или приступообразные,
+продолжительность болей;
+условия возникновения (при физической нагрузке, эмоциональном напряжении, в покое);
+чем купируются (валидол, нитроглицерин, седативные средства, наркотики).</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="label74">
+        <property name="text">
+         <string>Одышка (dyspnoe):</string>
+        </property>
+        <property name="wordWrap">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPlainTextEdit" name="edit74">
+        <property name="plainText">
+         <string>Условия возникновения (при физической нагрузке, в покое, зависимость от положения тела), характер и длительность одышки, чем купируется.</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="label75">
+        <property name="text">
+         <string>Удушье (asthma):</string>
+        </property>
+        <property name="wordWrap">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPlainTextEdit" name="edit75">
+        <property name="plainText">
+         <string>Время и условия возникновения (днем, ночью, в покое или при физической нагрузке, зависимость от положения тела); продолжительность приступов, их купирование.</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="label76">
+        <property name="text">
+         <string>Сердцебиения (palpatio cordls), перебои в сердце:</string>
+        </property>
+        <property name="wordWrap">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPlainTextEdit" name="edit76">
+        <property name="plainText">
+         <string>Характер аритмии (постоянный или приступообразный);
+продолжительность приступов, их частота, условия возникновения, чем купируются.</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="label77">
+        <property name="text">
+         <string>Отеки (oedema):</string>
+        </property>
+        <property name="wordWrap">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPlainTextEdit" name="edit77">
+        <property name="plainText">
+         <string>локализация (конечности, поясница, лицо, живот);
+распространенность (местные или анасарка);
+выраженность (пастозность, умеренно выраженные, резко выраженные);
+время и условия возникновения (к концу рабочего дня, после физической нагрузки, постоянные).</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="label78">
+        <property name="text">
+         <string>Осмотр
+Осмотр шеи:</string>
+        </property>
+        <property name="wordWrap">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPlainTextEdit" name="edit78">
+        <property name="plainText">
+         <string>усиленная пульсация сонных артерий (&quot;пляска каротид&quot;).
+Набухание шейных вен.
+Видимая пульсация вен (наличие отрицательного или положительного венного пульса).</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="label79">
+        <property name="text">
+         <string>Осмотр области сердца:</string>
+        </property>
+        <property name="wordWrap">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPlainTextEdit" name="edit79">
+        <property name="plainText">
+         <string>Выпячивание области сердца (Gibbus cordis).
+Видимые пульсации (верхушечный толчок, сердечный толчок, эпигастральная пульсация, атипичная пульсация в области сердца);
+характеристика (локализация, распространенность, сила, отношение, к фазам сердечной деятельности).</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="label80">
+        <property name="text">
+         <string>Пальпация
+Верхушечный толчок:</string>
+        </property>
+        <property name="wordWrap">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPlainTextEdit" name="edit80">
+        <property name="plainText">
+         <string>локализация (указать межреберье и отношение к левой срединноключичной линии);
+сила (нормальный, усиленный, приподнимающий);
+площадь (ограниченный, разлитой).</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="label81">
+        <property name="text">
+         <string>Сердечный толчок:</string>
+        </property>
+        <property name="wordWrap">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPlainTextEdit" name="edit81">
+        <property name="plainText">
+         <string>локализация, площадь.</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="label82">
+        <property name="text">
+         <string>Эпигастральная пульсация:</string>
+        </property>
+        <property name="wordWrap">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPlainTextEdit" name="edit82">
+        <property name="plainText">
+         <string>характер (связь с пульсациями брюшной аорты, сердца, печени) сила, распространенность (ограниченная или разлитая).</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="label83">
+        <property name="text">
+         <string>Дрожание в области сердца: (fremitus): его локализация;</string>
+        </property>
+        <property name="wordWrap">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPlainTextEdit" name="edit83">
+        <property name="plainText">
+         <string>отношение к фазам сердечной деятельности (систолическое или диастолическое).</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="label84">
+        <property name="text">
+         <string>Определение пальпаторной болезненности и зон гиперестезии в прекордиальной области.
+Перкуссия</string>
+        </property>
+        <property name="wordWrap">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPlainTextEdit" name="edit84">
+        <property name="plainText">
+         <string>Относительная тупость сердца:</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="label85">
+        <property name="text">
+         <string>Аускультация
+Тоны:</string>
+        </property>
+        <property name="wordWrap">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPlainTextEdit" name="edit85">
+        <property name="plainText">
+         <string>Ритм сердечных сокращений (ритмичные или аритмичные с указанием формы аритмии - дыхательная аритмия, мерцательная аритмия, экстрасистолия, выпадение сердечных сокращений).
+Число сердечных сокращений.</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="label86">
+        <property name="text">
+         <string>Первый тон,</string>
+        </property>
+        <property name="wordWrap">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPlainTextEdit" name="edit86">
+        <property name="plainText">
+         <string>громкость (нормальной звучности, ослабленный, усиленный, хлопающий);
+расщепление или раздвоение первого тона.</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="label87">
+        <property name="text">
+         <string>Второй тон,</string>
+        </property>
+        <property name="wordWrap">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPlainTextEdit" name="edit87">
+        <property name="plainText">
+         <string>громкость (нормальной звучности, ослабленный, усиленный - акцентированный);
+расщепление или раздвоение второго тона.</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="label88">
+        <property name="text">
+         <string>Дополнительные тоны:</string>
+        </property>
+        <property name="wordWrap">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPlainTextEdit" name="edit88">
+        <property name="plainText">
+         <string>пресистолический и/или протодиастолический ритм галопа, ритм перепела, систолический галоп и др.</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="label89">
+        <property name="text">
+         <string>Шумы:</string>
+        </property>
+        <property name="wordWrap">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPlainTextEdit" name="edit89">
+        <property name="plainText">
+         <string>Отношение к базам сердечной деятельности (систолический, диастолический, пресистолический, протодиастолический, мезодиастолический и т.д.).
+Место наилучшего выслушивания шума. Проведение шума.
+Характер шума (мягкий, дующий, скребущий, грубый и т.д.),
+его тембр (высокий, низкий);
+громкость (тихий, громкий); продолжительность (короткий, продолжительный),
+форма (нарастающий, нарастающе-убывающий - ромбовидный, убывающий и др.).
+Изменения шума в зависимости от положения тела, задержки дыхания на вдохе и выдохе и после физической нагрузки.</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="label90">
+        <property name="text">
+         <string>Шум трения перикарда:</string>
+        </property>
+        <property name="wordWrap">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPlainTextEdit" name="edit90">
+        <property name="plainText">
+         <string>место наилучшего выслушивания,
+характер шума (грубый и громкий или тихий и нежный).</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="label91">
+        <property name="text">
+         <string>Исследование сосудов
+Исследование артерий:</string>
+        </property>
+        <property name="wordWrap">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPlainTextEdit" name="edit91">
+        <property name="plainText">
+         <string>Осмотр и пальпация височных, сонных, лучевых, подколенных артерий и артерий тыла стопы;
+выраженность пульсации, эластичность, гладкость артериальной стенки, извитость артерий.
+Определение пульсации аорты в яремной ямке.
+Выслушивание сонных, бедренных, почечных артерий, брюшной аорты (наличие сосудистых шумов, двойной тон Траубе, двойного шума Виноградова-Дюрозье и др.).</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="label92">
+        <property name="text">
+         <string>Артериальный пульс:</string>
+        </property>
+        <property name="wordWrap">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPlainTextEdit" name="edit92">
+        <property name="plainText">
+         <string>Артериальный пульс на лучевых артериях: сравнение пульса на обеих руках (наличие pulsus dificiens),
+частота пульса,
+ритм (наличие аритмий),
+наполнение; напряжение; величина; скорость; форма пульса.
+Наличие дефицита пульса.</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="label93">
+        <property name="text">
+         <string>Артериальное давление (АД):</string>
+        </property>
+        <property name="wordWrap">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPlainTextEdit" name="edit93">
+        <property name="plainText">
+         <string>на плечевых артериях в мм рт. ст. (по методу Короткова определяется систолическое и диастолическое АД).</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="label94">
+        <property name="text">
+         <string>Исследование вен:</string>
+        </property>
+        <property name="wordWrap">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPlainTextEdit" name="edit94">
+        <property name="plainText">
+         <string>Осмотр и пальпация шейных вен, их набухание, видимая пульсация, наличие отрицательного или положительного венного пульса.
+Выслушивание яремной вены (&quot;шум волчка&quot;).
+Наличие расширения вен* грудной клетки, брюшной стенки, конечностей, с указанием места и степени расширения.
+Уплотнения и болезненность вен с указанием вены и протяженности уплотнения или болезненности.</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </widget>
+   <widget class="QScrollArea" name="currentStateTab4">
+    <property name="widgetResizable">
+     <bool>true</bool>
+    </property>
+    <attribute name="title">
+     <string>Система органов пищеварения</string>
+    </attribute>
+    <widget class="QWidget" name="currentStateTab4Contents">
+     <property name="geometry">
+      <rect>
+       <x>0</x>
+       <y>0</y>
+       <width>154</width>
+       <height>2603</height>
+      </rect>
+     </property>
+     <layout class="QVBoxLayout" name="currentStateTab4Layout">
+      <item>
+       <widget class="QLabel" name="label95">
+        <property name="text">
+         <string>Боли в животе:</string>
+        </property>
+        <property name="wordWrap">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPlainTextEdit" name="edit95">
+        <property name="plainText">
+         <string>локализация,
+иррадиация,
+интенсивность,
+длительность,
+условия возникновения и связь с приемом пищи (ранние, поздние, голодные боли);
+характер болей (постоянный, схваткообразный, острые, тупые, ноющие);
+купирование боли (самостоятельное или после приема пищи, применения тепла, холода, медикаментов, после рвоты).</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="label96">
+        <property name="text">
+         <string>Диспепсические явления:степень выраженности этих явлений, отношение к приему пищи, ее качеству и количеству, чем купируются диспепсические явления.</string>
+        </property>
+        <property name="wordWrap">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPlainTextEdit" name="edit96">
+        <property name="plainText">
+         <string>Затруднение глотания или прохождения пищи по пищеводу (dysphagia),
+тошнота (nausea),
+рвота (vomitus),
+отрыжка,
+изжога (pyrosis),
+вздутие живота (meteorismus).</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="label97">
+        <property name="text">
+         <string>Аппетит:</string>
+        </property>
+        <property name="wordWrap">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPlainTextEdit" name="edit97">
+        <property name="plainText">
+         <string>сохранен,
+понижен,
+повышен (polyphagia),
+полностью отсутствует (anorexia),
+извращен.
+Отвращение к пище (жирной, мясной)
+Продукты, которые  не любите , не переносите
+Продукты , которые очень любите
+Как себя чувствуете до, во время, после приёма пищи
+Что будет, если не поедите вовремя , пропустите прием пищи
+Сухость во рту, жажда не беспокоит ?
+Напитки какой температуры предпочитаете : горячие, теплые, холодные ?
+В каком количестве Вы пьете : по многу , по немногу ?</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="label98">
+        <property name="text">
+         <string>Стул:</string>
+        </property>
+        <property name="wordWrap">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPlainTextEdit" name="edit98">
+        <property name="plainText">
+         <string>Частота за сутки, количество (обильное, умеренное, небольшое), консистенция стула (оформленный, жидкий, кашицеобразный, твердый, &quot;овечий&quot;), цвет кала (коричневый, желто-коричневый, желтый, серо-белый, дегтеобразный).</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="label99">
+        <property name="text">
+         <string>Кровотечения:</string>
+        </property>
+        <property name="wordWrap">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPlainTextEdit" name="edit99">
+        <property name="plainText">
+         <string>Признаки пищеводного, желудочного, кишечного и геморроидального кровотечения - рвота кровью, кофейной гущей, черный дегтеобразный стул (melena); свежая кровь в кале.</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="label100">
+        <property name="text">
+         <string>Осмотр
+Полость рта:</string>
+        </property>
+        <property name="wordWrap">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPlainTextEdit" name="edit100">
+        <property name="plainText">
+         <string>Язык (окраска, влажность, состояние сосочкового слоя, наличие налетов, трещин, язв).
+Состояние зубов.
+Десны, мягкое и твердое небо (окраска, налеты, геморрагии, изъязвления).
+Зев (окраска, краснота, припухлость, налеты).
+Миндалины (величина, краснота, припухлость, налеты).</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="label101">
+        <property name="text">
+         <string>Живот:</string>
+        </property>
+        <property name="wordWrap">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPlainTextEdit" name="edit101">
+        <property name="plainText">
+         <string>форма живота, его симметричность, участие в акте дыхания, видимая перистальтика желудка и кишечника, венозные коплатерали. Состояние пупка.
+Окружность живота на уровне пупка.</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="label102">
+        <property name="text">
+         <string>Перкуссия</string>
+        </property>
+        <property name="wordWrap">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPlainTextEdit" name="edit102">
+        <property name="plainText">
+         <string>Характер перкуторного звука. Наличие свободной или осумкованной жидкости в брюшной полости.</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="label103">
+        <property name="text">
+         <string>Пальпация</string>
+        </property>
+        <property name="wordWrap">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPlainTextEdit" name="edit103">
+        <property name="plainText">
+         <string>Поверхностная ориентировочная пальпация: болезненные области, напряжение мышц брюшной стенки (мышечная защита - defance musculaire), расхождение прямых мышц живота и наличие грыж, наличие поверхностно расположенных опухолевидных образований. Перитонеальные симптомы (симптом Щеткина-Блюмберга и др.).
+Симптом Менделя.
+Методическая глубокая скользящая пальпация по Образцову-Стражвско: Определение локализации, болезненности, размеров, формы, консистенции, характера поверхности, подвижности и урчания сигмовидной, слепой кишки, поперечно-ободочной, восходящей, нисходящей ободочной кишки, большой кривизны желудка, привратника (с предварительным определением нижней границы желудка методом перкуссии, перкуторной пальпации - определение шума плеска, и методом аускультаторной перкуссии).*
+При наличии опухолевых образований описываются также их размеры, консистенция, болезненность, смещаемость, локализация и возможная связь с тем или иным органом брюшной полости.</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="label104">
+        <property name="text">
+         <string>Аускультация</string>
+        </property>
+        <property name="wordWrap">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPlainTextEdit" name="edit104">
+        <property name="plainText">
+         <string>Характеристика выслушиваемой перистальтики кишечника. Шум трения брюшины.</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </widget>
+   <widget class="QScrollArea" name="currentStateTab5">
+    <property name="widgetResizable">
+     <bool>true</bool>
+    </property>
+    <attribute name="title">
+     <string>Печень и желчный пузырь</string>
+    </attribute>
+    <widget class="QWidget" name="currentStateTab5Contents">
+     <property name="geometry">
+      <rect>
+       <x>0</x>
+       <y>0</y>
+       <width>154</width>
+       <height>1055</height>
+      </rect>
+     </property>
+     <layout class="QVBoxLayout" name="currentStateTab5Layout">
+      <item>
+       <widget class="QLabel" name="label105">
+        <property name="text">
+         <string>Диспепсические явления:</string>
+        </property>
+        <property name="wordWrap">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPlainTextEdit" name="edit105">
+        <property name="plainText">
+         <string>Тошнота,
+рвота (характер рвотных масс, их колличество),
+отрыжка.
+Условия возникновения диспепсических явлений, связь с приемом пищи, чем купируются.</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="label106">
+        <property name="text">
+         <string>Осмотр
+Печень:</string>
+        </property>
+        <property name="wordWrap">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPlainTextEdit" name="edit106">
+        <property name="plainText">
+         <string>Уточнение нижних границ печени по срединно-ключичной и передней срединной линии.
+Характеристика края печени (острый или закругленный, мягкий или плотный, болезненный или безболезненный).
+Характеристика поверхности печени (при её увеличении): поверхность гладкая, зернистая, бугристая.</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="label107">
+        <property name="text">
+         <string>Размеры печени по Курлову:</string>
+        </property>
+        <property name="wordWrap">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPlainTextEdit" name="edit107">
+        <property name="plainText">
+         <string>По правой среднеключичной линии (в см)
+По передней срединной линии (в см)
+По левой реберной дуге (в см)</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="label108">
+        <property name="text">
+         <string>Желчный пузырь: </string>
+        </property>
+        <property name="wordWrap">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPlainTextEdit" name="edit108">
+        <property name="plainText">
+         <string>Характеристика желчного пузыря, его прощупываемостй, болезненности, размеров, а также наличие симптомов
+Кера,
+Курвуазье,
+френикус-симптома.
+Ортнера.</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </widget>
+   <widget class="QScrollArea" name="currentStateTab6">
+    <property name="widgetResizable">
+     <bool>true</bool>
+    </property>
+    <attribute name="title">
+     <string>Поджелудочная железа</string>
+    </attribute>
+    <widget class="QWidget" name="currentStateTab6Contents">
+     <property name="geometry">
+      <rect>
+       <x>0</x>
+       <y>0</y>
+       <width>111</width>
+       <height>475</height>
+      </rect>
+     </property>
+     <layout class="QVBoxLayout" name="currentStateTab6Layout">
+      <item>
+       <widget class="QLabel" name="label109">
+        <property name="text">
+         <string>Боль:</string>
+        </property>
+        <property name="wordWrap">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPlainTextEdit" name="edit109">
+        <property name="plainText">
+         <string>Локализация (в верхней половине живота),
+иррадиация (опоясывающие боли),
+характер болей (острые, тупые, постоянные, приступообразные),
+условия возникновения (связь с приемом пищи, алкоголя, физической нагрузкой и т.д.), чем купируются.</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="label110">
+        <property name="text">
+         <string>Пальпация</string>
+        </property>
+        <property name="wordWrap">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPlainTextEdit" name="edit110">
+        <property name="plainText">
+         <string>Наличие болезненности, увеличения и уплотнения поджелудочной железы.</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </widget>
+   <widget class="QScrollArea" name="currentStateTab7">
+    <property name="widgetResizable">
+     <bool>true</bool>
+    </property>
+    <attribute name="title">
+     <string>Селезёнка</string>
+    </attribute>
+    <widget class="QWidget" name="currentStateTab7Contents">
+     <property name="geometry">
+      <rect>
+       <x>0</x>
+       <y>0</y>
+       <width>125</width>
+       <height>523</height>
+      </rect>
+     </property>
+     <layout class="QVBoxLayout" name="currentStateTab7Layout">
+      <item>
+       <widget class="QLabel" name="label111">
+        <property name="text">
+         <string>Боль в левом подреберье:</string>
+        </property>
+        <property name="wordWrap">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPlainTextEdit" name="edit111">
+        <property name="plainText">
+         <string>Характер болей (постоянные или приступообразные, острые или тупые ноющие),
+интенсивность боли,
+длительность,
+иррадиация,
+условия возникновения (связь с изменением положения тела, физической нагрузкой и т.д.).</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="label112">
+        <property name="text">
+         <string>Осмотр</string>
+        </property>
+        <property name="wordWrap">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPlainTextEdit" name="edit112">
+        <property name="plainText">
+         <string>Прощупываемость селезенки в положении лежа на боку и на спине
+Характеристика нижнего края селезенки (острый или закругленный, болезненный или безболезненный).
+Характеристика поверхности селезенки (при ее значительном увеличении): поверхность гладкая или бугристая, болезненная или безболезненная.</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </widget>
+   <widget class="QScrollArea" name="currentStateTab8">
+    <property name="widgetResizable">
+     <bool>true</bool>
+    </property>
+    <attribute name="title">
+     <string>Система органов мочеотделения</string>
+    </attribute>
+    <widget class="QWidget" name="currentStateTab8Contents">
+     <property name="geometry">
+      <rect>
+       <x>0</x>
+       <y>0</y>
+       <width>164</width>
+       <height>1697</height>
+      </rect>
+     </property>
+     <layout class="QVBoxLayout" name="currentStateTab8Layout">
+      <item>
+       <widget class="QLabel" name="label113">
+        <property name="text">
+         <string>Боль:</string>
+        </property>
+        <property name="wordWrap">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPlainTextEdit" name="edit113">
+        <property name="plainText">
+         <string>локализация (в поясничной области, внизу живота, по ходу мочеточника);
+иррадиация;
+характер боли (острая или тупая, постоянная или приступообразная);
+длительность боли;
+условия возникновения боли (физическая нагрузка, изменение положения тела, прием острой пищи, алкоголя, водная нагрузка и т.д.),
+чем купируются боли.</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="label114">
+        <property name="text">
+         <string>Мочеиспускание:</string>
+        </property>
+        <property name="wordWrap">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPlainTextEdit" name="edit114">
+        <property name="plainText">
+         <string>Количество мочи за сутки (наличие полиурии, олигурии, анурии или задержки мочи - ишурии).</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="label115">
+        <property name="text">
+         <string>Дизурические расстройства:</string>
+        </property>
+        <property name="wordWrap">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPlainTextEdit" name="edit115">
+        <property name="plainText">
+         <string>затрудненное мочеиспускание (тонкой струёй, каплями, прерывистое):
+наличие непроизвольного мочеиспускания;
+ложные позывы на мочеиспускание;
+резь, жжение, боли во время мочеиспускания (в начале, в конце или во время всего акта мочеиспускания):
+учащенное мочеиспускание (поллакиурия);
+ночное мочеиспускание (никтурия).</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="label116">
+        <property name="text">
+         <string>Моча:</string>
+        </property>
+        <property name="wordWrap">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPlainTextEdit" name="edit116">
+        <property name="plainText">
+         <string>Цвет мочи (соломенно-желтый, насыщенно желтый, темный, цвет &quot;пива&quot;, красный, цвета &quot;мясных помоев&quot; и т.д.);
+прозрачность мочи.Наличие примеси крови в моче (в начале или в конце мочеиспускания, во всех порциях).</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="label117">
+        <property name="text">
+         <string>Отеки:</string>
+        </property>
+        <property name="wordWrap">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPlainTextEdit" name="edit117">
+        <property name="plainText">
+         <string>локализация;
+время появления (утром, вечером, на протяжении суток);
+условия возникновения или усиления отеков (питьевая нагрузка, избыточный прием соли и т.д.);
+скорость нарастания отеков;
+факторы, способствующие уменьшению или исчезновению отеков.</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="label118">
+        <property name="text">
+         <string>Осмотр
+Почки:</string>
+        </property>
+        <property name="wordWrap">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPlainTextEdit" name="edit118">
+        <property name="plainText">
+         <string>определение симптома Пастернацкого
+пальпируемость почек в положении лежа и стоя; при увеличении почек - их болезненность, консистенция, величина, форма, подвижность, наличие симптома баллотирования.</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="label119">
+        <property name="text">
+         <string>Мочевой пузырь:</string>
+        </property>
+        <property name="wordWrap">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPlainTextEdit" name="edit119">
+        <property name="plainText">
+         <string>характер перкуторного звука над лобком; при увеличении мочевого пузыря - уровень расположения дна мочевого пузыря.
+Болевые точки: наличие болезненности при пальпации в реберно-позвоночной точке и по ходу мочеточников (мочеточниковые точки).</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </widget>
+   <widget class="QScrollArea" name="currentStateTab9">
+    <property name="widgetResizable">
+     <bool>true</bool>
+    </property>
+    <attribute name="title">
+     <string>Система половых органов</string>
+    </attribute>
+    <widget class="QWidget" name="currentStateTab9Contents">
+     <property name="geometry">
+      <rect>
+       <x>0</x>
+       <y>0</y>
+       <width>172</width>
+       <height>2431</height>
+      </rect>
+     </property>
+     <layout class="QVBoxLayout" name="currentStateTab9Layout">
+      <item>
+       <widget class="QLabel" name="label120">
+        <property name="text">
+         <string>Боль:</string>
+        </property>
+        <property name="wordWrap">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPlainTextEdit" name="edit120">
+        <property name="plainText">
+         <string>наличие болей внизу живота, в паху, пояснице, крестце, мошонке, в области наружных половых органов.
+Характер болей, локализация, иррадиация, условия возникновения, чем копируются.</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="label121">
+        <property name="text">
+         <string>Менструальный цикл: </string>
+        </property>
+        <property name="wordWrap">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPlainTextEdit" name="edit121">
+        <property name="plainText">
+         <string>Регулярность
+длительность менструального цикла;
+продолжительность менструаций,
+количество менструальных отделений обильные , скудные
+характер( сгустки, мембраны,просто кровь )
+болезненность.
+изменения самочувствия: до , во время , после.
+особенности выделений : день-ночь покой-движение
+положение тела
+сопровождаются ли симптомами со стороны других органов.
+Маточные кровотечения,
+другие выделения бели (цвет, запах ,раздражающие или нет)</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="label122">
+        <property name="text">
+         <string>Половая функция:</string>
+        </property>
+        <property name="wordWrap">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPlainTextEdit" name="edit122">
+        <property name="plainText">
+         <string>нормальная, повышена, снижена, отсутствует.</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="label123">
+        <property name="text">
+         <string>Осмотр
+Вторичные половые признаки:</string>
+        </property>
+        <property name="wordWrap">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPlainTextEdit" name="edit123">
+        <property name="plainText">
+         <string>тип оволосения (мужской, женский), волосяной покров в подмышечных впадинах, на лице, на животе, в лобковой области.
+Наличие гинекомастии. Голос (высокий, низкий).
+Признаки гирсутизма, евнухоидизма, вирилизма, феминизма.</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="label124">
+        <property name="text">
+         <string>Молочные железы (у женщин) и грудные железы (у мужчин):</string>
+        </property>
+        <property name="wordWrap">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPlainTextEdit" name="edit124">
+        <property name="plainText">
+         <string>степень развития, состояние кожных покровов, пигментация, локальный отек в виде &quot;лимонной корки&quot;, втяжения. Симметричность желез. Форма сосков, наличие эрозий и язв, деформация желез. Уплотнения, тяжистость и опухолевые образования при пальпации желез.</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="label125">
+        <property name="text">
+         <string>Наружные половые органы (у мужчин):</string>
+        </property>
+        <property name="wordWrap">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPlainTextEdit" name="edit125">
+        <property name="plainText">
+         <string>размер мошонки, яичек, отек мошонки, болезненность при пальпации яичек, наличие опухолевых образований.
+Недоразвитие яичек (анархизм, крипторхизм).
+Эрозии и язвы полового члена.
+Аномалии и уродства полового члена.</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="label126">
+        <property name="text">
+         <string>Предстательная железа (у мужчин):</string>
+        </property>
+        <property name="wordWrap">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPlainTextEdit" name="edit126">
+        <property name="plainText">
+         <string>размер, консистенция, пальпаторная болезненность предстательной железы при ректальном исследовании.</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="label127">
+        <property name="text">
+         <string>Гинекологическое исследование (у женщин)': состояние наружных половых органов, влагалища, матки, придатков при осмотре в зеркалах и бимануальной пальпации.</string>
+        </property>
+        <property name="wordWrap">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPlainTextEdit" name="edit127"/>
+      </item>
+     </layout>
+    </widget>
+   </widget>
+   <widget class="QScrollArea" name="currentStateTab10">
+    <property name="widgetResizable">
+     <bool>true</bool>
+    </property>
+    <attribute name="title">
+     <string>Эндокринная система</string>
+    </attribute>
+    <widget class="QWidget" name="currentStateTab10Contents">
+     <property name="geometry">
+      <rect>
+       <x>0</x>
+       <y>0</y>
+       <width>201</width>
+       <height>2733</height>
+      </rect>
+     </property>
+     <layout class="QVBoxLayout" name="currentStateTab10Layout">
+      <item>
+       <widget class="QLabel" name="label128">
+        <property name="text">
+         <string>Жалобы
+Нарушение роста, телосложения, увеличение массы тела, похудание</string>
+        </property>
+        <property name="wordWrap">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPlainTextEdit" name="edit128"/>
+      </item>
+      <item>
+       <widget class="QLabel" name="label129">
+        <property name="text">
+         <string>жажда, чувство голода</string>
+        </property>
+        <property name="wordWrap">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPlainTextEdit" name="edit129"/>
+      </item>
+      <item>
+       <widget class="QLabel" name="label130">
+        <property name="text">
+         <string>постоянное ощущение жара, потливость, ознобы, повышение температуры тела.</string>
+        </property>
+        <property name="wordWrap">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPlainTextEdit" name="edit130">
+        <property name="plainText">
+         <string>Повышенная потливость головы , тела , рук , ног
+При каких обстоятельствах
+Как  себя чувствуете до , вовремя , после потоотделения
+Каков характер  пота , его вид , запах</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="label131">
+        <property name="text">
+         <string>судороги, мышечная слабость</string>
+        </property>
+        <property name="wordWrap">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPlainTextEdit" name="edit131"/>
+      </item>
+      <item>
+       <widget class="QLabel" name="label132">
+        <property name="text">
+         <string>Осмотр
+Нарушения роста, телосложения и пропорциональности отдельных частей тела.
+Ожирение:</string>
+        </property>
+        <property name="wordWrap">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPlainTextEdit" name="edit132">
+        <property name="plainText">
+         <string>степень выраженности, преимущественная локализация жира.</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="label133">
+        <property name="text">
+         <string>Исхудание, кахексия.</string>
+        </property>
+        <property name="wordWrap">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPlainTextEdit" name="edit133"/>
+      </item>
+      <item>
+       <widget class="QLabel" name="label134">
+        <property name="text">
+         <string>Состояние кожных покровов:</string>
+        </property>
+        <property name="wordWrap">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPlainTextEdit" name="edit134">
+        <property name="plainText">
+         <string>влажность, истончение или огрубение;
+гиперпигментация кожи, кожных складок (локализация),
+наличие стрий;
+атипичное оволосение;
+лунообразное лицо.</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="label135">
+        <property name="text">
+         <string>Увеличение размеров языка, носа, челюстей, ушных раковин, кистей рук и стоп.</string>
+        </property>
+        <property name="wordWrap">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPlainTextEdit" name="edit135"/>
+      </item>
+      <item>
+       <widget class="QLabel" name="label136">
+        <property name="text">
+         <string>Пальпация щитовидной железы: локализация, величина и консистенция, болезненность, подвижность.</string>
+        </property>
+        <property name="wordWrap">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPlainTextEdit" name="edit136"/>
+      </item>
+     </layout>
+    </widget>
+   </widget>
+   <widget class="QScrollArea" name="currentStateTab11">
+    <property name="widgetResizable">
+     <bool>true</bool>
+    </property>
+    <attribute name="title">
+     <string>Нервная система и органы чувств</string>
+    </attribute>
+    <widget class="QWidget" name="currentStateTab11Contents">
+     <property name="geometry">
+      <rect>
+       <x>0</x>
+       <y>0</y>
+       <width>190</width>
+       <height>7517</height>
+      </rect>
+     </property>
+     <layout class="QVBoxLayout" name="currentStateTab11Layout">
+      <item>
+       <widget class="QLabel" name="label137">
+        <property name="text">
+         <string>Головная боль:</string>
+        </property>
+        <property name="wordWrap">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPlainTextEdit" name="edit137">
+        <property name="plainText">
+         <string>локализация,
+интенсивность,
+периодичность,
+характер головной боли,
+время и причина возникновения, чем купируется.</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="label138">
+        <property name="text">
+         <string>Головокружение:</string>
+        </property>
+        <property name="wordWrap">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPlainTextEdit" name="edit138">
+        <property name="plainText">
+         <string>характер головокружения,
+условия его появления (при ходьбе, при изменении положения тела и головы и т.д.).
+Сопутствующие явления.</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="label139">
+        <property name="text">
+         <string>Состояние психики:
+Работоспособность, память, внимание,</string>
+        </property>
+        <property name="wordWrap">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPlainTextEdit" name="edit139"/>
+      </item>
+      <item>
+       <widget class="QLabel" name="label140">
+        <property name="text">
+         <string>Сон
+Засыпание, глубина, продолжительность, бессонница, раннее пробуждение,
+В какое время  обычно ложитесь спать, засыпаете , просыпаетесь, встаете ?
+В каком положении засыпаете ? Куда кладете голову, руки, ноги ?
+Поза во сне (на спине, на животе, на боку), как укрываетесь
+Беспокойный сон (смех, вздрагивание, плач, скрип зубами)
+Сонливость днем.
+Сновидения есть нет, приятные неприятные, повторяющиеся, с пробуждением
+Как себя чувствуете после сна ?</string>
+        </property>
+        <property name="wordWrap">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPlainTextEdit" name="edit140"/>
+      </item>
+      <item>
+       <widget class="QLabel" name="label141">
+        <property name="text">
+         <string>Эмоционально-волевая сфера: настроение, особенности характера, повышенная раздражительность, вялость, апатия, тревожная мнительность, депрессия, эйфория. Волевые качества (сильная воля, настойчивость, упрямство, податливость, внушаемость, решительность, нерешительность, слабоволие)</string>
+        </property>
+        <property name="wordWrap">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPlainTextEdit" name="edit141">
+        <property name="plainText">
+         <string>
+Сдезливость , плаксивость?
+Какие страхи были в детстве, сейчас?
+Навязчивые мысли?
+Что раздражает, вызывает гнев?</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="label142">
+        <property name="text">
+         <string>Двигательная сфера:</string>
+        </property>
+        <property name="wordWrap">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPlainTextEdit" name="edit142">
+        <property name="plainText">
+         <string>Слабость в конечностях, дрожание, судороги, другие непроизвольные движения.</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="label143">
+        <property name="text">
+         <string>Чувствительная сфера: Нарушения кожной чувствительности (гипестезии, гиперестезии, парестезии), боли по ходу нервных стволов, корешковые боли. Зрение, вкус, обоняние, слух тактильная чувствительность</string>
+        </property>
+        <property name="wordWrap">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPlainTextEdit" name="edit143">
+        <property name="plainText">
+         <string>Как  переносите высокий ворот, шарф , галстук , пояс, тесную одежду ?</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="label144">
+        <property name="text">
+         <string>свет</string>
+        </property>
+        <property name="wordWrap">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPlainTextEdit" name="edit144">
+        <property name="plainText">
+         <string>Влияет ли  солнечный ,искусственный свет , полумрак, темнота?</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="label145">
+        <property name="text">
+         <string>звук</string>
+        </property>
+        <property name="wordWrap">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPlainTextEdit" name="edit145">
+        <property name="plainText">
+         <string>Как  переносите музыку , громкие звуки ?</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="label146">
+        <property name="text">
+         <string>запахи</string>
+        </property>
+        <property name="wordWrap">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPlainTextEdit" name="edit146">
+        <property name="plainText">
+         <string>чувствительность к запахам ?
+Как  оцениваете свое обоняние : острое нормальное сниженное</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="label147">
+        <property name="text">
+         <string>время</string>
+        </property>
+        <property name="wordWrap">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPlainTextEdit" name="edit147">
+        <property name="plainText">
+         <string>В какие часы (время суток) чувствуете себя  хуже  всего?
+Как Вы переносите новолуние , полнолуние?
+В какое время года , сезон Вы чувствуете себя хуже  всего?</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="label148">
+        <property name="text">
+         <string>физические факторы: холод тепло</string>
+        </property>
+        <property name="wordWrap">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPlainTextEdit" name="edit148">
+        <property name="plainText">
+         <string>Как  переносите тепло ? (радиатора, огня, кровати, комнатное, сухое , влажное)
+Как Вы переносите солнце , солнечную жару?
+Как  переносите холод ?
+Какую одежду  предпочитаете: теплую или лёгкую?
+Как переносите сквозняки, ветер?</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="label149">
+        <property name="text">
+         <string>погода</string>
+        </property>
+        <property name="wordWrap">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPlainTextEdit" name="edit149">
+        <property name="plainText">
+         <string>Как  переносите перемены погоды?
+Как себя чувствуете до, во время, после грозы ?
+Какая погода ухудшает самочувствие?</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="label150">
+        <property name="text">
+         <string>место</string>
+        </property>
+        <property name="wordWrap">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPlainTextEdit" name="edit150">
+        <property name="plainText">
+         <string>Как  себя чувствуете на большой высоте, на берегу моря ?
+Как влияет быстрое изменение высоты при подъеме или спуске ?
+Любите ли воду, купание, душ, морскую воду? при какой температуре ?
+Какой климат кажется самым плохим для здоровья ?</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="label151">
+        <property name="text">
+         <string>физиологические условия</string>
+        </property>
+        <property name="wordWrap">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPlainTextEdit" name="edit151">
+        <property name="plainText">
+         <string>Какое  положение тела самое болезненное: стоя, сидя , лежа , при ходьбе ?
+Какие физические упражнения делаете или каким спортом занимаетесь? Какова выносливость? Как себя чувствуете после этого ?
+Как переносите транспорт? (машина, поезд, лифт, пароход, самолет)</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="label152">
+        <property name="text">
+         <string>Осмотр
+Состояние психики:</string>
+        </property>
+        <property name="wordWrap">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPlainTextEdit" name="edit152">
+        <property name="plainText">
+         <string>Сознание. Ориентировка в месте, времени и ситуации</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="label153">
+        <property name="text">
+         <string>Интеллект:</string>
+        </property>
+        <property name="wordWrap">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPlainTextEdit" name="edit153">
+        <property name="plainText">
+         <string>соответствует или не соответствует уровню развития, Ослабление интеллектуальных функций (ослабление, внимания, снижение памяти, нарушение критики, снижение круга интересов).</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="label154">
+        <property name="text">
+         <string>Поведение больного</string>
+        </property>
+        <property name="wordWrap">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPlainTextEdit" name="edit154">
+        <property name="plainText">
+         <string>степень общительности, уравновешенность, суетливость, двигательное беспокойство.</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="label155">
+        <property name="text">
+         <string>Исследование черепно-мозговых нервов:</string>
+        </property>
+        <property name="wordWrap">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPlainTextEdit" name="edit155">
+        <property name="plainText">
+         <string>Острота зрения, двоение в глазах (диплопия); птоз, объем движений глазных яблок, реакция зрачков на свет.
+Симметричность носогубных складок при оскале зубов.
+Расстройства глотания.
+Дисфония.
+Положение языка при высовывании.</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="label156">
+        <property name="text">
+         <string>Менингеальные симптомы:</string>
+        </property>
+        <property name="wordWrap">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPlainTextEdit" name="edit156">
+        <property name="plainText">
+         <string> ригидность затылочных мышц, симптомы Кернига и Брудзинского.</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="label157">
+        <property name="text">
+         <string>Двигательная сфера:</string>
+        </property>
+        <property name="wordWrap">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPlainTextEdit" name="edit157">
+        <property name="plainText">
+         <string>характер походки с открытыми и закрытыми глазами (обычная, атактическая, паретическая, др. формы).
+Устойчивость при стоянии с открытыми и закрытыми глазами (проба Ромберга).
+Пальце-носовая и коленно-пяточная пробы.
+Судороги: клонические и тонические, фибриллярные подергивания, дрожание (тремор) и др. непроизвольные движения. Контрактуры мышц (локализация). Объем движений и сила в конечностях.</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="label158">
+        <property name="text">
+         <string>Чувствительная сфера:</string>
+        </property>
+        <property name="wordWrap">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPlainTextEdit" name="edit158">
+        <property name="plainText">
+         <string>Пальпаторная болезненность по ходу нервных стволов и корешков. Нарушения кожной и глубокой чувствительности (локализация). Симптомы натяжения, симптом Лассега.</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="label159">
+        <property name="text">
+         <string>Рефлексы:</string>
+        </property>
+        <property name="wordWrap">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPlainTextEdit" name="edit159">
+        <property name="plainText">
+         <string>Роговичный, глоточный.
+Сухожильные рефлексы: коленный, ахиллов.
+Патологические рефлексы: симптомы Бабинского и Россолимо.</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="label160">
+        <property name="text">
+         <string>Речь:</string>
+        </property>
+        <property name="wordWrap">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPlainTextEdit" name="edit160">
+        <property name="plainText">
+         <string>афазия (моторная или сенсорная), дизартрия.</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="label161">
+        <property name="text">
+         <string>Вегетативная нервная система:</string>
+        </property>
+        <property name="wordWrap">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPlainTextEdit" name="edit161">
+        <property name="plainText">
+         <string>Глазные симптомы: ширина глазной щели, ширина зрачка, экзофтальм или анофтальм. Симптом Горнера.
+Кожа: вид дермографизма, температурные асимметрии, гипертрихоз, облысение, трофические язвы, нарушение потоотделения.</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </widget>
+  </widget>
+  <widget class="QWidget" name="additionalMethods">
+   <attribute name="title">
+    <string>Доп. методы</string>
+   </attribute>
+   <layout class="QVBoxLayout" name="additionalMethodsLayout">
+    <item>
+     <widget class="QLabel" name="label162">
+      <property name="text">
+       <string>План обследования
+ Данные лабораторных, инструментальных методов исследования и консультации специалистов</string>
+      </property>
+      <property name="wordWrap">
+       <bool>true</bool>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QPlainTextEdit" name="edit162"/>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QScrollArea" name="diagnosis">
+   <property name="widgetResizable">
+    <bool>true</bool>
+   </property>
+   <attribute name="title">
+    <string>Диагноз</string>
+   </attribute>
+   <widget class="QWidget" name="diagnosisContents">
+    <property name="geometry">
+     <rect>
+      <x>0</x>
+      <y>0</y>
+      <width>777</width>
+      <height>3741</height>
+     </rect>
+    </property>
+    <layout class="QVBoxLayout" name="diagnosisLayout">
+     <item>
+      <widget class="QLabel" name="labelForTable2">
+       <property name="text">
+        <string>Состояние жизненной силы</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QTableWidget" name="table2">
+       <property name="minimumSize">
+        <size>
+         <width>0</width>
+         <height>600</height>
+        </size>
+       </property>
+       <attribute name="horizontalHeaderCascadingSectionResizes">
+        <bool>false</bool>
+       </attribute>
+       <attribute name="horizontalHeaderDefaultSectionSize">
+        <number>200</number>
+       </attribute>
+       <attribute name="verticalHeaderDefaultSectionSize">
+        <number>70</number>
+       </attribute>
+       <row>
+        <property name="text">
+         <string>Острые болезни</string>
+        </property>
+       </row>
+       <row>
+        <property name="text">
+         <string>Хронические</string>
+        </property>
+       </row>
+       <row>
+        <property name="text">
+         <string>Модальности</string>
+        </property>
+       </row>
+       <row>
+        <property name="text">
+         <string>Страхи</string>
+        </property>
+       </row>
+       <row>
+        <property name="text">
+         <string>Сновидения</string>
+        </property>
+       </row>
+       <row>
+        <property name="text">
+         <string>Эмоции</string>
+        </property>
+       </row>
+       <row>
+        <property name="text">
+         <string>Соц. адаптация</string>
+        </property>
+       </row>
+       <column>
+        <property name="text">
+         <string>Высокая</string>
+        </property>
+       </column>
+       <column>
+        <property name="text">
+         <string>Средняя</string>
+        </property>
+       </column>
+       <column>
+        <property name="text">
+         <string>Низкая</string>
+        </property>
+       </column>
+       <item row="0" column="0">
+        <property name="text">
+         <string>Есть
+Редкие (до 3 раз в год)
+Обязательно с лихорадкой 38 и выше
+Проходят быстро ( до 2 недель)
+Без осложнений</string>
+        </property>
+       </item>
+       <item row="0" column="1">
+        <property name="text">
+         <string>Более 3 раз в год
+Субфебрильная темп
+Длительные (более 2 нед)
+осложнения</string>
+        </property>
+       </item>
+       <item row="0" column="2">
+        <property name="text">
+         <string>Нет или очень редко
+Без лихорадки
+Очень длительные
+Обостряют хр заболевания</string>
+        </property>
+       </item>
+       <item row="1" column="0">
+        <property name="text">
+         <string>Функциональный характер изменений
+Обострения редкие
+Ремиссии длительные(десятки лет)
+Без осложнений</string>
+        </property>
+       </item>
+       <item row="1" column="1">
+        <property name="text">
+         <string>Есть морфологические изменения
+Типы патологий: хр воспаление. аллергозы
+Обострения имеют периодичность</string>
+        </property>
+       </item>
+       <item row="1" column="2">
+        <property name="text">
+         <string>Необратимые грубые изменения
+Типы патологий :рубцы. Язвы
+Ремиссий нет или очень короткие</string>
+        </property>
+       </item>
+       <item row="2" column="0">
+        <property name="text">
+         <string>Четкие
+Только во время болезни . в ремиссии отсутствуют</string>
+        </property>
+       </item>
+       <item row="2" column="1">
+        <property name="text">
+         <string>Недостаточно четкие
+Есть и в ремиссии</string>
+        </property>
+       </item>
+       <item row="2" column="2">
+        <property name="text">
+         <string>Отсутствуют</string>
+        </property>
+       </item>
+       <item row="3" column="0">
+        <property name="text">
+         <string>Ситуационные
+адекватные</string>
+        </property>
+       </item>
+       <item row="3" column="1">
+        <property name="text">
+         <string>Контролируются с трудом
+Мешают и ограничивают деятельность</string>
+        </property>
+       </item>
+       <item row="3" column="2">
+        <property name="text">
+         <string>Навязчивые на пустом месте
+Или полное отсутствие страхов</string>
+        </property>
+       </item>
+       <item row="4" column="0">
+        <property name="text">
+         <string>Есть
+Приятные
+Ненавязчивые</string>
+        </property>
+       </item>
+       <item row="4" column="1">
+        <property name="text">
+         <string>Редкие
+Повторяются
+Неприятные</string>
+        </property>
+       </item>
+       <item row="4" column="2">
+        <property name="text">
+         <string>Неприятные с пробуждением
+Или отсутствие снов</string>
+        </property>
+       </item>
+       <item row="5" column="0">
+        <property name="text">
+         <string>Адекватные
+Легко контролируются</string>
+        </property>
+       </item>
+       <item row="5" column="1">
+        <property name="text">
+         <string>Периодически эмоциональные срывы во время стресса</string>
+        </property>
+       </item>
+       <item row="5" column="2">
+        <property name="text">
+         <string>Эмоции неадекватны событиям</string>
+        </property>
+       </item>
+       <item row="6" column="0">
+        <property name="text">
+         <string>Хорошая</string>
+        </property>
+       </item>
+       <item row="6" column="1">
+        <property name="text">
+         <string>Периодически нарушается адаптация
+Поиск виновных</string>
+        </property>
+       </item>
+       <item row="6" column="2">
+        <property name="text">
+         <string>Нарушена
+Уход в болезнь</string>
+        </property>
+       </item>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLabel" name="labelForTable3">
+       <property name="text">
+        <string>Гиперчувствительность</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QTableWidget" name="table3">
+       <property name="minimumSize">
+        <size>
+         <width>0</width>
+         <height>400</height>
+        </size>
+       </property>
+       <property name="rowCount">
+        <number>4</number>
+       </property>
+       <attribute name="horizontalHeaderDefaultSectionSize">
+        <number>250</number>
+       </attribute>
+       <attribute name="horizontalHeaderStretchLastSection">
+        <bool>true</bool>
+       </attribute>
+       <attribute name="verticalHeaderDefaultSectionSize">
+        <number>80</number>
+       </attribute>
+       <row/>
+       <row/>
+       <row/>
+       <row/>
+       <column>
+        <property name="text">
+         <string>Заголовок</string>
+        </property>
+       </column>
+       <column>
+        <property name="text">
+         <string>Описание</string>
+        </property>
+       </column>
+       <item row="0" column="0">
+        <property name="text">
+         <string>причины</string>
+        </property>
+       </item>
+       <item row="0" column="1">
+        <property name="text">
+         <string>Предшествующее длительное лечение, в том числе и гомеопатическое</string>
+        </property>
+       </item>
+       <item row="1" column="0">
+        <property name="text">
+         <string>заболевания</string>
+        </property>
+       </item>
+       <item row="1" column="1">
+        <property name="text">
+         <string>c проявлениями гиперфункции
+Аллергические реакции на пищевые, бытовые, химические аллергены
+Множественные побочные эффекты от применения лекарств, трав, витаминов, БАДов, косметических средств</string>
+        </property>
+       </item>
+       <item row="2" column="0">
+        <property name="text">
+         <string>модальности</string>
+        </property>
+       </item>
+       <item row="2" column="1">
+        <property name="text">
+         <string>Необходимость соблюдения щадящей диеты
+нечеткие, стертые или отсутствуют</string>
+        </property>
+       </item>
+       <item row="3" column="0">
+        <property name="text">
+         <string>Состояние нервной системы</string>
+        </property>
+       </item>
+       <item row="3" column="1">
+        <property name="text">
+         <string>Неадекватные реакции на окружающую среду – свет, температуру, шум, толпу, запахи
+Выраженная метеопатия
+Легкая возбудимость.
+Избыточная чувствительность
+Затруднения при засыпании
+Быстрые перепады настроения
+Частые истерические состояния
+Быстрые движения..</string>
+        </property>
+       </item>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLabel" name="label163">
+       <property name="text">
+        <string>Преобладающая патология семьи</string>
+       </property>
+       <property name="wordWrap">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPlainTextEdit" name="edit163"/>
+     </item>
+     <item>
+      <widget class="QLabel" name="label164">
+       <property name="text">
+        <string>Этиология, провоцирующие факторы, условия, факторы риска</string>
+       </property>
+       <property name="wordWrap">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPlainTextEdit" name="edit164"/>
+     </item>
+     <item>
+      <widget class="QLabel" name="label165">
+       <property name="text">
+        <string>Первично пораженный орган или система</string>
+       </property>
+       <property name="wordWrap">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPlainTextEdit" name="edit165">
+       <property name="plainText">
+        <string>Симптомы первичные
+Симптомы вторичные</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLabel" name="label166">
+       <property name="text">
+        <string>Симптомы компенсаторные (физиологические)</string>
+       </property>
+       <property name="wordWrap">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPlainTextEdit" name="edit166"/>
+     </item>
+     <item>
+      <widget class="QLabel" name="label167">
+       <property name="text">
+        <string>Основные патологические синдромы</string>
+       </property>
+       <property name="wordWrap">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPlainTextEdit" name="edit167">
+       <property name="plainText">
+        <string>Основное заболевание (первично пораженный орган, система)
+Осложнение (первично пораженный орган, система, симптомы вторичные имеют другую модальность)
+Сопутствующее ( не связано с первично пораженный органом)</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLabel" name="label168">
+       <property name="text">
+        <string>Миазм</string>
+       </property>
+       <property name="wordWrap">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPlainTextEdit" name="edit168">
+       <property name="plainText">
+        <string>Миазматические события
+Миазматическая склонность
+Первичная, вторичная, третичная псора
+Сикоз
+Сифилис
+Туберкулиновый</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLabel" name="label169">
+       <property name="text">
+        <string>Проекция на таблицу</string>
+       </property>
+       <property name="wordWrap">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPlainTextEdit" name="edit169"/>
+     </item>
+     <item>
+      <widget class="QLabel" name="label170">
+       <property name="text">
+        <string>Клинический диагноз
+1)основное заболевание  а) форма клиническую, клинико-морфологическая или патогенетическая
+в) характер течения
+г) стадии, фазы, степени активности процесса
+д) степени (стадии) функциональных расстройств или тяжести заболевания</string>
+       </property>
+       <property name="wordWrap">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPlainTextEdit" name="edit170"/>
+     </item>
+     <item>
+      <widget class="QLabel" name="label171">
+       <property name="text">
+        <string>2) осложнения основного заболевания</string>
+       </property>
+       <property name="wordWrap">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPlainTextEdit" name="edit171"/>
+     </item>
+     <item>
+      <widget class="QLabel" name="label172">
+       <property name="text">
+        <string>3)сопутствующие заболевания</string>
+       </property>
+       <property name="wordWrap">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPlainTextEdit" name="edit172"/>
+     </item>
+     <item>
+      <widget class="QLabel" name="label173">
+       <property name="text">
+        <string>Реперторизация</string>
+       </property>
+       <property name="wordWrap">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPlainTextEdit" name="edit173"/>
+     </item>
+    </layout>
+   </widget>
+  </widget>
+  <widget class="QScrollArea" name="treatmentPlan">
+   <property name="widgetResizable">
+    <bool>true</bool>
+   </property>
+   <attribute name="title">
+    <string>План лечения</string>
+   </attribute>
+   <widget class="QWidget" name="treatmentPlanContents">
+    <property name="geometry">
+     <rect>
+      <x>0</x>
+      <y>0</y>
+      <width>777</width>
+      <height>1927</height>
+     </rect>
+    </property>
+    <layout class="QVBoxLayout" name="treatmentPlanLayout">
+     <item>
+      <widget class="QLabel" name="label174">
+       <property name="text">
+        <string>Цели лечения</string>
+       </property>
+       <property name="wordWrap">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPlainTextEdit" name="edit174">
+       <property name="plainText">
+        <string>Полное выздоровление (исчезновение всех симптомов, главные-в обратном порядке)
+Временное улучшение (исчезновение главных симптомов, остаются вторичные и компенсаторные)
+Ремиссия (исчезновение главных симптомов, остаются только компенсаторные)
+Улучшение прогноза, трудоспособности.</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLabel" name="label175">
+       <property name="text">
+        <string>Направления лечения:
+   а) этиологическое лечение</string>
+       </property>
+       <property name="wordWrap">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPlainTextEdit" name="edit175"/>
+     </item>
+     <item>
+      <widget class="QLabel" name="label176">
+       <property name="text">
+        <string>  б) патогенетическое лечение</string>
+       </property>
+       <property name="wordWrap">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPlainTextEdit" name="edit176">
+       <property name="plainText">
+        <string>воздействие на основные механизмы болезни (воспаление, аллергия, функциональные нарушения, дефицит определенных факторов, интоксикация и др.)</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLabel" name="label177">
+       <property name="text">
+        <string>  в) симптоматическое лечение</string>
+       </property>
+       <property name="wordWrap">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPlainTextEdit" name="edit177"/>
+     </item>
+     <item>
+      <widget class="QLabel" name="labelForTable4">
+       <property name="text">
+        <string>План и прогноз</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QTableWidget" name="table4">
+       <property name="minimumSize">
+        <size>
+         <width>0</width>
+         <height>700</height>
+        </size>
+       </property>
+       <attribute name="horizontalHeaderDefaultSectionSize">
+        <number>200</number>
+       </attribute>
+       <attribute name="verticalHeaderDefaultSectionSize">
+        <number>100</number>
+       </attribute>
+       <row>
+        <property name="text">
+         <string>Длительность гомеотерапии</string>
+        </property>
+       </row>
+       <row>
+        <property name="text">
+         <string>Разведение</string>
+        </property>
+       </row>
+       <row>
+        <property name="text">
+         <string>Сроки появления обострения</string>
+        </property>
+       </row>
+       <row>
+        <property name="text">
+         <string>Длительность обострения</string>
+        </property>
+       </row>
+       <row>
+        <property name="text">
+         <string>Прием фарм препаратов</string>
+        </property>
+       </row>
+       <row>
+        <property name="text">
+         <string>Прогноз</string>
+        </property>
+       </row>
+       <column>
+        <property name="text">
+         <string>Высокая</string>
+        </property>
+       </column>
+       <column>
+        <property name="text">
+         <string>Средняя</string>
+        </property>
+       </column>
+       <column>
+        <property name="text">
+         <string>Низкая</string>
+        </property>
+       </column>
+       <item row="0" column="0">
+        <property name="text">
+         <string>Короткий курс 
+даже однократно</string>
+        </property>
+       </item>
+       <item row="0" column="1">
+        <property name="text">
+         <string>Длительное пожизненное лечение  чередовать препараты по меняющейся совокупности
+ритм индивидуальный
+Возможен  кратковременный ситуативный плюрализм</string>
+        </property>
+       </item>
+       <item row="0" column="2">
+        <property name="text">
+         <string>Паллиативное лечение
+Плюрализм в индивидуально подобранном ритме</string>
+        </property>
+       </item>
+       <item row="1" column="0">
+        <property name="text">
+         <string>Любые
+Чаще высокие</string>
+        </property>
+       </item>
+       <item row="1" column="1">
+        <property name="text">
+         <string>Острая патология- низкие и средние
+Хр пат-средние и LM
+Высокие осторожно</string>
+        </property>
+       </item>
+       <item row="1" column="2">
+        <property name="text">
+         <string>низкие</string>
+        </property>
+       </item>
+       <item row="2" column="0">
+        <property name="text">
+         <string>1 час- неделя</string>
+        </property>
+       </item>
+       <item row="2" column="1">
+        <property name="text">
+         <string>От 2 нед до 1 мес</string>
+        </property>
+       </item>
+       <item row="2" column="2">
+        <property name="text">
+         <string>Через месяц</string>
+        </property>
+       </item>
+       <item row="3" column="0">
+        <property name="text">
+         <string>Короткое  (до 1 нед)</string>
+        </property>
+       </item>
+       <item row="3" column="1">
+        <property name="text">
+         <string>1 нед-1 мес
+Рекомендуется прием антидотов</string>
+        </property>
+       </item>
+       <item row="3" column="2">
+        <property name="text">
+         <string>месяцы</string>
+        </property>
+       </item>
+       <item row="4" column="0">
+        <property name="text">
+         <string>Можно одномоментно отменить</string>
+        </property>
+       </item>
+       <item row="4" column="1">
+        <property name="text">
+         <string>Отменять постепенно при улучшении состояния особенно гипотензивные  и кортикостероиды</string>
+        </property>
+       </item>
+       <item row="4" column="2">
+        <property name="text">
+         <string>Совместный прием
+Не отменять
+Можно снижать дозу</string>
+        </property>
+       </item>
+       <item row="5" column="0">
+        <property name="text">
+         <string>Хороший  
+или длительная ремиссия</string>
+        </property>
+       </item>
+       <item row="5" column="1">
+        <property name="text">
+         <string>Возможна длительная ремиссия</string>
+        </property>
+       </item>
+       <item row="5" column="2">
+        <property name="text">
+         <string>Сомнительный</string>
+        </property>
+       </item>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLabel" name="label178">
+       <property name="text">
+        <string>Назначения</string>
+       </property>
+       <property name="wordWrap">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPlainTextEdit" name="edit178"/>
+     </item>
+    </layout>
+   </widget>
+  </widget>
+  <widget class="QTableWidget" name="diary">
+   <attribute name="title">
+    <string>Дневник</string>
+   </attribute>
+   <column>
+    <property name="text">
+     <string>Дата и назначение</string>
+    </property>
+   </column>
+   <column>
+    <property name="text">
+     <string>Динамика основных жалоб (10 б)</string>
+    </property>
+   </column>
+   <column>
+    <property name="text">
+     <string>Общее состояние (сон аппетит, стул,мочеиспускание)</string>
+    </property>
+   </column>
+   <column>
+    <property name="text">
+     <string>Новые симптомы</string>
+    </property>
+   </column>
+   <column>
+    <property name="text">
+     <string>Заключение</string>
+    </property>
+   </column>
+  </widget>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

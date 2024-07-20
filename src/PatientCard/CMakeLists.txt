@@ -1,15 +1,14 @@
 qt_add_library(PatientCard STATIC
     PatientCard.h PatientCard.cpp
 
-    PCardTab.h PCardTab.cpp
-    Field.h Field.cpp
-    TableField.h TableField.cpp
-    TextField.h TextField.cpp
-    LineField.h LineField.cpp
-    NumberField.h NumberField.cpp
-    DateField.h DateField.cpp
-    CurrentStateTab.h CurrentStateTab.cpp
 
+
+
+
+
+
+    PatientCard.ui
+    MultiLineEditDelegate.h MultiLineEditDelegate.cpp
 )
 
 qt_add_resources(PatientCard pcardIcons

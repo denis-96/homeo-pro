@@ -1,29 +1,29 @@
 #include "PatientCard.h"
+#include <QJsonArray>
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QScrollArea>
 #include <QVBoxLayout>
-#include "CurrentStateTab.h"
-#include "DateField.h"
-#include "LineField.h"
-#include "NumberField.h"
-#include "TableField.h"
-#include "TextField.h"
+#include "MultiLineEditDelegate.h"
+#include "ui_PatientCard.h"
 
 PatientCard::PatientCard(QWidget *parent)
     : HomeoEntity{parent}
+    , ui{new Ui::PatientCard()}
 {
-    auto f = font();
-    f.setPointSize(14);
-    setFont(f);
-
     tabWidget = new QTabWidget(this);
+    ui->setupUi(tabWidget);
 
-    createTabs();
+    setupFields();
 
     auto layout = new QVBoxLayout(this);
     layout->addWidget(tabWidget);
     setLayout(layout);
+}
+
+PatientCard::~PatientCard()
+{
+    delete ui;
 }
 
 bool PatientCard::read(QFile &file)
@@ -31,8 +31,58 @@ bool PatientCard::read(QFile &file)
     QJsonDocument doc = QJsonDocument::fromJson(file.readAll());
     QJsonObject json = doc.object();
 
-    for (const auto &tab : tabs)
-        tab.second->read(json[tab.first]);
+    if (!json["edits"].isArray())
+        return false;
+    QJsonArray editsJson = json["edits"].toArray();
+
+    if (editsJson.size() == edits.size())
+        for (int i = 0; i < edits.size(); ++i) {
+            auto edit = edits[i];
+            auto value = editsJson[i];
+            if (auto tEdit = dynamic_cast<QPlainTextEdit *>(edit)) {
+                if (value.isString())
+                    tEdit->setPlainText(value.toString());
+            } else if (auto lEdit = dynamic_cast<QLineEdit *>(edit)) {
+                if (value.isString())
+                    lEdit->setText(value.toString());
+            } else if (auto dEdit = dynamic_cast<QDateEdit *>(edit)) {
+                if (value.isDouble())
+                    dEdit->setDate(QDate::fromJulianDay(value.toInteger()));
+            } else if (auto nEdit = dynamic_cast<QSpinBox *>(edit)) {
+                if (value.isDouble())
+                    nEdit->setValue(value.toInt());
+            }
+        }
+
+    if (!json["tables"].isArray())
+        return false;
+    QJsonArray tablesJson = json["tables"].toArray();
+
+    if (tablesJson.size() == tables.size())
+        for (int i = 0; i < tables.size(); ++i) {
+            if (!tablesJson[i].isArray())
+                continue;
+            auto table = tables[i];
+            QJsonArray value = tablesJson[i].toArray();
+
+            bool isDynamicTable = !table->rowCount();
+            if (!isDynamicTable && value.size() != table->rowCount())
+                continue;
+
+            for (int i = 0; i < value.size(); ++i) {
+                if (!value[i].isArray())
+                    continue;
+                const QJsonArray cols = value[i].toArray();
+                if (cols.size() != table->columnCount())
+                    continue;
+                if (isDynamicTable)
+                    table->insertRow(table->rowCount());
+                for (int j = 0; j < table->columnCount(); ++j) {
+                    table->setItem(i, j, new QTableWidgetItem(cols[j].toString()));
+                }
+            }
+            table->resizeRowsToContents();
+        }
 
     return true;
 }
@@ -41,931 +91,368 @@ bool PatientCard::write(QFile &file)
 {
     QJsonObject json;
 
-    for (const auto &tab : tabs)
-        json[tab.first] = tab.second->toJson();
+    QJsonArray editsJson;
+    for (const auto &edit : edits) {
+        if (auto tEdit = dynamic_cast<QPlainTextEdit *>(edit))
+            editsJson.push_back(tEdit->toPlainText());
+        else if (auto lEdit = dynamic_cast<QLineEdit *>(edit))
+            editsJson.push_back(lEdit->text());
+        else if (auto dEdit = dynamic_cast<QDateEdit *>(edit))
+            editsJson.push_back(dEdit->date().toJulianDay());
+        else if (auto nEdit = dynamic_cast<QSpinBox *>(edit))
+            editsJson.push_back(nEdit->value());
+    }
+
+    QJsonArray tablesJson;
+    for (const auto &table : tables) {
+        QJsonArray tableJson;
+        for (int i = 0; i < table->rowCount(); ++i) {
+            QJsonArray row;
+            for (int j = 0; j < table->columnCount(); ++j) {
+                row.push_back(table->item(i, j)->text());
+            }
+            tableJson.push_back(row);
+        }
+        tablesJson.push_back(tableJson);
+    }
+
+    json["edits"] = editsJson;
+    json["tables"] = tablesJson;
 
     return file.write(QJsonDocument(json).toJson());
 }
 
-void PatientCard::createTabs()
+void PatientCard::setupFields()
 {
-    tabs.push_back({"passportDetails",
-                    new PCardTab("Паспортная часть",
-                                 {
-                                     new LineField("Фамилия Имя Отчество"),
-                                     new NumberField("Возраст"),
-                                     new LineField("Профессия, место работы (учебы), должность"),
-                                     new DateField("Дата обращения"),
-                                 })});
-    tabs.push_back(
-        {"complaints",
-         new PCardTab("Жалобы",
-                      {new TableField("", {"Основные", "Детализация (ЛОМС)"}, [](int section) {
-                          return QString::number(section + 1);
-                      })})});
+    edits.push_back(ui->edit1);
+    edits.push_back(ui->edit2);
+    edits.push_back(ui->edit3);
+    edits.push_back(ui->edit4);
+    edits.push_back(ui->edit5);
+    edits.push_back(ui->edit6);
+    edits.push_back(ui->edit7);
+    edits.push_back(ui->edit8);
+    edits.push_back(ui->edit9);
+    edits.push_back(ui->edit10);
+    edits.push_back(ui->edit11);
+    edits.push_back(ui->edit12);
+    edits.push_back(ui->edit13);
+    edits.push_back(ui->edit14);
+    edits.push_back(ui->edit15);
+    edits.push_back(ui->edit16);
+    edits.push_back(ui->edit17);
+    edits.push_back(ui->edit18);
+    edits.push_back(ui->edit19);
+    edits.push_back(ui->edit20);
+    edits.push_back(ui->edit21);
+    edits.push_back(ui->edit22);
+    edits.push_back(ui->edit23);
+    edits.push_back(ui->edit24);
+    edits.push_back(ui->edit25);
+    edits.push_back(ui->edit26);
+    edits.push_back(ui->edit27);
+    edits.push_back(ui->edit28);
+    edits.push_back(ui->edit29);
+    edits.push_back(ui->edit30);
+    edits.push_back(ui->edit31);
+    edits.push_back(ui->edit32);
+    edits.push_back(ui->edit33);
+    edits.push_back(ui->edit34);
+    edits.push_back(ui->edit35);
+    edits.push_back(ui->edit36);
+    edits.push_back(ui->edit37);
+    edits.push_back(ui->edit38);
+    edits.push_back(ui->edit39);
+    edits.push_back(ui->edit40);
+    edits.push_back(ui->edit41);
+    edits.push_back(ui->edit42);
+    edits.push_back(ui->edit43);
+    edits.push_back(ui->edit44);
+    edits.push_back(ui->edit45);
+    edits.push_back(ui->edit46);
+    edits.push_back(ui->edit47);
+    edits.push_back(ui->edit48);
+    edits.push_back(ui->edit49);
+    edits.push_back(ui->edit50);
+    edits.push_back(ui->edit51);
+    edits.push_back(ui->edit52);
+    edits.push_back(ui->edit53);
+    edits.push_back(ui->edit54);
+    edits.push_back(ui->edit55);
+    edits.push_back(ui->edit56);
+    edits.push_back(ui->edit57);
+    edits.push_back(ui->edit58);
+    edits.push_back(ui->edit59);
+    edits.push_back(ui->edit60);
+    edits.push_back(ui->edit61);
+    edits.push_back(ui->edit62);
+    edits.push_back(ui->edit63);
+    edits.push_back(ui->edit64);
+    edits.push_back(ui->edit65);
+    edits.push_back(ui->edit66);
+    edits.push_back(ui->edit67);
+    edits.push_back(ui->edit68);
+    edits.push_back(ui->edit69);
+    edits.push_back(ui->edit70);
+    edits.push_back(ui->edit71);
+    edits.push_back(ui->edit72);
+    edits.push_back(ui->edit73);
+    edits.push_back(ui->edit74);
+    edits.push_back(ui->edit75);
+    edits.push_back(ui->edit76);
+    edits.push_back(ui->edit77);
+    edits.push_back(ui->edit78);
+    edits.push_back(ui->edit79);
+    edits.push_back(ui->edit80);
+    edits.push_back(ui->edit81);
+    edits.push_back(ui->edit82);
+    edits.push_back(ui->edit83);
+    edits.push_back(ui->edit84);
+    edits.push_back(ui->edit85);
+    edits.push_back(ui->edit86);
+    edits.push_back(ui->edit87);
+    edits.push_back(ui->edit88);
+    edits.push_back(ui->edit89);
+    edits.push_back(ui->edit90);
+    edits.push_back(ui->edit91);
+    edits.push_back(ui->edit92);
+    edits.push_back(ui->edit93);
+    edits.push_back(ui->edit94);
+    edits.push_back(ui->edit95);
+    edits.push_back(ui->edit96);
+    edits.push_back(ui->edit97);
+    edits.push_back(ui->edit98);
+    edits.push_back(ui->edit99);
+    edits.push_back(ui->edit100);
+    edits.push_back(ui->edit101);
+    edits.push_back(ui->edit102);
+    edits.push_back(ui->edit103);
+    edits.push_back(ui->edit104);
+    edits.push_back(ui->edit105);
+    edits.push_back(ui->edit106);
+    edits.push_back(ui->edit107);
+    edits.push_back(ui->edit108);
+    edits.push_back(ui->edit109);
+    edits.push_back(ui->edit110);
+    edits.push_back(ui->edit111);
+    edits.push_back(ui->edit112);
+    edits.push_back(ui->edit113);
+    edits.push_back(ui->edit114);
+    edits.push_back(ui->edit115);
+    edits.push_back(ui->edit116);
+    edits.push_back(ui->edit117);
+    edits.push_back(ui->edit118);
+    edits.push_back(ui->edit119);
+    edits.push_back(ui->edit120);
+    edits.push_back(ui->edit121);
+    edits.push_back(ui->edit122);
+    edits.push_back(ui->edit123);
+    edits.push_back(ui->edit124);
+    edits.push_back(ui->edit125);
+    edits.push_back(ui->edit126);
+    edits.push_back(ui->edit127);
+    edits.push_back(ui->edit128);
+    edits.push_back(ui->edit129);
+    edits.push_back(ui->edit130);
+    edits.push_back(ui->edit131);
+    edits.push_back(ui->edit132);
+    edits.push_back(ui->edit133);
+    edits.push_back(ui->edit134);
+    edits.push_back(ui->edit135);
+    edits.push_back(ui->edit136);
+    edits.push_back(ui->edit137);
+    edits.push_back(ui->edit138);
+    edits.push_back(ui->edit139);
+    edits.push_back(ui->edit140);
+    edits.push_back(ui->edit141);
+    edits.push_back(ui->edit142);
+    edits.push_back(ui->edit143);
+    edits.push_back(ui->edit144);
+    edits.push_back(ui->edit145);
+    edits.push_back(ui->edit146);
+    edits.push_back(ui->edit147);
+    edits.push_back(ui->edit148);
+    edits.push_back(ui->edit149);
+    edits.push_back(ui->edit150);
+    edits.push_back(ui->edit151);
+    edits.push_back(ui->edit152);
+    edits.push_back(ui->edit153);
+    edits.push_back(ui->edit154);
+    edits.push_back(ui->edit155);
+    edits.push_back(ui->edit156);
+    edits.push_back(ui->edit157);
+    edits.push_back(ui->edit158);
+    edits.push_back(ui->edit159);
+    edits.push_back(ui->edit160);
+    edits.push_back(ui->edit161);
+    edits.push_back(ui->edit162);
+    edits.push_back(ui->edit163);
+    edits.push_back(ui->edit164);
+    edits.push_back(ui->edit165);
+    edits.push_back(ui->edit166);
+    edits.push_back(ui->edit167);
+    edits.push_back(ui->edit168);
+    edits.push_back(ui->edit169);
+    edits.push_back(ui->edit170);
+    edits.push_back(ui->edit171);
+    edits.push_back(ui->edit172);
+    edits.push_back(ui->edit173);
+    edits.push_back(ui->edit174);
+    edits.push_back(ui->edit175);
+    edits.push_back(ui->edit176);
+    edits.push_back(ui->edit177);
+    edits.push_back(ui->edit178);
 
-    tabs.push_back(
-        {"diseaseHistory",
-         new PCardTab(
-             "История заболевния",
-             {
-                 new TextField("В течение какого времени считает себя больным?"),
-                 new TextField("Факторы, способствовавшие началу заболевания."),
-                 new TextField("С каких признаков началось заболевание?"),
-                 new TextField("Первое обращение к врачу, результаты проводившихся исследований, "
-                               "диагноз заболевания, лечение в тот период, его эффективность."),
-                 new TextField(
-                     "Последующее течение заболевания:\nа) динамика начальных симптомов, появление "
-                     "новых симптомов и дальнейшее развитие всех признаков заболевания;\nб) "
-                     "частота обострений, длительность ремиссий, осложнения заболевания;\nв) "
-                     "применявшиеся лечебные и диагностические мероприятия"),
-             })});
+    tables.push_back(ui->complaints);
+    tables.push_back(ui->table1);
+    tables.push_back(ui->table2);
+    tables.push_back(ui->table3);
+    tables.push_back(ui->table4);
+    tables.push_back(ui->diary);
 
-    tabs.push_back(
-        {"lifeHistory",
-         new PCardTab(
-             "История жизни",
-             {
-                 new TextField("Краткие биографические данные:\nГод и место рождения, в какой "
-                               "семье родился, каким ребенком по счету, как рос и развивался."),
-                 new TextField(
-                     "Образование: неполное или полное среднее, специальное среднее или высшее."),
-                 new TextField("Отношение к военной службе, пребывание на фронте (если был "
-                               "освобожден или демобилизован, то указать, по какой причине)."),
-                 new TextField(
-                     "Семейно-половой анамнез:\nДля женщин - время появления менструаций, "
-                     "длительность менструального цикла, продолжительность менструаций, количество "
-                     "отделений. Возраст вступления в брак. Беременности, роды и аборты "
-                     "(самопроизвольные и искусственные), их количество и осложнения."),
-                 new TextField("Климакс и его течение. Время окончания менструаций (менопауза). "
-                               "Семейное положение в настоящий момент. Количество детей."),
-                 new TextField(
-                     "Трудовой анамнез:\nС какого возраста, кем и где начал работать. Дальнейшая "
-                     "трудовая деятельность в хронологической последовательности с указанием мест "
-                     "работы и должностей. Условия и режим труда. Профессиональные вредности "
-                     "(воздействие токсических химических соединений, пылей, ионизирующей "
-                     "радиации, физические и эмоциональные нагрузки и др. вредности)."),
-                 new TextField("Бытовой анамнез:\nЖилищные и санитарно-гигиенические условия в "
-                               "быту (площадь помещений, их характеристика, наличие удобств). "
-                               "Количество проживающих на данной жилплощади лиц. Климатические "
-                               "условия. Пребывание в зонах экологических бедствий."),
-                 new TextField("Питание:\nРежим и регулярность питания, характер пищи, ее "
-                               "разнообразие, калорийность и т.д."),
-                 new TextField("Вредные привычки:\nКурение, с какого возраста, в каком количестве. "
-                               "Употребление алкоголя, с какого возраста, в каком количестве. "
-                               "Употребление наркотиков."),
-                 new TableField(
-                     "Перенесенные заболевания:\nВ хронологической последовательности излагаются "
-                     "все перенесенные заболевания, операции, ранения, травмы, контузии с "
-                     "указанием возраста больного, длительности и тяжести этих заболеваний и их "
-                     "осложнений и проводившегося лечения. Особо указать на перенесенные "
-                     "инфекционные заболевания, венерические болезни, туберкулез, желтуху. "
-                     "Отметить, переливалась ли ранее кровь или кровезаменители, и были ли реакции "
-                     "на переливание. Указать, проводилось ли парентеральное введение лекарств в "
-                     "течение последних 6 месяцев.",
-                     {"Этиология", "Перенесенные заболевания"},
-                     [](int section) -> QString {
-                         if (section == 0)
-                             return "В у";
-                         if (section == 1)
-                             return "Роды";
-                         if (section == 2)
-                             return "До 1 года";
-                         if (section == 3)
-                             return "1 - 4";
-                         if (section < 9)
-                             return QString("%1 - %2").arg((section - 3) * 4).arg((section - 2) * 4);
-                         return QString("%1 - %2")
-                             .arg(24 + (section - 9) * 12)
-                             .arg(24 + (section - 8) * 12);
-                     },
-                     10),
-                 new TextField("Аллергологический анамнез:\nНепереносимость пищевых продуктов, "
-                               "различных медикаментов, вакцин и сывороток. Наличие аллергических "
-                               "реакций (вазомоторного ринита, крапивницы, отека Квинке), причины "
-                               "этих реакций, их сезонность."),
-             })});
-    tabs.push_back(
-        {"heredity",
-         new PCardTab(
-             "Наследственность",
-             {
-                 new LineField(
-                     "Родители, братья, сестры, дети: состояние их здоровья, "
-                     "заболевания, причины смерти (указать, в каком возрасте).\nОтягощенная "
-                     "наследственность:\nНаличие у ближайших родственников злокачественных "
-                     "новообразований, сердечно-сосудистых (инфаркт миокарда, стенокардия, "
-                     "артериальная гипертензия, инсульты), эндокринных (сахарный диабет, "
-                     "тиреотоксикоз и др.) и психических заболеваний, геморрагических диатезов, "
-                     "алкоголизма. Наличие в анамнезе у ближайших родственников туберкулеза\nМама"),
-                 new LineField("Папа"),
-                 new LineField("Бабушка по маме"),
-                 new LineField("Дедушка по маме"),
-                 new LineField("Бабушка по папе"),
-                 new LineField("Дедушка по папе"),
-                 new LineField("Братья / Сестры"),
-                 new LineField("Дети"),
-             })});
+    for (const auto &edit : edits) {
+        if (auto castedEdit = dynamic_cast<QPlainTextEdit *>(edit))
+            connect(castedEdit, &QPlainTextEdit::textChanged, this, &HomeoEntity::changed);
+        else if (auto castedEdit = dynamic_cast<QLineEdit *>(edit))
+            connect(castedEdit, &QLineEdit::editingFinished, this, &HomeoEntity ::changed);
+        else if (auto castedEdit = dynamic_cast<QDateEdit *>(edit))
+            connect(castedEdit, &QDateEdit::editingFinished, this, &HomeoEntity ::changed);
+        else if (auto castedEdit = dynamic_cast<QSpinBox *>(edit))
+            connect(castedEdit, &QSpinBox::editingFinished, this, &HomeoEntity ::changed);
+    }
+    for (const auto &table : tables) {
+        connect(table, &QTableWidget::cellChanged, this, &HomeoEntity::changed);
+        table->setItemDelegate(new MultiLineEditDelegate(table));
+    }
 
-    tabs.push_back(
-        {"currentState",
-         new CurrentStateTab(
-             "Настоящее состояние",
-             {
-                 {"Общий осмотр",
-                  {
-                      new TextField("Общее состояние больного:",
-                                    "удовлетворительное, средней тяжести, тяжелое."),
-                      new TextField("Сознание:",
-                                    "ясное, спутанное - ступор, сопор, кома, бред, галлюцинации."),
-                      new TextField("Положение больного", " активное, пассивное, вынужденное"),
-                      new TextField("Телосложение",
-                                    "конституциональный тип (нормостенический, гиперстенический, "
-                                    "астенический),"),
-                      new TextField("Рост, масса тела"),
-                      new TextField("Осанка",
-                                    "прямая, сутуловатая), походка (быстрая, медленная, "
-                                    "атактическзя, спастическая, паретическая"),
-                      new TextField("Температура тела:"),
-                      new TextField("Выражение лица",
-                                    "спокойное, безразличное, маскообразное, тоскливое, "
-                                    "страдальческое, возбужденное, утомленное и т. д. Лицо "
-                                    "Корвизара. fades feoris, facies nephritica, facies mitralis, "
-                                    "facies Hyppocratica, facies Basedovica и др."),
-                      new TextField("Кожные покровы:\nСо  стороны  кожи  что-нибудь  беспокоит "
-                                    "(рубцы , опухоли , сыпь , бородавки, кондиломы)?"),
-                      new TextField("Цвет",
-                                    "бледно-розовый, смуглый, красный, синюшный, желтушный, "
-                                    "бледный, землистый"),
-                      new TextField("Пигментация и депигментация (лейкодерма), их локализация."),
-                      new TextField("Высыпания:",
-                                    "форма сыпи (розеола, папула, пустула, везикула, эритема, "
-                                    "пятно, лихорадочные высыпания - herpes); локализация "
-                                    "высыпаний, единичные или множественные (сливные) высыпания."),
-                      new TextField("Сосудистые изменения",
-                                    "телеангиоэктазии, \"сосудистые звездочки\", их локализация и "
-                                    "количество"),
-                      new TextField("Кровоизлияния",
-                                    "локализация, размер, количество, выраженность."),
-                      new TextField("Рубцы:",
-                                    "локализация, цвет, размеры, подвижность, болезненность"),
-                      new TextField(
-                          "Трофические изменения",
-                          "язвы, пролежни, их локализация, размер, характер поверхности и т.д."),
-                      new TextField("Видимые опухоли:",
-                                    "миома, ангиома, атерома и другие, их локализация, размер"),
-                      new TextField("Влажность кожи. Тургор кожи. Тип оволосения."),
-                      new TextField(
-                          "Ногти:",
-                          "форма (\"часовые стекла\", койлонихии и др.), цвет (розовый, синюшный, "
-                          "бледный); поперечная или продольная исчерченность, ломкость ногтей."),
-                      new TextField("Волосы"),
+    setupEditableTable(ui->complaints);
+    setupEditableTable(ui->diary);
 
-                      new TextField("Видимые слизистые:",
-                                    "цвет (розовый, бледный, синюшный, желтушный, красный); "
-                                    "высыпания на слизистых (энантема), их локализация и "
-                                    "выраженность; влажность слизистых."),
-                      new TextField("Подкожно-жировая клетчатка:",
-                                    "Развитие (умеренное, слабое, чрезмерное); места наибольшего "
-                                    "отложения жира (на животе, руках, бедрах);"),
-                      new TextField(
-                          "Отеки (oedema);",
-                          "их локализация (конечности, поясница, живот), распространенность "
-                          "(местные или общие - анасарка), выраженность (пастозность, умеренные "
-                          "или резко выраженные), консистенция отеков."),
-                      new TextField(
-                          "Болезненность при пальпации подкожно-жировой клетчатки, наличие "
-                          "крепитации (при воздушной эмфиземе подкожной клетчатки)."),
-                      new TextField(
-                          "Лимфатические узлы:\nЛокализация пальпируемых лимфоузлов  Их величина, "
-                          "форма, консистенция, болезненность, подвижность, сращения между собой и "
-                          "с окружающими тканями, состояние кожи над лимфоузлами.",
-                          "затылочные,\nоколоушные,\nподчелюстные,\nшейные,\nнадключичные и "
-                          "подключичные,\nподмышечные,\nлоктевые,\nпаховые,\nподколенные"),
-                      new TextField("Мышцы:\nСтепень развития",
-                                    "удовлетворительная, слабая и/или атрофии, гипертрофии мышц"),
+    ui->edit4->setDate(QDate::currentDate());
+    ui->edit4->setMinimumDate(QDate(2000, 1, 1));
+    ui->edit4->setMaximumDate(QDate::currentDate());
+}
 
-                      new TextField("Тонус:", "сохранен, снижен, повышен (ригидность мышц"),
-                      new TextField("Сила мышц. Болезненность и уплотнения при ощупывании."),
-                      new TextField("Кости:\nФорма костей, наличие деформаций, болезненности при "
-                                    "ощупывании, поколачивании. Состояние концевых фаланг пальцев "
-                                    "рук и ног (симптом \"барабанных пальцев\")."),
-                      new TextField("Суставы:\nКонфигурация, припухлость, болезненность при "
-                                    "ощупывании, гиперемия и местная температура кожи над "
-                                    "суставами. Движения в суставах: их болезненность, хруст при "
-                                    "движениях, объем активных и пассивных движений в суставах."),
+void PatientCard::setupEditableTable(QTableWidget *table)
+{
+    auto addRowAction = new QAction(QIcon(":/resources/icons/add.svg"), "Добавить запись", table);
+    connect(addRowAction, &QAction::triggered, table, [table] {
+        int row = table->rowCount();
+        table->insertRow(row);
+        for (int col = 0; col < table->columnCount(); ++col) {
+            table->setItem(row, col, new QTableWidgetItem);
+        }
+    });
+    table->addAction(addRowAction);
 
-                  }},
-                 {"Система органов дыхания",
-                  {
-                      new TextField("Кашель (tussis):",
-                                    "характер (сухой - непродуктивный или с выделением мокроты - "
-                                    "продуктивный), время появления (днем, ночью, утром), "
-                                    "длительность (постоянный, периодический, приступообразный), "
-                                    "условия появления и купирования кашля."),
-                      new TextField(
-                          "Мокрота (sputum):",
-                          "характер, цвет и консистенция (серозная, слизистая, слизисто-гнойная, "
-                          "гнойная), количество мокроты одномоментно и за сутки; примеси крови; "
-                          "положение, способствующее наилучшему отхождению мокроты."),
-                      new TextField("Кровохарканье (haemoptoe):",
-                                    "количество крови (прожилки, сгустки или чистая кровь); цвет "
-                                    "крови (алая, темная, ржавая или малинового цвета); условия "
-                                    "появления кровохарканья."),
-                      new TextField("Боль (dolor) в грудной клетке:",
-                                    "локализация, характер боли (острые, тупые, колющие), "
-                                    "интенсивность (слабые, умеренные, сильные); продолжительность "
-                                    "(постоянные, приступообразные); связь болей с дыхательными "
-                                    "движениями;  иррадиация болей."),
-                      new TextField("Одышка (dyspnoe):",
-                                    "условия возникновения (в покое, при физической нагрузке, при "
-                                    "кашле, при изменении положения тела и т.д.); характер одышки "
-                                    "(инспираторная, экспираторная, смешанная)."),
-                      new TextField("Удушье (asthma):",
-                                    "время и условия возникновения, продолжительность приступов, "
-                                    "их купирование."),
-                      new TextField(
-                          "Осмотр\nНос:",
-                          "изменение формы носа , дыхание через нос (свободное, затрудненное). "
-                          "Отделяемое из носа, его характер и количество. Носовые кровотечения."),
-                      new TextField("Гортань:",
-                                    "Деформация и припухлость в области гортани. Голос (громкий, "
-                                    "тихий, сиплый), отсутствие голоса - афония."),
-                      new TextField(
-                          "Грудная клетка:\nФорма грудной клетки:",
-                          "нормостеническая, гиперстеническая, астеническая:\nпатологические формы "
-                          "(эмфизематозная, или бочкообразная, паралитическая, ладьевидная, "
-                          "рахитическая, воронкообразная).\nВыраженность над- и подключичных ямок "
-                          "(выполнены, запавшие, втянуты)\nширина межреберных промежутков "
-                          "(умеренные, широкие, узкие);\nвеличина эпигастрального угла (прямой, "
-                          "острый, тупой); положение лопаток и ключиц (не выступают, выступают "
-                          "умеренно, отчетливо, крыловидные лопатки);\nсоотношение передне-заднего "
-                          "и бокового размеров грудной клетки;\nсимметричность грудной клетки "
-                          "(увеличение или уменьшение одной из половин, локальные выпячивания или "
-                          "западения)."),
-                      new TextField("Искривления позвоночника:",
-                                    "кифоз, лордоз, сколиоз, кифосколиоз.\nОкружность грудной "
-                                    "клетки, экскурсия грудной клетки на вдохе и выдохе."),
-                      new TextField(
-                          "Дыхание:",
-                          "Тип дыхания (грудной, брюшной, смешанный).\nСимметричность дыхательных "
-                          "движений (отставание в акте дыхания одной половины).\nУчастие в дыхании "
-                          "вспомогательной мускулатуры.\nЧисло дыханий в минуту.\nГлубина дыхания "
-                          "(поверхностное, глубокое, в т.ч. дыхание Куссмауля).\nРитм дыхания "
-                          "(ритмичное, аритмичное, в т.ч. дыхание Чейн-Стокса и "
-                          "Биота).\nСоотношение вдоха и выдоха.\nПризнаки затруднения вдоха и/или "
-                          "выдоха (инспираторная, экспираторная и смешанная одышка)."),
-                      new TextField(
-                          "Пальпация\nОпределение болезненных участков, их локализация. "
-                          "Определение резистентности (эластичности) грудной клетки. Определение "
-                          "голосового дрожания на симметричных участках (одинаково, усилено или "
-                          "ослаблено с одной стороны).\nПеркуссия легких",
-                          "Сравнительная перкуссия: характер перкуторного звука на симметричных "
-                          "участках грудной клетки (звук ясный легочный, притупленный, тупой, "
-                          "коробочный, тимпанический, притупленно-тимпанический) с точным "
-                          "определением границ каждого звука по ребрам и топографическим линиям."),
-                      new TextField(
-                          "Аускультация\nОсновные дыхательные шумы:",
-                          "Характер основных дыхательных шумов над симметричными отделами легких "
-                          "(везикулярное, ослабленное, усиленное, жесткое, бронхиальное, "
-                          "амфорическое, отсутствие дыхательного шума)."),
-                      new TextField("Побочные дыхательные шумы:",
-                                    "Хрипы (сухие или влажные), крепитация, шум трения плевры, их "
-                                    "локализация и детальная характеристика."),
-                      new TextField(
-                          "Бронхофония:",
-                          "Определение бронхофонии над симметричными участками грудной клетки "
-                          "(одинаковая с обеих сторон, усилена или ослаблена с одной стороны)."),
+    auto removeRowAction = new QAction(QIcon(":/resources/icons/remove.svg"),
+                                       "Удалить запись",
+                                       table);
+    removeRowAction->setDisabled(true);
+    connect(removeRowAction, &QAction::triggered, table, [table] {
+        table->removeRow(table->selectionModel()->selectedRows().back().row());
+    });
+    table->addAction(removeRowAction);
 
-                  }},
-                 {"Система органов кровообращения",
-                  {
-                      new TextField(
-                          "Боль в области сердца:",
-                          "Локализация (за грудиной, в области верхушки сердца, слева от грудины "
-                          "на уровне || -V ребер и т.д.);\nхарактер (сжимающие, колющие, давящие, "
-                          "ноющие и т.д.).\nиррадиация болей,\nинтенсивность;\nпостоянные или "
-                          "приступообразные,\nпродолжительность болей;\nусловия возникновения (при "
-                          "физической нагрузке, эмоциональном напряжении, в покое);\nчем "
-                          "купируются (валидол, нитроглицерин, седативные средства, наркотики)."),
-                      new TextField(
-                          "Одышка (dyspnoe):",
-                          "Условия возникновения (при физической нагрузке, в покое, зависимость от "
-                          "положения тела), характер и длительность одышки, чем купируется."),
-                      new TextField("Удушье (asthma):",
-                                    "Время и условия возникновения (днем, ночью, в покое или при "
-                                    "физической нагрузке, зависимость от положения тела); "
-                                    "продолжительность приступов, их купирование."),
-                      new TextField(
-                          "Сердцебиения (palpatio cordls), перебои в сердце:",
-                          "Характер аритмии (постоянный или приступообразный);\nпродолжительность "
-                          "приступов, их частота, условия возникновения, чем купируются."),
-                      new TextField(
-                          "Отеки (oedema):",
-                          "локализация (конечности, поясница, лицо, живот);\nраспространенность "
-                          "(местные или анасарка);\nвыраженность (пастозность, умеренно "
-                          "выраженные, резко выраженные);\nвремя и условия возникновения (к концу "
-                          "рабочего дня, после физической нагрузки, постоянные)."),
-                      new TextField("Осмотр\nОсмотр шеи:",
-                                    "усиленная пульсация сонных артерий (\"пляска "
-                                    "каротид\").\nНабухание шейных вен.\nВидимая пульсация вен "
-                                    "(наличие отрицательного или положительного венного пульса)."),
-                      new TextField(
-                          "Осмотр области сердца:",
-                          "Выпячивание области сердца (Gibbus cordis).\nВидимые пульсации "
-                          "(верхушечный толчок, сердечный толчок, эпигастральная пульсация, "
-                          "атипичная пульсация в области сердца);\nхарактеристика (локализация, "
-                          "распространенность, сила, отношение, к фазам сердечной деятельности)."),
+    table->setContextMenuPolicy(Qt::ActionsContextMenu);
+    connect(table->selectionModel(),
+            &QItemSelectionModel::selectionChanged,
+            table,
+            [table, removeRowAction] {
+                removeRowAction->setEnabled(table->selectionModel()->selectedRows().size());
+            });
+}
+/*
+void convert(const std::pair<QString, PCardTab *> &val)
+{
+    static int editCnt = 0;
+    static int labelCnt = 0;
+    static int tableCnt = 0;
 
-                      new TextField("Пальпация\nВерхушечный толчок:",
-                                    "локализация (указать межреберье и отношение к левой "
-                                    "срединноключичной линии);\n сила (нормальный, усиленный, "
-                                    "приподнимающий);\nплощадь (ограниченный, разлитой)."),
-                      new TextField("Сердечный толчок:", "локализация, площадь."),
+    QFile file("C:\\Users\\denis\\Desktop\\result.xml");
+    file.open(QIODevice::Append);
+    QTextStream ts(&file);
+    if (CurrentStateTab *cst = dynamic_cast<CurrentStateTab *>(val.second)) {
+        ts << QString("<widget class=\"QTabWidget\" name=\"%1\"><property "
+                      "name=\"tabPosition\"><enum>QTabWidget::West</enum></property><attribute "
+                      "name=\"title\"><string>%2</string></attribute>")
+                  .arg(val.first)
+                  .arg(cst->title());
+        int tCnt = 1;
+        for (const auto &st : cst->content) {
+            ts << QString("<widget class=\"QScrollArea\" name=\"%1\"><attribute "
+                          "name=\"title\"><string>%2"
+                          "</string></attribute><property "
+                          "name=\"widgetResizable\"><bool>true</bool></property><widget "
+                          "class=\"QWidget\" "
+                          "name=\"%1Contents\"><layout class=\"QVBoxLayout\" name=\"%1Layout\">")
+                      .arg(val.first + "Tab" + QString::number(tCnt))
+                      .arg(st.first);
+            for (const auto &field : st.second) {
+                if (field->label.size()) {
+                    ts << QString("<item><widget class=\"QLabel\" name=\"label%1\"><property "
+                                  "name=\"wordWrap\"><bool>true</bool></property><property "
+                                  "name=\"text\"><string>%2</string></property></widget></item>")
+                              .arg(++labelCnt)
+                              .arg(field->label);
+                }
+                if (LineField *lf = dynamic_cast<LineField *>(field)) {
+                    ts << QString("<item><widget class=\"QLineEdit\" name=\"edit%1\"/></item>")
+                              .arg(++editCnt);
+                }
+                if (TextField *tf = dynamic_cast<TextField *>(field)) {
+                    ts << QString("<item><widget class=\"QPlainTextEdit\" name=\"edit%1\">")
+                              .arg(++editCnt);
+                    if (tf->initialText.size())
+                        ts << QString("<property name=\"plainText\"><string>%1</string></property>")
+                                  .arg(tf->initialText);
+                    ts << "</widget></item>";
+                }
+            }
 
-                      new TextField("Эпигастральная пульсация:",
-                                    "характер (связь с пульсациями брюшной аорты, сердца, печени) "
-                                    "сила, распространенность (ограниченная или разлитая)."),
-                      new TextField("Дрожание в области сердца: (fremitus): его локализация;",
-                                    "отношение к фазам сердечной деятельности (систолическое или "
-                                    "диастолическое)."),
-                      new TextField("Определение пальпаторной болезненности и зон гиперестезии в "
-                                    "прекордиальной области.\nПеркуссия",
-                                    "Относительная тупость сердца:"),
-                      new TextField(
-                          "Аускультация\nТоны:",
-                          "Ритм сердечных сокращений (ритмичные или аритмичные с указанием формы "
-                          "аритмии - дыхательная аритмия, мерцательная аритмия, экстрасистолия, "
-                          "выпадение сердечных сокращений).\nЧисло сердечных сокращений."),
-                      new TextField("Первый тон,",
-                                    "громкость (нормальной звучности, ослабленный, усиленный, "
-                                    "хлопающий);\nрасщепление или раздвоение первого тона."),
-                      new TextField("Второй тон,",
-                                    "громкость (нормальной звучности, ослабленный, усиленный - "
-                                    "акцентированный);\nрасщепление или раздвоение второго тона."),
+            ts << "</layout></widget></widget>";
+            ++tCnt;
+        }
+        ts << "</widget>";
+    } else {
+        ts << QString(
+                  "<widget class=\"QScrollArea\" name=\"%1\"><attribute name=\"title\"><string>%2"
+                  "</string></attribute><property "
+                  "name=\"widgetResizable\"><bool>true</bool></property><widget class=\"QWidget\" "
+                  "name=\"%1Contents\"><layout class=\"QVBoxLayout\" name=\"%1Layout\">")
+                  .arg(val.first)
+                  .arg(val.second->title());
+        for (const auto &field : val.second->_fields) {
+            if (field->label.size()) {
+                ts << QString("<item><widget class=\"QLabel\" name=\"label%1\"><property "
+                              "name=\"wordWrap\"><bool>true</bool></property><property "
+                              "name=\"text\"><string>%2</string></property></widget></item>")
+                          .arg(++labelCnt)
+                          .arg(field->label);
+            }
+            if (LineField *lf = dynamic_cast<LineField *>(field)) {
+                ts << QString("<item><widget class=\"QLineEdit\" name=\"edit%1\"/></item>")
+                          .arg(++editCnt);
+            }
+            if (TextField *tf = dynamic_cast<TextField *>(field)) {
+                ts << QString("<item><widget class=\"QPlainTextEdit\" name=\"edit%1\">")
+                          .arg(++editCnt);
+                if (tf->initialText.size())
+                    ts << QString("<property name=\"plainText\"><string>%1</string></property>")
+                              .arg(tf->initialText);
+                ts << "</widget></item>";
+            }
+            if (DateField *df = dynamic_cast<DateField *>(field)) {
+                ts << QString("<item><widget class=\"QDateEdit\" name=\"edit%1\"/></item>")
+                          .arg(++editCnt);
+            }
+            if (NumberField *df = dynamic_cast<NumberField *>(field)) {
+                ts << QString("<item><widget class=\"QSpinBox\" name=\"edit%1\"/></item>")
+                          .arg(++editCnt);
+            }
+        }
 
-                      new TextField("Дополнительные тоны:",
-                                    "пресистолический и/или протодиастолический ритм галопа, ритм "
-                                    "перепела, систолический галоп и др."),
-
-                      new TextField(
-                          "Шумы:",
-                          "Отношение к базам сердечной деятельности (систолический, "
-                          "диастолический, пресистолический, протодиастолический, "
-                          "мезодиастолический и т.д.).\nМесто наилучшего выслушивания шума. "
-                          "Проведение шума.\nХарактер шума (мягкий, дующий, скребущий, грубый и "
-                          "т.д.),\nего тембр (высокий, низкий);\nгромкость (тихий, громкий); "
-                          "продолжительность (короткий, продолжительный),\nформа (нарастающий, "
-                          "нарастающе-убывающий - ромбовидный, убывающий и др.).\nИзменения шума в "
-                          "зависимости от положения тела, задержки дыхания на вдохе и выдохе и "
-                          "после физической нагрузки."),
-
-                      new TextField("Шум трения перикарда:",
-                                    "место наилучшего выслушивания,\nхарактер шума (грубый и "
-                                    "громкий или тихий и нежный)."),
-
-                      new TextField(
-                          "Исследование сосудов\nИсследование артерий:",
-                          "Осмотр и пальпация височных, сонных, лучевых, подколенных артерий и "
-                          "артерий тыла стопы;\nвыраженность пульсации, эластичность, гладкость "
-                          "артериальной стенки, извитость артерий.\nОпределение пульсации аорты в "
-                          "яремной ямке.\nВыслушивание сонных, бедренных, почечных артерий, "
-                          "брюшной аорты (наличие сосудистых шумов, двойной тон Траубе, двойного "
-                          "шума Виноградова-Дюрозье и др.)."),
-
-                      new TextField("Артериальный пульс:",
-                                    "Артериальный пульс на лучевых артериях: сравнение пульса на "
-                                    "обеих руках (наличие pulsus dificiens),\nчастота "
-                                    "пульса,\nритм (наличие аритмий),\nнаполнение; напряжение; "
-                                    "величина; скорость; форма пульса.\nНаличие дефицита пульса."),
-                      new TextField("Артериальное давление (АД):",
-                                    "на плечевых артериях в мм рт. ст. (по методу Короткова "
-                                    "определяется систолическое и диастолическое АД)."),
-                      new TextField(
-                          "Исследование вен:",
-                          "Осмотр и пальпация шейных вен, их набухание, видимая пульсация, наличие "
-                          "отрицательного или положительного венного пульса.\nВыслушивание яремной "
-                          "вены (\"шум волчка\").\nНаличие расширения вен* грудной клетки, брюшной "
-                          "стенки, конечностей, с указанием места и степени "
-                          "расширения.\nУплотнения и болезненность вен с указанием вены и "
-                          "протяженности уплотнения или болезненности."),
-                  }},
-                 {"Система органов пищеварения",
-                  {
-                      new TextField(
-                          "Боли в животе:",
-                          "локализация,\nиррадиация,\nинтенсивность,\nдлительность,\n\nусловия "
-                          "возникновения и связь с приемом пищи (ранние, поздние, голодные "
-                          "боли);\nхарактер болей (постоянный, схваткообразный, острые, тупые, "
-                          "ноющие);\nкупирование боли (самостоятельное или после приема пищи, "
-                          "применения тепла, холода, медикаментов, после рвоты)."),
-                      new TextField(
-                          "Диспепсические явления:степень выраженности этих явлений, отношение к "
-                          "приему пищи, ее качеству и количеству, чем купируются диспепсические "
-                          "явления.",
-                          "Затруднение глотания или прохождения пищи по пищеводу "
-                          "(dysphagia),\nтошнота (nausea),\nрвота (vomitus),\nотрыжка,\nизжога "
-                          "(pyrosis),\nвздутие живота (meteorismus)."),
-                      new TextField(
-                          "Аппетит:",
-                          "сохранен,\nпонижен,\nповышен (polyphagia),\nполностью отсутствует "
-                          "(anorexia),\nизвращен.\nОтвращение к пище (жирной, мясной)\nПродукты, "
-                          "которые    не  любите , не  переносите\nПродукты , которые  очень  "
-                          "любите\nКак  себя чувствуете  до, во  время, после  приёма  пищи\nЧто  "
-                          "будет, если не  поедите  вовремя , пропустите  прием  пищи\nСухость  во "
-                          " "
-                          "рту, жажда  не  беспокоит ?\nНапитки  какой  температуры предпочитаете "
-                          ": "
-                          "горячие, теплые, холодные ?\nВ  каком  количестве  Вы  пьете : по многу "
-                          ", "
-                          "по немногу ?"),
-                      new TextField(
-                          "Стул:",
-                          "Частота за сутки, количество (обильное, умеренное, небольшое), "
-                          "консистенция стула (оформленный, жидкий, кашицеобразный, "
-                          "твердый, \"овечий\"), цвет кала (коричневый, желто-коричневый, "
-                          "желтый, серо-белый, дегтеобразный)."),
-                      new TextField(
-                          "Кровотечения:",
-                          "Признаки пищеводного, желудочного, кишечного и геморроидального "
-                          "кровотечения - рвота кровью, кофейной гущей, черный "
-                          "дегтеобразный стул (melena); свежая кровь в кале."),
-                      new TextField(
-                          "Осмотр\nПолость рта:",
-                          "Язык (окраска, влажность, состояние сосочкового слоя, наличие налетов, "
-                          "трещин, язв).\nСостояние зубов.\nДесны, мягкое и твердое небо (окраска, "
-                          "налеты, геморрагии, изъязвления).\nЗев (окраска, краснота, припухлость, "
-                          "налеты).\nМиндалины (величина, краснота, припухлость, налеты).\n"),
-                      new TextField(
-                          "Живот:",
-                          "форма живота, его симметричность, участие в акте дыхания, "
-                          "видимая перистальтика желудка и кишечника, венозные коплатерали. "
-                          "Состояние пупка.\nОкружность живота на уровне пупка."),
-                      new TextField(
-                          "Перкуссия",
-                          "Характер перкуторного звука. Наличие свободной или осумкованной "
-                          "жидкости в брюшной полости."),
-                      new TextField(
-                          "Пальпация",
-                          "Поверхностная ориентировочная пальпация: болезненные области, "
-                          "напряжение "
-                          "мышц брюшной стенки (мышечная защита - defance musculaire), расхождение "
-                          "прямых мышц живота и наличие грыж, наличие поверхностно расположенных "
-                          "опухолевидных образований. Перитонеальные симптомы (симптом "
-                          "Щеткина-Блюмберга и др.).\nСимптом Менделя.\nМетодическая глубокая "
-                          "скользящая пальпация по Образцову-Стражвско: Определение локализации, "
-                          "болезненности, размеров, формы, консистенции, характера поверхности, "
-                          "подвижности и урчания сигмовидной, слепой кишки, поперечно-ободочной, "
-                          "восходящей, нисходящей ободочной кишки, большой кривизны желудка, "
-                          "привратника (с предварительным определением нижней границы желудка "
-                          "методом "
-                          "перкуссии, перкуторной пальпации - определение шума плеска, и методом "
-                          "аускультаторной перкуссии).*\nПри наличии опухолевых образований "
-                          "описываются также их размеры, консистенция, болезненность, смещаемость, "
-                          "локализация и возможная связь с тем или иным органом брюшной полости."),
-                      new TextField("Аускультация",
-                                    "Характеристика выслушиваемой перистальтики кишечника. Шум "
-                                    "трения брюшины."),
-                  }},
-                 {"Печень и желчный пузырь",
-                  {
-                      new TextField("Диспепсические явления:",
-                                    "Тошнота,\nрвота (характер рвотных масс, их "
-                                    "колличество),\nотрыжка.\nУсловия возникновения диспепсических "
-                                    "явлений, связь с приемом пищи, чем купируются."),
-                      new TextField("Осмотр\nПечень:",
-                                    "Уточнение нижних границ печени по срединно-ключичной и "
-                                    "передней срединной линии.\nХарактеристика края печени (острый "
-                                    "или закругленный, мягкий или плотный, болезненный или "
-                                    "безболезненный).\nХарактеристика поверхности печени (при её "
-                                    "увеличении): поверхность гладкая, зернистая, бугристая."),
-                      new TextField("Размеры печени по Курлову:",
-                                    "По правой среднеключичной линии (в см)\nПо передней срединной "
-                                    "линии (в см)\nПо левой реберной дуге (в см)"),
-                      new TextField("Желчный пузырь: ",
-                                    "Характеристика желчного пузыря, его прощупываемостй, "
-                                    "болезненности, размеров, а также наличие "
-                                    "симптомов\nКера,\nКурвуазье,\nфреникус-симптома.\nОртнера."),
-                  }},
-                 {"Поджелудочная железа",
-                  {
-                      new TextField(
-                          "Боль:",
-                          "Локализация (в верхней половине живота),\nиррадиация (опоясывающие "
-                          "боли),\nхарактер болей (острые, тупые, постоянные, "
-                          "приступообразные),\nусловия возникновения (связь с приемом пищи, "
-                          "алкоголя, физической нагрузкой и т.д.), чем купируются."),
-                      new TextField(
-                          "Пальпация",
-                          "Наличие болезненности, увеличения и уплотнения поджелудочной железы."),
-
-                  }},
-                 {"Селезёнка",
-                  {
-                      new TextField(
-                          "Боль в левом подреберье:",
-                          "Характер болей (постоянные или приступообразные, острые или тупые "
-                          "ноющие),\nинтенсивность боли,\nдлительность,\nиррадиация,\nусловия "
-                          "возникновения (связь с изменением положения тела, физической нагрузкой "
-                          "и т.д.)."),
-                      new TextField(
-                          "Осмотр",
-                          "Прощупываемость селезенки в положении лежа на боку и на "
-                          "спине\nХарактеристика нижнего края селезенки (острый или закругленный, "
-                          "болезненный или безболезненный).\nХарактеристика поверхности селезенки "
-                          "(при ее значительном увеличении): поверхность гладкая или бугристая, "
-                          "болезненная или безболезненная."),
-                  }},
-                 {"Система органов мочеотделения",
-                  {
-                      new TextField(
-                          "Боль:",
-                          "локализация (в поясничной области, внизу живота, по ходу "
-                          "мочеточника);\nиррадиация;\nхарактер боли (острая или тупая, постоянная "
-                          "или приступообразная);\nдлительность боли;\nусловия возникновения боли "
-                          "(физическая нагрузка, изменение положения тела, прием острой пищи, "
-                          "алкоголя, водная нагрузка и т.д.),\nчем купируются боли."),
-
-                      new TextField("Мочеиспускание:",
-                                    "Количество мочи за сутки (наличие полиурии, олигурии, анурии "
-                                    "или задержки мочи - ишурии)."),
-                      new TextField(
-                          "Дизурические расстройства:",
-                          "затрудненное мочеиспускание (тонкой струёй, каплями, "
-                          "прерывистое):\nналичие непроизвольного мочеиспускания;\nложные позывы "
-                          "на мочеиспускание;\nрезь, жжение, боли во время мочеиспускания (в "
-                          "начале, в конце или во время всего акта мочеиспускания):\nучащенное "
-                          "мочеиспускание (поллакиурия);\nночное мочеиспускание (никтурия)."),
-                      new TextField("Моча:",
-                                    "Цвет мочи (соломенно-желтый, насыщенно желтый, темный, цвет "
-                                    "\"пива\", красный, цвета \"мясных помоев\" и "
-                                    "т.д.);\nпрозрачность мочи.Наличие примеси крови в моче (в "
-                                    "начале или в конце мочеиспускания, во всех порциях)."),
-                      new TextField(
-                          "Отеки:",
-                          "локализация;\nвремя появления (утром, вечером, на протяжении "
-                          "суток);\nусловия возникновения или усиления отеков (питьевая нагрузка, "
-                          "избыточный прием соли и т.д.);\nскорость нарастания отеков;\nфакторы, "
-                          "способствующие уменьшению или исчезновению отеков."),
-                      new TextField(
-                          "Осмотр\nПочки:",
-                          "определение симптома Пастернацкого\nпальпируемость почек в положении "
-                          "лежа и стоя; при увеличении почек - их болезненность, консистенция, "
-                          "величина, форма, подвижность, наличие симптома баллотирования."),
-                      new TextField(
-                          "Мочевой пузырь:",
-                          "характер перкуторного звука над лобком; при увеличении мочевого пузыря "
-                          "- уровень расположения дна мочевого пузыря.\nБолевые точки: наличие "
-                          "болезненности при пальпации в реберно-позвоночной точке и по ходу "
-                          "мочеточников (мочеточниковые точки)."),
-
-                  }},
-                 {"Система половых органов",
-                  {
-                      new TextField(
-                          "Боль:",
-                          "наличие болей внизу живота, в паху, пояснице, крестце, мошонке, в "
-                          "области наружных половых органов.\nХарактер болей, локализация, "
-                          "иррадиация, условия возникновения, чем копируются."),
-                      new TextField(
-                          "Менструальный цикл: ",
-                          "Регулярность\nдлительность менструального цикла;\nпродолжительность "
-                          "менструаций,\nколичество менструальных отделений обильные , "
-                          "скудные\nхарактер( сгустки, мембраны,просто  кровь "
-                          ")\nболезненность.\nизменения  самочувствия: до , во  время  , "
-                          "после.\nособенности выделений : день-ночь покой-движение\nположение "
-                          "тела\nсопровождаются  ли  симптомами  со  стороны  других  "
-                          "органов.\nМаточные кровотечения,\nдругие выделения бели (цвет, запах "
-                          ",раздражающие  или  нет)"),
-                      new TextField("Половая функция:",
-                                    "нормальная, повышена, снижена, отсутствует."),
-                      new TextField(
-                          "Осмотр\nВторичные половые признаки:",
-                          "тип оволосения (мужской, женский), волосяной покров в подмышечных "
-                          "впадинах, на лице, на животе, в лобковой области.\nНаличие "
-                          "гинекомастии. Голос (высокий, низкий).\nПризнаки гирсутизма, "
-                          "евнухоидизма, вирилизма, феминизма."),
-                      new TextField(
-                          "Молочные железы (у женщин) и грудные железы (у мужчин):",
-                          "степень развития, состояние кожных покровов, пигментация, локальный "
-                          "отек в виде \"лимонной корки\", втяжения. Симметричность желез. Форма "
-                          "сосков, наличие эрозий и язв, деформация желез. Уплотнения, тяжистость "
-                          "и опухолевые образования при пальпации желез."),
-                      new TextField(
-                          "Наружные половые органы (у мужчин):",
-                          "размер мошонки, яичек, отек мошонки, болезненность при пальпации яичек, "
-                          "наличие опухолевых образований.\nНедоразвитие яичек (анархизм, "
-                          "крипторхизм).\nЭрозии и язвы полового члена.\nАномалии и уродства "
-                          "полового члена."),
-                      new TextField("Предстательная железа (у мужчин):",
-                                    "размер, консистенция, пальпаторная болезненность "
-                                    "предстательной железы при ректальном исследовании."),
-                      new TextField("Гинекологическое исследование (у женщин)': состояние наружных "
-                                    "половых органов, влагалища, матки, придатков при осмотре в "
-                                    "зеркалах и бимануальной пальпации."),
-
-                  }},
-                 {"Эндокринная система",
-                  {
-                      new TextField("Жалобы\nНарушение роста, телосложения, увеличение массы тела, "
-                                    "похудание"),
-                      new TextField("жажда, чувство голода"),
-                      new TextField(
-                          "постоянное ощущение жара, потливость, ознобы, повышение температуры "
-                          "тела.",
-                          "Повышенная  потливость  головы , тела , рук , ног \nПри  каких  "
-                          "обстоятельствах \nКак   себя  чувствуете  до , вовремя , после  "
-                          "потоотделения \nКаков  характер   пота , его  вид , запах"),
-                      new TextField("судороги, мышечная слабость"),
-                      new TextField("Осмотр\nНарушения роста, телосложения и пропорциональности "
-                                    "отдельных частей тела.\nОжирение:",
-                                    "степень выраженности, преимущественная локализация жира."),
-                      new TextField("Исхудание, кахексия."),
-                      new TextField("Состояние кожных покровов:",
-                                    "влажность, истончение или огрубение;\nгиперпигментация кожи, "
-                                    "кожных складок (локализация),\nналичие стрий;\nатипичное "
-                                    "оволосение;\nлунообразное лицо."),
-                      new TextField("Увеличение размеров языка, носа, челюстей, ушных раковин, "
-                                    "кистей рук и стоп."),
-                      new TextField("Пальпация щитовидной железы: локализация, величина и "
-                                    "консистенция, болезненность, подвижность."),
-                  }},
-                 {"Нервная система и органы чувств",
-                  {
-                      new TextField(
-                          "Головная боль:",
-                          "локализация,\nинтенсивность,\nпериодичность,\nхарактер головной "
-                          "боли,\nвремя и причина возникновения, чем купируется."),
-                      new TextField(
-                          "Головокружение:",
-                          "характер головокружения,\nусловия его появления (при ходьбе, при "
-                          "изменении положения тела и головы и т.д.).\nСопутствующие явления."),
-                      new TextField("Состояние психики:\nРаботоспособность, память, внимание,"),
-                      new TextField(
-                          "Сон\nЗасыпание, глубина, продолжительность, бессонница, раннее "
-                          "пробуждение,\nВ  какое  время   обычно  ложитесь  спать, засыпаете , "
-                          "просыпаетесь, встаете ?\nВ  каком  положении засыпаете ? Куда  кладете  "
-                          "голову, руки, ноги ?\nПоза во сне (на спине, на животе, на боку), как "
-                          "укрываетесь\nБеспокойный сон (смех, вздрагивание, плач, скрип "
-                          "зубами)\nСонливость днем.\nСновидения есть нет,  приятные неприятные, "
-                          "повторяющиеся,  с пробуждением\nКак  себя  чувствуете  после  сна ?"),
-                      new TextField("Эмоционально-волевая сфера: настроение, особенности "
-                                    "характера, повышенная раздражительность, вялость, апатия, "
-                                    "тревожная мнительность, депрессия, эйфория. Волевые качества "
-                                    "(сильная воля, настойчивость, упрямство, податливость, "
-                                    "внушаемость, решительность, нерешительность, слабоволие)",
-                                    "\nСдезливость , плаксивость?\nКакие страхи были в детстве, "
-                                    "сейчас?\nНавязчивые мысли?\nЧто раздражает, вызывает гнев?"),
-                      new TextField("Двигательная сфера:",
-                                    "Слабость в конечностях, дрожание, судороги, другие "
-                                    "непроизвольные движения."),
-                      new TextField(
-                          "Чувствительная сфера: Нарушения кожной чувствительности (гипестезии, "
-                          "гиперестезии, парестезии), боли по ходу нервных стволов, корешковые "
-                          "боли. Зрение, вкус, обоняние, слух тактильная чувствительность",
-                          "Как   переносите  высокий  ворот, шарф , галстук , пояс, тесную  одежду "
-                          "?"),
-                      new TextField(
-                          "свет", "Влияет  ли   солнечный ,искусственный  свет , полумрак, темнота?"),
-                      new TextField("звук", "Как   переносите  музыку , громкие  звуки ?"),
-                      new TextField("запахи",
-                                    "чувствительность  к  запахам ?\nКак   оцениваете  свое  "
-                                    "обоняние : острое  нормальное  сниженное"),
-                      new TextField("время",
-                                    "В  какие  часы (время  суток)  чувствуете  себя    хуже    "
-                                    "всего?\nКак  Вы переносите  новолуние , полнолуние?\nВ  какое "
-                                    " время  года , сезон  Вы чувствуете  себя  хуже   всего?"),
-                      new TextField(
-                          "физические факторы: холод тепло",
-                          "Как   переносите  тепло ? (радиатора, огня,  кровати, комнатное, сухое "
-                          ", влажное)\nКак  Вы  переносите  солнце , солнечную  жару?\nКак   "
-                          "переносите  холод ?\nКакую  одежду    предпочитаете: теплую или  "
-                          "лёгкую?\nКак переносите  сквозняки, ветер?"),
-                      new TextField(
-                          "погода",
-                          "Как   переносите  перемены погоды?\nКак  себя  чувствуете  до, во  "
-                          "время, после  грозы ?\nКакая погода ухудшает самочувствие?"),
-                      new TextField(
-                          "место",
-                          "Как   себя  чувствуете  на  большой  высоте, на берегу  моря ?\nКак  "
-                          "влияет  быстрое  изменение  высоты  при  подъеме  или  спуске ?\nЛюбите "
-                          " ли  воду, купание, душ,  морскую  воду? при  какой  температуре "
-                          "?\nКакой  климат  кажется  самым плохим  для  здоровья ?"),
-                      new TextField(
-                          "физиологические условия",
-                          "Какое   положение  тела  самое  болезненное: стоя, сидя , лежа , при  "
-                          "ходьбе ?\nКакие  физические  упражнения делаете  или  каким  спортом  "
-                          "занимаетесь? Какова выносливость? Как  себя  чувствуете  после  этого "
-                          "?\nКак  переносите  транспорт? (машина, поезд, лифт, пароход, самолет)"),
-                      new TextField("Осмотр\nСостояние психики:",
-                                    "Сознание. Ориентировка в месте, времени и ситуации"),
-                      new TextField(
-                          "Интеллект:",
-                          "соответствует или не соответствует уровню развития, Ослабление "
-                          "интеллектуальных функций (ослабление, внимания, снижение памяти, "
-                          "нарушение критики, снижение круга интересов)."),
-                      new TextField("Поведение больного",
-                                    "степень общительности, уравновешенность, суетливость, "
-                                    "двигательное беспокойство."),
-                      new TextField(
-                          "Исследование черепно-мозговых нервов:",
-                          "Острота зрения, двоение в глазах (диплопия); птоз, объем движений "
-                          "глазных яблок, реакция зрачков на свет.\nСимметричность носогубных "
-                          "складок при оскале зубов.\nРасстройства глотания.\nДисфония.\nПоложение "
-                          "языка при высовывании."),
-                      new TextField(
-                          "Менингеальные симптомы:",
-                          " ригидность затылочных мышц, симптомы Кернига и Брудзинского."),
-                      new TextField(
-                          "Двигательная сфера:",
-                          "характер походки с открытыми и закрытыми глазами (обычная, "
-                          "атактическая, паретическая, др. формы).\nУстойчивость при стоянии с "
-                          "открытыми и закрытыми глазами (проба Ромберга).\nПальце-носовая и "
-                          "коленно-пяточная пробы.\nСудороги: клонические и тонические, "
-                          "фибриллярные подергивания, дрожание (тремор) и др. непроизвольные "
-                          "движения. Контрактуры мышц (локализация). Объем движений и сила в "
-                          "конечностях."),
-                      new TextField("Чувствительная сфера:",
-                                    "Пальпаторная болезненность по ходу нервных стволов и "
-                                    "корешков. Нарушения кожной и глубокой чувствительности "
-                                    "(локализация). Симптомы натяжения, симптом Лассега."),
-                      new TextField(
-                          "Рефлексы:",
-                          "Роговичный, глоточный.\nСухожильные рефлексы: коленный, "
-                          "ахиллов.\nПатологические рефлексы: симптомы Бабинского и Россолимо."),
-                      new TextField("Речь:", "афазия (моторная или сенсорная), дизартрия."),
-                      new TextField("Вегетативная нервная система:",
-                                    "Глазные симптомы: ширина глазной щели, ширина зрачка, "
-                                    "экзофтальм или анофтальм. Симптом Горнера.\nКожа: вид "
-                                    "дермографизма, температурные асимметрии, гипертрихоз, "
-                                    "облысение, трофические язвы, нарушение потоотделения."),
-
-                  }},
-             })});
-
-    tabs.push_back(
-        {"additionalMethods",
-         new PCardTab("Доп. методы",
-                      {new TextField("План обследования\nДанные лабораторных, инструментальных "
-                                     "методов исследования и консультации специалистов")})});
-
-    TableField *lifeStateTable
-        = new TableField("Состояние жизненной силы", {"высокая", "средняя", "низкая"}, [](int row) {
-              static std::vector<QString> headers = {"Острые болезни",
-                                                     "Хронические",
-                                                     "Модальности",
-                                                     "Страхи",
-                                                     "Сновидения",
-                                                     "Эмоции",
-                                                     "Соц адаптация"};
-              return headers[row];
-          });
-    lifeStateTable->addRow(
-        {"Есть\nРедкие (до 3 раз в год)\nОбязательно с лихорадкой 38 и выше\nПроходят быстро ( до "
-         "2 недель)\nБез осложнений",
-         "Более 3 раз в год\nСубфебрильная темп\nДлительные (более 2 нед)\nосложнения",
-         "Нет или очень редко\nБез лихорадки\nОчень длительные\nОбостряют хр заболевания"});
-    lifeStateTable->addRow({"Функциональный характер изменений\nОбострения редкие\nРемиссии "
-                            "длительные(десятки лет)\nБез осложнений",
-                            "Есть морфологические изменения\nТипы патологий: хр воспаление. "
-                            "аллергозы\nОбострения имеют периодичность",
-                            "Необратимые грубые изменения\nТипы патологий :рубцы. Язвы\nРемиссий "
-                            "нет или очень короткие"});
-    lifeStateTable->addRow({"Четкие\nТолько во время болезни . в ремиссии отсутствуют",
-                            "Недостаточно четкие\nЕсть и в ремиссии",
-                            "отсутствуют"});
-    lifeStateTable->addRow({"Ситуационные\nадекватные",
-                            "Контролируются с трудом\nМешают и ограничивают деятельность",
-                            "Навязчивые на пустом месте\nИли полное отсутствие страхов"});
-    lifeStateTable->addRow({"Есть\nПриятные\nНенавязчивые",
-                            "Редкие\nПовторяются\nНеприятные",
-                            "Неприятные с пробуждением\nИли отсутствие снов"});
-    lifeStateTable->addRow({"Адекватные\nЛегко контролируются",
-                            "Периодически эмоциональные срывы во время стресса",
-                            "Эмоции неадекватны  событиям"});
-    lifeStateTable->addRow({"хорошая",
-                            "Периодически нарушается адаптация\nПоиск виновных",
-                            "Нарушена\nУход в болезнь"});
-    TableField *hypersensitivityTable = new TableField("Гиперчувствительность",
-                                                       {"Заголовок", "Описание"});
-    hypersensitivityTable->addRow(
-        {"причины", "Предшествующее длительное лечение, в том числе и гомеопатическое"});
-    hypersensitivityTable->addRow(
-        {"заболевания",
-         "с проявлениями гиперфункци\nАллергические реакции на пищевые, бытовые, химические "
-         "аллергены\nМножественные побочные эффекты от применения лекарств, трав, витаминов, "
-         "БАДов, косметических средств"});
-    hypersensitivityTable->addRow(
-        {"модальности",
-         "Необходимость соблюдения щадящей диеты\nнечеткие, стертые или отсутствуют"});
-    hypersensitivityTable->addRow(
-        {"Состояние нервной системы",
-         "Неадекватные реакции на окружающую среду – свет, температуру, шум, толпу, "
-         "запахи\nВыраженная метеопатия\nЛегкая возбудимость\nИзбыточная "
-         "чувствительность\nЗатруднения при засыпании\nБыстрые перепады настроения\nЧастые "
-         "истерические состояния\nБыстрые движения"});
-
-    tabs.push_back(
-        {"diagnosis",
-         new PCardTab(
-             "Диагноз",
-             {
-                 lifeStateTable,
-                 hypersensitivityTable,
-                 new TextField("Преобладающая патология семьи"),
-                 new TextField("Этиология, провоцирующие факторы, условия, факторы риска"),
-                 new TextField("Первично пораженный орган или система",
-                               "Симптомы первичные\nСимптомы вторичные"),
-                 new TextField("Симптомы компенсаторные (физиологические)"),
-                 new TextField(
-                     "Основные патологические синдромы",
-                     "Основное заболевание (первично пораженный орган, система)\nОсложнение "
-                     "(первично пораженный орган, система, симптомы вторичные имеют другую "
-                     "модальность)\nСопутствующее ( не связано с первично пораженный органом)"),
-                 new TextField("Миазм",
-                               "Миазматические события\nМиазматическая склонность\nПервичная, "
-                               "вторичная, третичная псора\nСикоз\nСифилис\nТуберкулиновый"),
-                 new TextField("Проекция на таблицу"),
-                 new TextField(
-                     "Клинический диагноз\n1)основное заболевание    а) форма клиническую, "
-                     "клинико-морфологическая или патогенетическая\nв) характер течения\nг) "
-                     "стадии, фазы, степени активности процесса\nд) степени (стадии) "
-                     "функциональных расстройств или тяжести заболевания"),
-                 new TextField("2) осложнения основного заболевания"),
-                 new TextField("3)сопутствующие заболевания"),
-                 new TextField("Реперторизация"),
-
-             })});
-
-    TableField *treatmentPlanTable
-        = new TableField("План и прогноз", {"высокая", "средняя", "низкая"}, [](int row) {
-              static std::vector<QString> headers = {"Длительность гомеотерапии",
-                                                     "Разведение",
-                                                     "Сроки появления обострения",
-                                                     "Длительность обострения",
-                                                     "Прием фарм препаратов",
-                                                     "Прогноз"};
-              return headers[row];
-          });
-
-    treatmentPlanTable->addRow(
-        {"Короткий курс\nдаже однократно",
-         "Длительное пожизненное лечение  чередовать препараты по меняющейся совокупности\nритм "
-         "индивидуальный\nВозможен  кратковременный ситуативный плюрализм",
-         "Паллиативное лечение\nПлюрализм в индивидуально подобранном ритме"});
-    treatmentPlanTable->addRow(
-        {"Любые\nЧаще высокие",
-         "Острая патология- низкие и средние\nХр пат-средние и LM\nВысокие осторожно",
-         "низкие"});
-    treatmentPlanTable->addRow({"1 час- неделя\n", "От 2 нед до 1 мес", "Через месяц"});
-    treatmentPlanTable->addRow(
-        {"Короткое  (до 1 нед)", "1 нед-1 мес\nРекомендуется прием антидотов", "месяцы"});
-    treatmentPlanTable->addRow(
-        {"Можно одномоментно отменить",
-         "Отменять постепенно при улучшении состояния особенно гипотензивные  и кортикостероиды",
-         "Совместный прием\nНе отменять\nМожно снижать дозу"});
-    treatmentPlanTable->addRow(
-        {"Хороший или длительная ремиссия", "Возможна длительная ремиссия", "Сомнительный"});
-
-    tabs.push_back(
-        {"treatmentPlan",
-         new PCardTab(
-             "План лечения",
-             {
-                 new TextField(
-                     "Цели лечения",
-                     "Полное выздоровление (исчезновение всех симптомов, главные-в обратном "
-                     "порядке)\nВременное улучшение (исчезновение главных симптомов, остаются "
-                     "вторичные и компенсаторные)\nРемиссия (исчезновение главных симптомов, "
-                     "остаются "
-                     " только компенсаторные)\nУлучшение прогноза, трудоспособности."),
-                 new TextField("Направления лечения:\n    а) этиологическое лечение"),
-                 new TextField("    б) патогенетическое лечение",
-                               "воздействие на основные механизмы болезни (воспаление, аллергия, "
-                               "функциональные нарушения, дефицит определенных факторов, "
-                               "интоксикация и др.)"),
-                 new TextField("    в) симптоматическое лечение"),
-                 treatmentPlanTable,
-                 new TextField("Назначения"),
-             })});
-
-    tabs.push_back(
-        {"diary",
-         new PCardTab("Дневник",
-                      {
-                          new TableField("",
-                                         {"Дата и назначение",
-                                          "Динамика основных жалоб (10 б)",
-                                          "Общее состояние (сон аппетит, стул,мочеиспускание)",
-                                          "Новые симптомы",
-                                          "Заключение"}),
-                      })});
-
-    for (const auto &tab : tabs) {
-        auto scrollArea = new QScrollArea(this);
-        scrollArea->setWidget(tab.second);
-        scrollArea->setWidgetResizable(true);
-        tabWidget->addTab(scrollArea, tab.second->title());
-        connect(tab.second, &PCardTab::changed, this, &HomeoEntity::changed);
+        ts << "</layout></widget></widget>";
     }
 }
+*/

@@ -2,6 +2,7 @@
 #include <QJsonArray>
 #include <QJsonDocument>
 #include <QJsonObject>
+#include <QMenu>
 #include <QScrollArea>
 #include <QVBoxLayout>
 #include "MultiLineEditDelegate.h"
@@ -39,7 +40,10 @@ bool PatientCard::read(QFile &file)
         for (int i = 0; i < edits.size(); ++i) {
             auto edit = edits[i];
             auto value = editsJson[i];
-            if (auto tEdit = dynamic_cast<QPlainTextEdit *>(edit)) {
+            if (auto tEdit = dynamic_cast<QTextEdit *>(edit)) {
+                if (value.isString())
+                    tEdit->setHtml(value.toString());
+            } else if (auto tEdit = dynamic_cast<QPlainTextEdit *>(edit)) {
                 if (value.isString())
                     tEdit->setPlainText(value.toString());
             } else if (auto lEdit = dynamic_cast<QLineEdit *>(edit)) {
@@ -93,7 +97,9 @@ bool PatientCard::write(QFile &file)
 
     QJsonArray editsJson;
     for (const auto &edit : edits) {
-        if (auto tEdit = dynamic_cast<QPlainTextEdit *>(edit))
+        if (auto tEdit = dynamic_cast<QTextEdit *>(edit))
+            editsJson.push_back(tEdit->toHtml());
+        else if (auto tEdit = dynamic_cast<QPlainTextEdit *>(edit))
             editsJson.push_back(tEdit->toPlainText());
         else if (auto lEdit = dynamic_cast<QLineEdit *>(edit))
             editsJson.push_back(lEdit->text());
@@ -324,13 +330,25 @@ void PatientCard::setupFields()
         connect(table, &QTableWidget::cellChanged, this, &HomeoEntity::changed);
         table->setItemDelegate(new MultiLineEditDelegate(table));
     }
-
     setupEditableTable(ui->complaints);
     setupEditableTable(ui->diary);
 
     ui->edit4->setDate(QDate::currentDate());
     ui->edit4->setMinimumDate(QDate(2000, 1, 1));
     ui->edit4->setMaximumDate(QDate::currentDate());
+
+    auto boldAct = new QAction("Выделить");
+    auto e = ui->edit5;
+    connect(boldAct, &QAction::triggered, e, [e]() {
+        auto color = e->textBackgroundColor();
+        e->setTextBackgroundColor(QPalette::Accent);
+    });
+    e->addAction(boldAct);
+    auto sep = new QAction;
+    sep->setSeparator(true);
+    e->addAction(sep);
+    e->addActions(e->createStandardContextMenu()->actions());
+    e->setContextMenuPolicy(Qt::ActionsContextMenu);
 }
 
 void PatientCard::setupEditableTable(QTableWidget *table)

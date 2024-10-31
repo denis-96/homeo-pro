@@ -10,6 +10,8 @@ QWidget *MultiLineEditDelegate::createEditor(QWidget *parent,
                                              const QModelIndex &index) const
 {
     QPlainTextEdit *editor = new QPlainTextEdit(parent);
+    editor->setAutoFillBackground(true);
+    editor->setBackgroundRole(QPalette::Window);
     editor->setContentsMargins(0, 0, 0, 0);
     return editor;
 }

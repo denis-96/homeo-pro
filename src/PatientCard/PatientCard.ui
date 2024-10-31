@@ -19,7 +19,7 @@
    <string>PatientCardTab</string>
   </property>
   <property name="currentIndex">
-   <number>0</number>
+   <number>2</number>
   </property>
   <widget class="QScrollArea" name="passportDetails">
    <property name="widgetResizable">
@@ -150,7 +150,8 @@
       </widget>
      </item>
      <item>
-      <widget class="QPlainTextEdit" name="edit5"/>
+      <widget class="QTextEdit" name="edit5">
+      </widget>
      </item>
      <item>
       <widget class="QLabel" name="label6">

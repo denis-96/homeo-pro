@@ -33,7 +33,7 @@ HomeoPro is a professional desktop application designed for homeopathic doctors 
 ### Building from Source
 1. Clone repository:
 
-   git clone https://github.com/yourusername/homeopro.git
+   git clone https://github.com/denis-96/homeo-pro.git
    cd homeopro
 
 2. Create build directory:

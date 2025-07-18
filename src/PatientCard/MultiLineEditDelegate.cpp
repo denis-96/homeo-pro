@@ -11,7 +11,8 @@ QWidget *MultiLineEditDelegate::createEditor(QWidget *parent,
 {
     QPlainTextEdit *editor = new QPlainTextEdit(parent);
     editor->setAutoFillBackground(true);
-    editor->setBackgroundRole(QPalette::Window);
+    editor->setBackgroundVisible(true);
+    editor->setBackgroundRole(QPalette::Button);
     editor->setContentsMargins(0, 0, 0, 0);
     return editor;
 }

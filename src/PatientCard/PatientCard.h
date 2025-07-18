@@ -3,6 +3,7 @@
 
 #include <QTabWidget>
 #include <QTableWidget>
+#include <QTextEdit>
 #include <QWidget>
 #include <HomeoEntity.h>
 
@@ -23,6 +24,7 @@ private:
     void setupFields();
 
     void setupEditableTable(QTableWidget *table);
+    void setupTextEdit(QTextEdit *edit);
 
     Ui::PatientCard *ui;
     QTabWidget *tabWidget;

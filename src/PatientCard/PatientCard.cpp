@@ -4,6 +4,7 @@
 #include <QJsonObject>
 #include <QMenu>
 #include <QScrollArea>
+#include <QSpinBox>
 #include <QVBoxLayout>
 #include "MultiLineEditDelegate.h"
 #include "ui_PatientCard.h"
@@ -43,9 +44,6 @@ bool PatientCard::read(QFile &file)
             if (auto tEdit = dynamic_cast<QTextEdit *>(edit)) {
                 if (value.isString())
                     tEdit->setHtml(value.toString());
-            } else if (auto tEdit = dynamic_cast<QPlainTextEdit *>(edit)) {
-                if (value.isString())
-                    tEdit->setPlainText(value.toString());
             } else if (auto lEdit = dynamic_cast<QLineEdit *>(edit)) {
                 if (value.isString())
                     lEdit->setText(value.toString());
@@ -55,7 +53,10 @@ bool PatientCard::read(QFile &file)
             } else if (auto nEdit = dynamic_cast<QSpinBox *>(edit)) {
                 if (value.isDouble())
                     nEdit->setValue(value.toInt());
-            }
+            } /*else if (auto tEdit = dynamic_cast<QPlainTextEdit *>(edit)) {
+                if (value.isString())
+                    tEdit->setPlainText(value.toString());
+            }*/
         }
 
     if (!json["tables"].isArray())
@@ -99,14 +100,14 @@ bool PatientCard::write(QFile &file)
     for (const auto &edit : edits) {
         if (auto tEdit = dynamic_cast<QTextEdit *>(edit))
             editsJson.push_back(tEdit->toHtml());
-        else if (auto tEdit = dynamic_cast<QPlainTextEdit *>(edit))
-            editsJson.push_back(tEdit->toPlainText());
         else if (auto lEdit = dynamic_cast<QLineEdit *>(edit))
             editsJson.push_back(lEdit->text());
         else if (auto dEdit = dynamic_cast<QDateEdit *>(edit))
             editsJson.push_back(dEdit->date().toJulianDay());
         else if (auto nEdit = dynamic_cast<QSpinBox *>(edit))
             editsJson.push_back(nEdit->value());
+        // else if (auto tEdit = dynamic_cast<QPlainTextEdit *>(edit))
+        //     editsJson.push_back(tEdit->toPlainText());
     }
 
     QJsonArray tablesJson;
@@ -234,14 +235,6 @@ void PatientCard::setupFields()
     edits.push_back(ui->edit102);
     edits.push_back(ui->edit103);
     edits.push_back(ui->edit104);
-    edits.push_back(ui->edit105);
-    edits.push_back(ui->edit106);
-    edits.push_back(ui->edit107);
-    edits.push_back(ui->edit108);
-    edits.push_back(ui->edit109);
-    edits.push_back(ui->edit110);
-    edits.push_back(ui->edit111);
-    edits.push_back(ui->edit112);
     edits.push_back(ui->edit113);
     edits.push_back(ui->edit114);
     edits.push_back(ui->edit115);
@@ -317,18 +310,23 @@ void PatientCard::setupFields()
     tables.push_back(ui->diary);
 
     for (const auto &edit : edits) {
-        if (auto castedEdit = dynamic_cast<QPlainTextEdit *>(edit))
-            connect(castedEdit, &QPlainTextEdit::textChanged, this, &HomeoEntity::changed);
-        else if (auto castedEdit = dynamic_cast<QLineEdit *>(edit))
+        if (auto castedEdit = dynamic_cast<QTextEdit *>(edit)) {
+            connect(castedEdit, &QTextEdit::textChanged, this, &HomeoEntity::changed);
+            setupTextEdit(castedEdit);
+        } else if (auto castedEdit = dynamic_cast<QLineEdit *>(edit))
             connect(castedEdit, &QLineEdit::editingFinished, this, &HomeoEntity ::changed);
         else if (auto castedEdit = dynamic_cast<QDateEdit *>(edit))
             connect(castedEdit, &QDateEdit::editingFinished, this, &HomeoEntity ::changed);
         else if (auto castedEdit = dynamic_cast<QSpinBox *>(edit))
             connect(castedEdit, &QSpinBox::editingFinished, this, &HomeoEntity ::changed);
+        // else if (auto castedEdit = dynamic_cast<QPlainTextEdit *>(edit))
+        //     connect(castedEdit, &QPlainTextEdit::textChanged, this, &HomeoEntity::changed);
     }
     for (const auto &table : tables) {
         connect(table, &QTableWidget::cellChanged, this, &HomeoEntity::changed);
         table->setItemDelegate(new MultiLineEditDelegate(table));
+        table->horizontalHeader()->setStretchLastSection(true);
+        table->horizontalHeader()->setDefaultSectionSize(200);
     }
     setupEditableTable(ui->complaints);
     setupEditableTable(ui->diary);
@@ -337,18 +335,7 @@ void PatientCard::setupFields()
     ui->edit4->setMinimumDate(QDate(2000, 1, 1));
     ui->edit4->setMaximumDate(QDate::currentDate());
 
-    auto boldAct = new QAction("Выделить");
-    auto e = ui->edit5;
-    connect(boldAct, &QAction::triggered, e, [e]() {
-        auto color = e->textBackgroundColor();
-        e->setTextBackgroundColor(QPalette::Accent);
-    });
-    e->addAction(boldAct);
-    auto sep = new QAction;
-    sep->setSeparator(true);
-    e->addAction(sep);
-    e->addActions(e->createStandardContextMenu()->actions());
-    e->setContextMenuPolicy(Qt::ActionsContextMenu);
+    ui->edit162->setFixedHeight(400);
 }
 
 void PatientCard::setupEditableTable(QTableWidget *table)
@@ -379,6 +366,33 @@ void PatientCard::setupEditableTable(QTableWidget *table)
             [table, removeRowAction] {
                 removeRowAction->setEnabled(table->selectionModel()->selectedRows().size());
             });
+}
+
+void PatientCard::setupTextEdit(QTextEdit *edit)
+{
+    auto highlightAction = new QAction("Выделить");
+    connect(highlightAction, &QAction::triggered, edit, [edit]() {
+        QTextCursor cursor = edit->textCursor();
+
+        if (!cursor.hasSelection())
+            cursor.select(QTextCursor::WordUnderCursor);
+
+        QTextCharFormat fmt;
+        fmt.setBackground(cursor.charFormat().background().color() != QColor(Qt::green)
+                              ? Qt::green
+                              : fmt.background());
+
+        // fmt.setFontWeight(cursor.charFormat().font().bold() ? QFont::Normal : QFont::Bold);
+
+        cursor.mergeCharFormat(fmt);
+    });
+    edit->addAction(highlightAction);
+    auto separator = new QAction;
+    separator->setSeparator(true);
+    edit->addAction(separator);
+    edit->addActions(edit->createStandardContextMenu()->actions());
+    edit->setContextMenuPolicy(Qt::ActionsContextMenu);
+    edit->setFixedHeight(70);
 }
 /*
 void convert(const std::pair<QString, PCardTab *> &val)

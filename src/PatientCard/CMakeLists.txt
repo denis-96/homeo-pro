@@ -1,12 +1,5 @@
 qt_add_library(PatientCard STATIC
     PatientCard.h PatientCard.cpp
-
-
-
-
-
-
-
     PatientCard.ui
     MultiLineEditDelegate.h MultiLineEditDelegate.cpp
 )

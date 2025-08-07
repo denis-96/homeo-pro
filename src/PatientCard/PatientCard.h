@@ -28,9 +28,6 @@ private:
 
     Ui::PatientCard *ui;
     QTabWidget *tabWidget;
-
-    std::vector<QWidget *> edits;
-    std::vector<QTableWidget *> tables;
 };
 
 #endif // PATIENTCARD_H
